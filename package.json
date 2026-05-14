@@ -1,0 +1,11 @@
+{
+  "name": "sailsforce",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^42.0.1"
+  }
+}
