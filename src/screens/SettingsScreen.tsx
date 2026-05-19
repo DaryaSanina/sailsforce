@@ -24,6 +24,7 @@ import {
   windUnitOptions,
   type UserSettings,
 } from "../data/prototype";
+import { FadeIn } from "../components/Transitions";
 import { shadows } from "../styles/shadows";
 
 type Props = {
@@ -61,36 +62,38 @@ export function SettingsScreen({
       </View>
 
       <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 28 }}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Edit profile"
-          onPress={() =>
-            onEditField({
-              kind: "text",
-              key: "name",
-              title: "Your name",
-              value: settings.name,
-              placeholder: "Enter your name",
-              maxLength: 40,
-            })
-          }
-          className="mb-5 mt-1 flex-row items-center rounded-xl border border-line-soft bg-white p-3 active:bg-surface"
-          style={shadows.soft}
-        >
-          <View className="mr-3 h-[50px] w-[50px] overflow-hidden rounded-full">
-            <Avatar />
-          </View>
-          <View className="flex-1">
-            <Text className="text-[18px] font-bold text-ink">{settings.name}</Text>
-            <Text className="text-[14px] text-ink-soft">{homeSpotName}</Text>
-          </View>
-          <View className="items-center">
-            <Star size={23} color="#7CB3B5" fill="#7CB3B5" />
-            <Text className="mt-1 text-[12px] text-ink">Favorite spot</Text>
-          </View>
-        </Pressable>
+        <FadeIn duration={280} delay={40} translateY={10}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Edit profile"
+            onPress={() =>
+              onEditField({
+                kind: "text",
+                key: "name",
+                title: "Your name",
+                value: settings.name,
+                placeholder: "Enter your name",
+                maxLength: 40,
+              })
+            }
+            className="mb-5 mt-1 flex-row items-center rounded-xl border border-line-soft bg-white p-3 active:bg-surface"
+            style={shadows.soft}
+          >
+            <View className="mr-3 h-[50px] w-[50px] overflow-hidden rounded-full">
+              <Avatar />
+            </View>
+            <View className="flex-1">
+              <Text className="text-[18px] font-bold text-ink">{settings.name}</Text>
+              <Text className="text-[14px] text-ink-soft">{homeSpotName}</Text>
+            </View>
+            <View className="items-center">
+              <Star size={23} color="#7CB3B5" fill="#7CB3B5" />
+              <Text className="mt-1 text-[12px] text-ink">Favorite spot</Text>
+            </View>
+          </Pressable>
+        </FadeIn>
 
-        <SettingsSection title="USER DATA">
+        <SettingsSection title="USER DATA" index={1}>
           <SettingsRow
             label="Weight"
             value={`${settings.weightKg} kg`}
@@ -156,7 +159,7 @@ export function SettingsScreen({
           />
         </SettingsSection>
 
-        <SettingsSection title="UNITS">
+        <SettingsSection title="UNITS" index={2}>
           <SettingsRow
             label="Wind Speed units"
             value={windUnitLabel(settings.windUnit)}
@@ -173,7 +176,7 @@ export function SettingsScreen({
           />
         </SettingsSection>
 
-        <SettingsSection title="SPOTS & FAVORITES">
+        <SettingsSection title="SPOTS & FAVORITES" index={3}>
           <SettingsRow
             label="Saved spots"
             value={`${savedSpotsCount} spot${savedSpotsCount === 1 ? "" : "s"}`}
@@ -182,7 +185,7 @@ export function SettingsScreen({
           />
         </SettingsSection>
 
-        <SettingsSection title="QUIVER">
+        <SettingsSection title="QUIVER" index={4}>
           <QuiverRow
             label="Sails"
             count={settings.sails.length}
@@ -204,17 +207,19 @@ export function SettingsScreen({
   );
 }
 
-function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
+function SettingsSection({ title, children, index = 0 }: { title: string; children: ReactNode; index?: number }) {
   return (
-    <View className="mb-5">
-      <View className="mb-2 flex-row items-center">
-        <View className="mr-2 h-1.5 w-1.5 rounded-full bg-mint" />
-        <Text className="text-[12px] font-bold tracking-wider text-ink-soft">{title}</Text>
+    <FadeIn duration={280} delay={40 + index * 70} translateY={10}>
+      <View className="mb-5">
+        <View className="mb-2 flex-row items-center">
+          <View className="mr-2 h-1.5 w-1.5 rounded-full bg-mint" />
+          <Text className="text-[12px] font-bold tracking-wider text-ink-soft">{title}</Text>
+        </View>
+        <View className="overflow-hidden rounded-xl border border-line-soft bg-white" style={shadows.soft}>
+          {children}
+        </View>
       </View>
-      <View className="overflow-hidden rounded-xl border border-line-soft bg-white" style={shadows.soft}>
-        {children}
-      </View>
-    </View>
+    </FadeIn>
   );
 }
 

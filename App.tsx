@@ -5,6 +5,7 @@ import { Platform, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
+import { FadeIn } from "./src/components/Transitions";
 import { ForecastScreen } from "./src/screens/ForecastScreen";
 import { LocationSelectionSheet } from "./src/screens/LocationSelectionSheet";
 import { SettingsScreen } from "./src/screens/SettingsScreen";
@@ -216,34 +217,36 @@ export default function App() {
       <StatusBar style="dark" />
       <View className="flex-1 items-center bg-white">
         <SafeAreaView edges={["top", "bottom"]} className="w-full max-w-[430px] flex-1 bg-white">
-          {route === "forecast" ? (
-            <ForecastScreen
-              mode={mode}
-              selectedLocationId={selectedLocationId}
-              isFavorite={isFavorite}
-              onToggleFavorite={() => toggleFavorite(selectedLocationId)}
-              onShare={handleShare}
-              onOpenSettings={() => setRoute("settings")}
-              onOpenLocations={() => setLocationsOpen(true)}
-              onChangeMode={setMode}
-              onOpenMapDetail={() => setInfoDetail(INFO_DETAILS.map)}
-              onOpenWindBeach={() => setInfoDetail(INFO_DETAILS.windBeach)}
-              onOpenWaterState={() => setInfoDetail(INFO_DETAILS.waterState)}
-              onOpenSafety={() => setInfoDetail(INFO_DETAILS.safety)}
-              onOpenFooterInfo={(key) => setInfoDetail(INFO_DETAILS[key])}
-            />
-          ) : (
-            <SettingsScreen
-              settings={settings}
-              homeSpotName={selectedLocation.name}
-              savedSpotsCount={favoriteIds.size}
-              onBack={() => setRoute("forecast")}
-              onOpenLocations={() => setLocationsOpen(true)}
-              onEditField={setEditField}
-              onEditSails={() => setEditCollection("sails")}
-              onEditBoards={() => setEditCollection("boards")}
-            />
-          )}
+          <FadeIn key={route} duration={220} style={{ flex: 1 }}>
+            {route === "forecast" ? (
+              <ForecastScreen
+                mode={mode}
+                selectedLocationId={selectedLocationId}
+                isFavorite={isFavorite}
+                onToggleFavorite={() => toggleFavorite(selectedLocationId)}
+                onShare={handleShare}
+                onOpenSettings={() => setRoute("settings")}
+                onOpenLocations={() => setLocationsOpen(true)}
+                onChangeMode={setMode}
+                onOpenMapDetail={() => setInfoDetail(INFO_DETAILS.map)}
+                onOpenWindBeach={() => setInfoDetail(INFO_DETAILS.windBeach)}
+                onOpenWaterState={() => setInfoDetail(INFO_DETAILS.waterState)}
+                onOpenSafety={() => setInfoDetail(INFO_DETAILS.safety)}
+                onOpenFooterInfo={(key) => setInfoDetail(INFO_DETAILS[key])}
+              />
+            ) : (
+              <SettingsScreen
+                settings={settings}
+                homeSpotName={selectedLocation.name}
+                savedSpotsCount={favoriteIds.size}
+                onBack={() => setRoute("forecast")}
+                onOpenLocations={() => setLocationsOpen(true)}
+                onEditField={setEditField}
+                onEditSails={() => setEditCollection("sails")}
+                onEditBoards={() => setEditCollection("boards")}
+              />
+            )}
+          </FadeIn>
 
           <LocationSelectionSheet
             visible={locationsOpen}

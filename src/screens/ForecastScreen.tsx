@@ -20,6 +20,8 @@ import {
   Wind,
 } from "lucide-react-native";
 
+import { FadeIn } from "../components/Transitions";
+
 import { BeachMap } from "../components/BeachMap";
 import { BeachWindGraphic, MiniTideWave, TideGraph, WaveGraphic } from "../components/Graphs";
 import { SailabilityMeter } from "../components/SailabilityMeter";
@@ -200,7 +202,11 @@ function WeatherWidget({ detailed, onToggle }: { detailed: boolean; onToggle: ()
           <MiniTideWave />
         </View>
 
-        {detailed ? <ModelTable /> : null}
+        {detailed ? (
+          <FadeIn duration={220} translateY={8}>
+            <ModelTable />
+          </FadeIn>
+        ) : null}
 
         <View className="mt-2 flex-row items-center justify-center gap-1">
           {detailed ? <ChevronUp size={12} color="#94A3B8" /> : null}
@@ -337,6 +343,7 @@ function MetricCardsRow({
 }) {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}>
+      <FadeIn duration={280} delay={80} translateY={12}>
       <MetricCard onPress={onOpenWindBeach} label="Wind vs beach detail">
         <Text className="text-[10px] font-bold tracking-wider text-ink-soft">WIND VS BEACH</Text>
         <Text className="mt-1 text-[12px] font-bold text-sky">ONSHORE</Text>
@@ -350,7 +357,9 @@ function MetricCardsRow({
           <BeachWindGraphic />
         </View>
       </MetricCard>
+      </FadeIn>
 
+      <FadeIn duration={280} delay={150} translateY={12}>
       <MetricCard onPress={onOpenWaterState} label="Water state detail">
         <Text className="text-[10px] font-bold tracking-wider text-ink-soft">WATER STATE</Text>
         <View className="mt-2 flex-row items-center gap-1">
@@ -364,7 +373,9 @@ function MetricCardsRow({
           <WaveGraphic />
         </View>
       </MetricCard>
+      </FadeIn>
 
+      <FadeIn duration={280} delay={220} translateY={12}>
       <MetricCard onPress={onOpenSafety} label="Safety detail">
         <Text className="text-[10px] font-bold tracking-wider text-ink-soft">SAFETY</Text>
         <View className="mt-2 flex-row items-center gap-1">
@@ -380,6 +391,7 @@ function MetricCardsRow({
           <Sun size={26} color="#FBBF24" fill="#FBBF24" />
         </View>
       </MetricCard>
+      </FadeIn>
     </ScrollView>
   );
 }

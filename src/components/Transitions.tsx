@@ -1,0 +1,62 @@
+import { useEffect, useRef, type ReactNode } from "react";
+import { Animated, Easing, type StyleProp, type ViewStyle } from "react-native";
+
+type FadeInProps = {
+  children: ReactNode;
+  duration?: number;
+  delay?: number;
+  translateY?: number;
+  style?: StyleProp<ViewStyle>;
+};
+
+export function FadeIn({ children, duration = 220, delay = 0, translateY = 0, style }: FadeInProps) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const ty = useRef(new Animated.Value(translateY)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration,
+        delay,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(ty, {
+        toValue: 0,
+        duration,
+        delay,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View style={[{ opacity, transform: [{ translateY: ty }] }, style]}>
+      {children}
+    </Animated.View>
+  );
+}
+
+type SlideUpProps = {
+  children: ReactNode;
+  from?: number;
+  duration?: number;
+  style?: StyleProp<ViewStyle>;
+};
+
+export function SlideUp({ children, from = 320, duration = 320, style }: SlideUpProps) {
+  const ty = useRef(new Animated.Value(from)).current;
+
+  useEffect(() => {
+    Animated.timing(ty, {
+      toValue: 0,
+      duration,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  return <Animated.View style={[{ transform: [{ translateY: ty }] }, style]}>{children}</Animated.View>;
+}
