@@ -1,15 +1,9 @@
-import Svg, { Circle, Defs, LinearGradient, Path, Stop } from "react-native-svg";
+import Svg, { Circle, Path } from "react-native-svg";
 
 export function TideGraph({ height = 78 }: { height?: number }) {
   return (
     <Svg width="100%" height={height} viewBox="0 0 320 78">
-      <Defs>
-        <LinearGradient id="tideFill" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#3B82F6" stopOpacity="0.18" />
-          <Stop offset="1" stopColor="#3B82F6" stopOpacity="0.02" />
-        </LinearGradient>
-      </Defs>
-      <Path d="M8 62 C52 57 76 42 112 31 C150 18 175 16 211 26 C247 36 267 55 312 60 L312 76 L8 76 Z" fill="url(#tideFill)" />
+      <Path d="M8 62 C52 57 76 42 112 31 C150 18 175 16 211 26 C247 36 267 55 312 60 L312 76 L8 76 Z" fill="#EFF6FF" />
       <Path d="M8 62 C52 57 76 42 112 31 C150 18 175 16 211 26 C247 36 267 55 312 60" fill="none" stroke="#3B82F6" strokeWidth="2.5" />
       {[8, 75, 139, 205, 270, 312].map((x, index) => (
         <Circle key={x} cx={x} cy={[62, 43, 23, 28, 54, 60][index]} r="3" fill="#FFFFFF" stroke="#3B82F6" strokeWidth="1.5" />

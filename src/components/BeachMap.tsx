@@ -49,7 +49,9 @@ export function BeachMap({ size, wind, swell, unit = "kt", showDirection = true 
       </View>
 
       <View className="absolute items-center">
-        <Navigation size={32} color="#FFFFFF" fill="#FFFFFF" style={{ transform: [{ rotate: "70deg" }] }} />
+        <View style={{ transform: [{ rotate: "70deg" }] }}>
+          <Navigation size={32} color="#FFFFFF" fill="#FFFFFF" />
+        </View>
         <Text className="mt-1 text-[48px] font-extrabold leading-[50px] text-white">{wind}</Text>
         <Text className="-mt-1 text-[16px] font-medium text-white">{unit}</Text>
         {showDirection ? <Text className="mt-1 text-[14px] font-semibold text-white">ENE (70°)</Text> : null}
