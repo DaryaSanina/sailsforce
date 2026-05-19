@@ -1,5 +1,10 @@
 # dependencies (bun install)
 node_modules
+node_modules/
+
+# expo / local preview
+.expo/
+.playwright-mcp/
 
 # output
 out
@@ -14,6 +19,7 @@ coverage
 logs
 _.log
 report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+*.log
 
 # dotenv environment variable files
 .env
@@ -32,3 +38,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# local visual verification
+*.png
+!design/**/*.png
