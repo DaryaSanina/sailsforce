@@ -79,39 +79,37 @@ async function fetchTidalPredictions(stationId, date) {
 
 /**
  * Averages two sets of tidal predictions.
- * Matches tides by type (H/L) and sequential order.
+ * Matches tides by type (H/L) and proximity in time.
  */
 function averagePredictions(pred1, pred2) {
-  if (!pred1 || !pred2) return [];
+  if (!pred1 || !pred2 || pred1.length === 0 || pred2.length === 0) return [];
   
   const averaged = [];
-  const minLength = Math.min(pred1.length, pred2.length);
-
-  for (let i = 0; i < minLength; i++) {
-    const p1 = pred1[i];
-    const p2 = pred2[i];
-
-    if (!p1 || !p2) continue;
-
-    // Ensure we are averaging the same type of tide
-    if (p1.type !== p2.type) {
-      // In a real-world scenario, we might need a more robust matching algorithm
-      continue;
-    }
-
+  
+  for (const p1 of pred1) {
     const time1 = new Date(p1.t).getTime();
-    const time2 = new Date(p2.t).getTime();
-    const avgTime = new Date((time1 + time2) / 2);
-
-    const val1 = parseFloat(p1.v);
-    const val2 = parseFloat(p2.v);
-    const avgVal = (val1 + val2) / 2;
-
-    averaged.push({
-      t: avgTime.toISOString().replace('T', ' ').substring(0, 16),
-      v: avgVal.toFixed(3),
-      type: p1.type
+    
+    // Find a matching tide in pred2: same type and within 4 hours
+    const match = pred2.find(p2 => {
+      if (p1.type !== p2.type) return false;
+      const time2 = new Date(p2.t).getTime();
+      return Math.abs(time1 - time2) < 4 * 60 * 60 * 1000;
     });
+
+    if (match) {
+      const time2 = new Date(match.t).getTime();
+      const avgTime = new Date((time1 + time2) / 2);
+
+      const val1 = parseFloat(p1.v);
+      const val2 = parseFloat(match.v);
+      const avgVal = (val1 + val2) / 2;
+
+      averaged.push({
+        t: avgTime.toISOString().replace('T', ' ').substring(0, 16),
+        v: avgVal.toFixed(3),
+        type: p1.type
+      });
+    }
   }
 
   return averaged;
@@ -141,8 +139,8 @@ async function getTidalData(lat, lon, date = null) {
     const station1 = nearestStations[0];
     const predictions1 = await fetchTidalPredictions(station1.id, date);
 
-    // If we only have one station, or if it's very close (e.g. < 2km), don't average
-    if (nearestStations.length === 1 || station1.distance < 2) {
+    // If we only have one station, or if it's very close (e.g. < 5km), don't average
+    if (nearestStations.length === 1 || station1.distance < 5) {
       return {
         station: {
           id: station1.id,
@@ -172,6 +170,19 @@ async function getTidalData(lat, lon, date = null) {
     }
 
     const averaged = averagePredictions(predictions1, predictions2);
+
+    // If averaging failed to find matches, fall back to the primary station
+    if (averaged.length === 0) {
+      return {
+        station: {
+          id: station1.id,
+          name: station1.name,
+          distance: station1.distance
+        },
+        isAveraged: false,
+        predictions: predictions1
+      };
+    }
 
     return {
       stations: [
