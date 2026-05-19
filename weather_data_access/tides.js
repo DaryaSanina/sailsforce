@@ -2,7 +2,6 @@
  * Tides Service for Sailsforce
  * Handles tidal data collection from NOAA CO-OPS API.
  */
-
 const NOAA_MDAPI_URL = 'https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json?type=waterlevels';
 const NOAA_DATAGETTER_URL = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter';
 
@@ -51,31 +50,7 @@ async function findNearestStations(lat, lon, count = 2) {
 /**
  * Fetches tidal predictions for a specific station.
  */
-async function fetchTidalPredictions(stationId, date) {
-  const params = new URLSearchParams({
-    begin_date: date,
-    end_date: date,
-    station: stationId,
-    product: 'predictions',
-    datum: 'MLLW',
-    time_zone: 'lst_ldt',
-    interval: 'hilo',
-    units: 'metric',
-    format: 'json',
-    application: 'Sailsforce'
-  });
-
-  const url = `${NOAA_DATAGETTER_URL}?${params.toString()}`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch tidal predictions for station ${stationId}: ${response.statusText}`);
-  }
-  const data = await response.json();
-  if (data.error) {
-    throw new Error(`NOAA API Error for station ${stationId}: ${data.error.message}`);
-  }
-  return data.predictions || [];
-}
+//TODO: find api to get tidal station data
 
 /**
  * Averages two sets of tidal predictions.
