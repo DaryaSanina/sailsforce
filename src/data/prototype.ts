@@ -52,17 +52,58 @@ export const modelRows = [
 export const confidence = [66, 70, 73, 78, 75, 68, 62];
 export const spread = ["2 kt", "2 kt", "2 kt", "3 kt", "2 kt", "1 kt", "1 kt"];
 
-export const settingsRows = {
-  user: [
-    ["Weight", "78 kg", "scale"],
-    ["Height", "182 cm", "ruler"],
-    ["Gender", "Male", "gender"],
-    ["Ability", "Intermediate", "stars"],
+export const genderOptions = ["Male", "Female", "Non-binary", "Prefer not to say"] as const;
+export type Gender = (typeof genderOptions)[number];
+
+export const abilityOptions = ["Beginner", "Intermediate", "Advanced", "Expert"] as const;
+export type Ability = (typeof abilityOptions)[number];
+
+export const windUnitOptions = [
+  { label: "Knots (kt)", value: "kt" as const },
+  { label: "Metres / sec (m/s)", value: "m/s" as const },
+  { label: "Kilometres / hour (km/h)", value: "km/h" as const },
+  { label: "Miles / hour (mph)", value: "mph" as const },
+];
+export type WindUnit = (typeof windUnitOptions)[number]["value"];
+
+export type GearItem = {
+  id: string;
+  name: string;
+  size: string;
+};
+
+export type UserSettings = {
+  name: string;
+  weightKg: number;
+  heightCm: number;
+  gender: Gender;
+  ability: Ability;
+  windUnit: WindUnit;
+  sails: GearItem[];
+  boards: GearItem[];
+};
+
+export const defaultUserSettings: UserSettings = {
+  name: "Cole",
+  weightKg: 78,
+  heightCm: 182,
+  gender: "Male",
+  ability: "Intermediate",
+  windUnit: "kt",
+  sails: [
+    { id: "s1", name: "Severne S-1", size: "5.3 m²" },
+    { id: "s2", name: "Severne Blade", size: "4.7 m²" },
+    { id: "s3", name: "Goya Banzai", size: "4.2 m²" },
+    { id: "s4", name: "NeilPryde Combat", size: "5.7 m²" },
+    { id: "s5", name: "Goya Banzai", size: "3.7 m²" },
   ],
-  units: [["Wind Speed units", "Knots (kt)", "wind"]],
-  spots: [["Saved spots", "18 spots", "pin"]],
-  quiver: [
-    ["Sails", "5 in collection", "sail"],
-    ["Boards", "3 in collection", "board"],
+  boards: [
+    { id: "b1", name: "JP Freestyle Wave", size: "94 L" },
+    { id: "b2", name: "Goya One 3", size: "84 L" },
+    { id: "b3", name: "Quatro Cube", size: "79 L" },
   ],
-} as const;
+};
+
+export function windUnitLabel(value: WindUnit): string {
+  return windUnitOptions.find((o) => o.value === value)?.label ?? value;
+}

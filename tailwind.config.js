@@ -34,7 +34,7 @@ module.exports = {
         card: "16px",
       },
       fontFamily: {
-        sans: ["System"],
+        sans: ["Manrope", "Inter", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
       },
     },
   },

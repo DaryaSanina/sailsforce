@@ -16,56 +16,188 @@ import {
 } from "lucide-react-native";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
 
-import { settingsRows } from "../data/prototype";
+import type { EditField } from "./EditValueSheet";
+import {
+  abilityOptions,
+  genderOptions,
+  windUnitLabel,
+  windUnitOptions,
+  type UserSettings,
+} from "../data/prototype";
 import { shadows } from "../styles/shadows";
 
 type Props = {
+  settings: UserSettings;
+  homeSpotName: string;
+  savedSpotsCount: number;
   onBack: () => void;
   onOpenLocations: () => void;
+  onEditField: (field: EditField) => void;
+  onEditSails: () => void;
+  onEditBoards: () => void;
 };
 
-export function SettingsScreen({ onBack, onOpenLocations }: Props) {
+export function SettingsScreen({
+  settings,
+  homeSpotName,
+  savedSpotsCount,
+  onBack,
+  onOpenLocations,
+  onEditField,
+  onEditSails,
+  onEditBoards,
+}: Props) {
   return (
     <View className="flex-1 bg-white">
       <View className="relative flex-row items-center justify-center px-4 py-3">
-        <Pressable onPress={onBack} className="absolute left-4 h-10 w-10 items-center justify-center rounded-xl bg-white" style={shadows.soft}>
+        <Pressable
+          onPress={onBack}
+          className="absolute left-4 h-10 w-10 items-center justify-center rounded-xl bg-white active:bg-surface"
+          style={shadows.soft}
+        >
           <ChevronLeft size={24} color="#1E293B" />
         </Pressable>
         <Text className="text-[20px] font-semibold text-ink">Settings</Text>
       </View>
 
       <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 28 }}>
-        <View className="mb-5 mt-1 flex-row items-center rounded-xl border border-line-soft bg-white p-3" style={shadows.soft}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Edit profile"
+          onPress={() =>
+            onEditField({
+              kind: "text",
+              key: "name",
+              title: "Your name",
+              value: settings.name,
+              placeholder: "Enter your name",
+              maxLength: 40,
+            })
+          }
+          className="mb-5 mt-1 flex-row items-center rounded-xl border border-line-soft bg-white p-3 active:bg-surface"
+          style={shadows.soft}
+        >
           <View className="mr-3 h-[50px] w-[50px] overflow-hidden rounded-full">
             <Avatar />
           </View>
           <View className="flex-1">
-            <Text className="text-[18px] font-bold text-ink">Cole</Text>
-            <Text className="text-[14px] text-ink-soft">Hookipa Beach</Text>
+            <Text className="text-[18px] font-bold text-ink">{settings.name}</Text>
+            <Text className="text-[14px] text-ink-soft">{homeSpotName}</Text>
           </View>
           <View className="items-center">
             <Star size={23} color="#7CB3B5" fill="#7CB3B5" />
             <Text className="mt-1 text-[12px] text-ink">Favorite spot</Text>
           </View>
-        </View>
+        </Pressable>
 
         <SettingsSection title="USER DATA">
-          {settingsRows.user.map(([label, value, icon], index) => (
-            <SettingsRow key={label} label={label} value={value} icon={icon} bordered={index < settingsRows.user.length - 1} />
-          ))}
+          <SettingsRow
+            label="Weight"
+            value={`${settings.weightKg} kg`}
+            icon="scale"
+            bordered
+            onPress={() =>
+              onEditField({
+                kind: "number",
+                key: "weightKg",
+                title: "Weight",
+                unitLabel: "kg",
+                value: settings.weightKg,
+                min: 30,
+                max: 200,
+              })
+            }
+          />
+          <SettingsRow
+            label="Height"
+            value={`${settings.heightCm} cm`}
+            icon="ruler"
+            bordered
+            onPress={() =>
+              onEditField({
+                kind: "number",
+                key: "heightCm",
+                title: "Height",
+                unitLabel: "cm",
+                value: settings.heightCm,
+                min: 100,
+                max: 230,
+              })
+            }
+          />
+          <SettingsRow
+            label="Gender"
+            value={settings.gender}
+            icon="gender"
+            bordered
+            onPress={() =>
+              onEditField({
+                kind: "choice",
+                key: "gender",
+                title: "Gender",
+                value: settings.gender,
+                options: genderOptions.map((g) => ({ label: g, value: g })),
+              })
+            }
+          />
+          <SettingsRow
+            label="Ability"
+            value={settings.ability}
+            icon="stars"
+            onPress={() =>
+              onEditField({
+                kind: "choice",
+                key: "ability",
+                title: "Ability",
+                value: settings.ability,
+                options: abilityOptions.map((a) => ({ label: a, value: a })),
+              })
+            }
+          />
         </SettingsSection>
 
         <SettingsSection title="UNITS">
-          <SettingsRow label="Wind Speed units" value="Knots (kt)" icon="wind" />
+          <SettingsRow
+            label="Wind Speed units"
+            value={windUnitLabel(settings.windUnit)}
+            icon="wind"
+            onPress={() =>
+              onEditField({
+                kind: "choice",
+                key: "windUnit",
+                title: "Wind speed units",
+                value: settings.windUnit,
+                options: windUnitOptions,
+              })
+            }
+          />
         </SettingsSection>
 
         <SettingsSection title="SPOTS & FAVORITES">
-          <SettingsRow label="Saved spots" value="18 spots" icon="pin" onPress={onOpenLocations} />
+          <SettingsRow
+            label="Saved spots"
+            value={`${savedSpotsCount} spot${savedSpotsCount === 1 ? "" : "s"}`}
+            icon="pin"
+            onPress={onOpenLocations}
+          />
         </SettingsSection>
 
         <SettingsSection title="QUIVER">
-          <QuiverRow label="Sails" detail="5 in collection" icon="sail" bordered />
-          <QuiverRow label="Boards" detail="3 in collection" icon="board" />
+          <QuiverRow
+            label="Sails"
+            count={settings.sails.length}
+            noun="sails"
+            icon="sail"
+            bordered
+            onPress={onEditSails}
+          />
+          <QuiverRow
+            label="Boards"
+            count={settings.boards.length}
+            noun="boards"
+            icon="board"
+            onPress={onEditBoards}
+          />
         </SettingsSection>
       </ScrollView>
     </View>
@@ -100,7 +232,10 @@ function SettingsRow({
   onPress?: () => void;
 }) {
   return (
-    <Pressable onPress={onPress} className={`flex-row items-center px-4 py-3.5 ${bordered ? "border-b border-line-soft" : ""}`}>
+    <Pressable
+      onPress={onPress}
+      className={`flex-row items-center px-4 py-3.5 active:bg-surface ${bordered ? "border-b border-line-soft" : ""}`}
+    >
       <View className="mr-3 w-6 items-center">{rowIcon(icon)}</View>
       <Text className="flex-1 text-[16px] font-medium text-ink">{label}</Text>
       <Text className="mr-2 text-[14px] font-medium text-ink-soft">{value}</Text>
@@ -109,15 +244,36 @@ function SettingsRow({
   );
 }
 
-function QuiverRow({ label, detail, icon, bordered = false }: { label: string; detail: string; icon: string; bordered?: boolean }) {
+function QuiverRow({
+  label,
+  count,
+  noun,
+  icon,
+  bordered = false,
+  onPress,
+}: {
+  label: string;
+  count: number;
+  noun: string;
+  icon: string;
+  bordered?: boolean;
+  onPress?: () => void;
+}) {
   return (
-    <Pressable className={`flex-row items-center px-4 py-3.5 ${bordered ? "border-b border-line-soft" : ""}`}>
+    <Pressable
+      onPress={onPress}
+      className={`flex-row items-center px-4 py-3.5 active:bg-surface ${bordered ? "border-b border-line-soft" : ""}`}
+    >
       <View className="mr-3 w-6 items-center">{rowIcon(icon)}</View>
       <View className="flex-1">
         <Text className="text-[16px] font-medium text-ink">{label}</Text>
-        <Text className="text-[12px] text-ink-faint">{detail}</Text>
+        <Text className="text-[12px] text-ink-faint">
+          {count} in collection
+        </Text>
       </View>
-      <Text className="mr-2 text-[13px] font-semibold text-ink">{detail}</Text>
+      <Text className="mr-2 text-[13px] font-semibold text-ink">
+        {count} {noun}
+      </Text>
       <ChevronRight size={18} color="#64748B" />
     </Pressable>
   );
