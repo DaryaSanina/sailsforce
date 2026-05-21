@@ -1,249 +1,321 @@
 /**
  * Tides Service for Sailsforce
- * Handles tidal data collection for UK beaches.
- * Uses UK Environment Agency for station locations and Open-Meteo for tidal predictions.
+ *
+ * Produces a 7-day (configurable) high/low tide forecast for any UK beach.
+ *
+ * Strategy:
+ *  1. Fetch hourly mean-sea-level height from Open-Meteo's Marine API for a
+ *     single window that covers the requested range plus one padding day on
+ *     each side (so peaks near the range boundaries are not missed).
+ *  2. Detect high/low tides as local maxima/minima of the hourly series,
+ *     then refine each peak's time and height with parabolic interpolation
+ *     (hourly samples rarely land exactly on a true tide peak).
+ *  3. Look up the nearest UK Environment Agency tide gauge purely to give
+ *     the result a human-readable reference name.
  */
 
-const EA_STATIONS_URL = 'https://environment.data.gov.uk/flood-monitoring/id/stations?type=TideGauge';
+const EA_STATIONS_URL =
+  'https://environment.data.gov.uk/flood-monitoring/id/stations?type=TideGauge';
 const OPEN_METEO_MARINE_URL = 'https://marine-api.open-meteo.com/v1/marine';
 
-/**
- * Calculates the Haversine distance between two points on Earth.
- */
-function getDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radius of the earth in km
-  const dLat = (lat2 - lat1) * (Math.PI / 180);
-  const dLon = (lon2 - lon1) * (Math.PI / 180);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // Distance in km
+const MS_PER_HOUR = 3_600_000;
+const MS_PER_DAY = 86_400_000;
+const DEFAULT_DAYS = 7;
+
+// ---------- Date helpers ----------------------------------------------
+// Open-Meteo (timezone=auto) returns naive local timestamps with no offset,
+// e.g. "2026-05-20T14:00". We parse and format every timestamp the same
+// naive way, so values stay in the beach's local time end to end.
+
+/** Parses a naive "YYYY-MM-DDTHH:MM" timestamp into epoch ms. */
+function parseTimestamp(s) {
+  const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (!m) throw new Error(`Unrecognised timestamp from API: ${s}`);
+  return Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+}
+
+/** Formats epoch ms as "YYYY-MM-DD HH:MM". */
+function formatDateTime(ms) {
+  const d = new Date(ms);
+  const p = (n) => String(n).padStart(2, '0');
+  return (
+    `${d.getUTCFullYear()}-${p(d.getUTCMonth() + 1)}-${p(d.getUTCDate())} ` +
+    `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`
+  );
+}
+
+/** Formats epoch ms as a "YYYY-MM-DD" date string. */
+function formatDate(ms) {
+  return formatDateTime(ms).slice(0, 10);
 }
 
 /**
- * Fetches the list of tidal stations from the UK Environment Agency.
+ * Resolves the start date to UTC-midnight epoch ms.
+ * Accepts a Date, "YYYY-MM-DD", "YYYYMMDD", or null (= today, local).
  */
-async function fetchStations() {
+function resolveStartDate(input) {
+  if (!input) {
+    const now = new Date();
+    return Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  }
+  if (input instanceof Date) {
+    return Date.UTC(
+      input.getFullYear(),
+      input.getMonth(),
+      input.getDate()
+    );
+  }
+  const m = String(input).match(/^(\d{4})-?(\d{2})-?(\d{2})$/);
+  if (!m) {
+    throw new Error(
+      `Invalid startDate "${input}" — expected YYYY-MM-DD or YYYYMMDD.`
+    );
+  }
+  return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+}
+
+// ---------- Geometry --------------------------------------------------
+
+/** Haversine distance between two lat/lon points, in kilometres. */
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ---------- Reference station -----------------------------------------
+
+/**
+ * Finds the nearest UK Environment Agency tide gauge to the given point.
+ * Used only to label the forecast with a recognisable place name; failure
+ * here is non-fatal and simply yields a null reference station.
+ */
+async function findNearestStation(lat, lon) {
   const response = await fetch(EA_STATIONS_URL);
   if (!response.ok) {
     throw new Error(`Failed to fetch UK EA stations: ${response.statusText}`);
   }
   const data = await response.json();
-  // Map EA fields to the format expected by the service
-  return (data.items || []).map(station => ({
-    id: station.stationReference,
-    name: station.label,
-    lat: station.lat,
-    lng: station.long
-  }));
+  let nearest = null;
+  for (const s of data.items || []) {
+    if (typeof s.lat !== 'number' || typeof s.long !== 'number') continue;
+    const distance = getDistance(lat, lon, s.lat, s.long);
+    if (!nearest || distance < nearest.distance) {
+      nearest = { id: s.stationReference, name: s.label, distance };
+    }
+  }
+  return nearest;
 }
 
-/**
- * Finds the nearest tidal stations to the provided coordinates.
- */
-async function findNearestStations(lat, lon, count = 2) {
-  const stations = await fetchStations();
-  const stationsWithDistance = stations.map(station => ({
-    ...station,
-    distance: getDistance(lat, lon, station.lat, station.lng)
-  }));
-
-  return stationsWithDistance
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, count);
-}
+// ---------- Tide series -----------------------------------------------
 
 /**
- * Fetches tidal predictions for a specific location using Open-Meteo.
- * Since Open-Meteo provides hourly sea level height, we derive high/low tides
- * by finding local maxima and minima.
- * 
- * @param {number} lat - Latitude
- * @param {number} lon - Longitude
- * @param {string} date - Date in YYYYMMDD format
- * @returns {Promise<Array>} List of tidal events
+ * Fetches the hourly mean-sea-level height series from Open-Meteo's Marine
+ * API. The API automatically snaps the request to the nearest sea cell.
  */
-async function fetchTidalPredictions(lat, lon, date) {
-  // Convert YYYYMMDD to YYYY-MM-DD
-  const targetDateStr = `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`;
-  
-  // Fetch a 3-day window (yesterday, today, tomorrow) to ensure we find all peaks for the target day
-  const targetDate = new Date(targetDateStr);
-  const startDate = new Date(targetDate);
-  startDate.setDate(startDate.getDate() - 1);
-  const endDate = new Date(targetDate);
-  endDate.setDate(endDate.getDate() + 1);
-
+async function fetchSeaLevelSeries(lat, lon, startDate, endDate) {
   const params = new URLSearchParams({
-    latitude: lat,
-    longitude: lon,
-    hourly: 'sea_level_height',
-    start_date: startDate.toISOString().split('T')[0],
-    end_date: endDate.toISOString().split('T')[0],
-    timezone: 'UTC'
+    latitude: String(lat),
+    longitude: String(lon),
+    hourly: 'sea_level_height_msl',
+    start_date: startDate,
+    end_date: endDate,
+    timezone: 'auto',
   });
 
-  const url = `${OPEN_METEO_MARINE_URL}?${params.toString()}`;
-  console.log('Open-Meteo URL:', url);
+  const url = `${OPEN_METEO_MARINE_URL}?${params}`;
   const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Open-Meteo API error: ${response.statusText}`);
-  }
-  const data = await response.json();
-  
-  const hourlyTimes = data.hourly.time;
-  const hourlyHeights = data.hourly.sea_level_height;
+  const data = await response.json().catch(() => null);
 
-  // Find peaks (High) and troughs (Low) using a simple local extremum check
-  const predictions = [];
-  for (let i = 1; i < hourlyHeights.length - 1; i++) {
-    const prev = hourlyHeights[i - 1];
-    const curr = hourlyHeights[i];
-    const next = hourlyHeights[i + 1];
-
-    if (curr > prev && curr > next) {
-      predictions.push({
-        t: hourlyTimes[i].replace('T', ' '),
-        v: curr.toFixed(3),
-        type: 'H'
-      });
-    } else if (curr < prev && curr < next) {
-      predictions.push({
-        t: hourlyTimes[i].replace('T', ' '),
-        v: curr.toFixed(3),
-        type: 'L'
-      });
-    }
+  if (!response.ok || !data || data.error) {
+    const reason =
+      (data && data.reason) || response.statusText || `HTTP ${response.status}`;
+    throw new Error(`Open-Meteo marine API error: ${reason}`);
   }
 
-  // Return only the events that fall on the target date
-  return predictions.filter(p => p.t.startsWith(targetDateStr));
+  const times = data.hourly && data.hourly.time;
+  const heights = data.hourly && data.hourly.sea_level_height_msl;
+  if (!Array.isArray(times) || !Array.isArray(heights)) {
+    throw new Error('Open-Meteo marine API returned no sea-level data.');
+  }
+
+  return {
+    times,
+    heights,
+    unit: (data.hourly_units && data.hourly_units.sea_level_height_msl) || 'm',
+    timezone: data.timezone || 'UTC',
+    modelled: { lat: data.latitude, lon: data.longitude },
+  };
 }
 
 /**
- * Averages two sets of tidal predictions.
- * Matches tides by type (H/L) and proximity in time.
+ * Detects high/low tides as local extrema of the hourly height series.
+ * Each peak is refined with parabolic interpolation over its three
+ * surrounding samples, giving a sub-hourly time and a corrected height.
+ *
+ * @returns {Array<{ ms: number, height: number, type: 'high'|'low' }>}
  */
-function averagePredictions(pred1, pred2) {
-  if (!pred1 || !pred2 || pred1.length === 0 || pred2.length === 0) return [];
-  
-  const averaged = [];
-  
-  for (const p1 of pred1) {
-    const time1 = new Date(p1.t).getTime();
-    
-    // Find a matching tide in pred2: same type and within 4 hours
-    const match = pred2.find(p2 => {
-      if (p1.type !== p2.type) return false;
-      const time2 = new Date(p2.t).getTime();
-      return Math.abs(time1 - time2) < 4 * 60 * 60 * 1000;
+function findTideExtrema(times, heights) {
+  const extrema = [];
+
+  for (let i = 1; i < heights.length - 1; i++) {
+    const y0 = heights[i - 1];
+    const y1 = heights[i];
+    const y2 = heights[i + 1];
+    if (y0 == null || y1 == null || y2 == null) continue;
+
+    const isHigh = y1 > y0 && y1 > y2;
+    const isLow = y1 < y0 && y1 < y2;
+    if (!isHigh && !isLow) continue;
+
+    // Vertex of the parabola through (-1,y0), (0,y1), (1,y2).
+    // denom is non-zero for any strict extremum.
+    const denom = y0 - 2 * y1 + y2;
+    let offsetHours = 0;
+    let height = y1;
+    if (denom !== 0) {
+      offsetHours = (0.5 * (y0 - y2)) / denom; // within (-0.5, 0.5)
+      height = y1 - 0.25 * (y0 - y2) * offsetHours;
+    }
+
+    extrema.push({
+      ms: parseTimestamp(times[i]) + offsetHours * MS_PER_HOUR,
+      height: Math.round(height * 100) / 100,
+      type: isHigh ? 'high' : 'low',
     });
-
-    if (match) {
-      const time2 = new Date(match.t).getTime();
-      const avgTime = new Date((time1 + time2) / 2);
-
-      const val1 = parseFloat(p1.v);
-      const val2 = parseFloat(match.v);
-      const avgVal = (val1 + val2) / 2;
-
-      averaged.push({
-        t: avgTime.toISOString().replace('T', ' ').substring(0, 16),
-        v: avgVal.toFixed(3),
-        type: p1.type
-      });
-    }
   }
 
-  return averaged;
+  return extrema;
 }
 
+// ---------- Public API ------------------------------------------------
+
 /**
- * Main function to get tidal data for a location.
- * 
- * @param {number} lat - Latitude
- * @param {number} lon - Longitude
- * @param {string} date - Date in YYYYMMDD format (optional, defaults to today)
- * @returns {Promise<Object>} Tidal data
+ * Returns a multi-day high/low tide forecast for a location.
+ *
+ * @param {number} lat   - Latitude in decimal degrees.
+ * @param {number} lon   - Longitude in decimal degrees.
+ * @param {object} [opts]
+ * @param {string|Date} [opts.startDate] - First day of the forecast
+ *        (YYYY-MM-DD / YYYYMMDD / Date). Defaults to today.
+ * @param {number}      [opts.days]      - Number of days to forecast
+ *        (default 7).
+ * @returns {Promise<{
+ *   location: { requested: {lat,lon}, modelled: {lat,lon} },
+ *   referenceStation: { id, name, distanceKm } | null,
+ *   unit: string,
+ *   range: { startDate: string, endDate: string, days: number, timezone: string },
+ *   tides: Array<{ time: string, height: number, type: 'high'|'low' }>,
+ *   days: Array<{ date: string, tides: Array<object> }>
+ * }>}
  */
-async function getTidalData(lat, lon, date = null) {
-  if (!date) {
-    const today = new Date();
-    date = today.toISOString().split('T')[0].replace(/-/g, '');
+async function getTidalData(lat, lon, opts = {}) {
+  const { startDate = null, days = DEFAULT_DAYS } = opts;
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    throw new Error('getTidalData requires numeric lat and lon.');
+  }
+  if (!Number.isInteger(days) || days < 1) {
+    throw new Error('getTidalData: days must be a positive integer.');
   }
 
-  try {
-    const nearestStations = await findNearestStations(lat, lon, 2);
-    
-    if (nearestStations.length === 0) {
-      throw new Error('No tidal stations found.');
-    }
+  const startMs = resolveStartDate(startDate);
+  const rangeEndExclusiveMs = startMs + days * MS_PER_DAY;
 
-    const station1 = nearestStations[0];
-    const predictions1 = await fetchTidalPredictions(station1.lat, station1.lng, date);
+  // Fetch one padded window: a day before the range and a day after, so
+  // tide peaks straddling the boundaries are still detected.
+  const fetchStart = formatDate(startMs - MS_PER_DAY);
+  const fetchEnd = formatDate(startMs + days * MS_PER_DAY);
 
-    // If we only have one station, or if it's very close (e.g. < 5km), don't average
-    if (nearestStations.length === 1 || station1.distance < 5) {
-      return {
-        station: {
-          id: station1.id,
-          name: station1.name,
-          distance: station1.distance
-        },
-        isAveraged: false,
-        predictions: predictions1
-      };
-    }
+  // Tides are the core data; the station name is best-effort.
+  const [series, station] = await Promise.all([
+    fetchSeaLevelSeries(lat, lon, fetchStart, fetchEnd),
+    findNearestStation(lat, lon).catch((err) => {
+      console.warn('Reference station lookup failed:', err.message);
+      return null;
+    }),
+  ]);
 
-    const station2 = nearestStations[1];
-    let predictions2 = [];
-    try {
-      predictions2 = await fetchTidalPredictions(station2.lat, station2.lng, date);
-    } catch (e) {
-      console.warn(`Failed to fetch predictions for second station ${station2.id}:`, e.message);
-      return {
-        station: {
-          id: station1.id,
-          name: station1.name,
-          distance: station1.distance
-        },
-        isAveraged: false,
-        predictions: predictions1
-      };
-    }
+  const tides = findTideExtrema(series.times, series.heights)
+    .filter((t) => t.ms >= startMs && t.ms < rangeEndExclusiveMs)
+    .sort((a, b) => a.ms - b.ms)
+    .map((t) => ({
+      time: formatDateTime(t.ms),
+      height: t.height,
+      type: t.type,
+    }));
 
-    const averaged = averagePredictions(predictions1, predictions2);
-
-    // If averaging failed to find matches, fall back to the primary station
-    if (averaged.length === 0) {
-      return {
-        station: {
-          id: station1.id,
-          name: station1.name,
-          distance: station1.distance
-        },
-        isAveraged: false,
-        predictions: predictions1
-      };
-    }
-
-    return {
-      stations: [
-        { id: station1.id, name: station1.name, distance: station1.distance },
-        { id: station2.id, name: station2.name, distance: station2.distance }
-      ],
-      isAveraged: true,
-      predictions: averaged
-    };
-
-  } catch (error) {
-    console.error('Error fetching tidal data:', error);
-    throw error;
+  // Group into one bucket per day, including days that have no tides.
+  const byDay = [];
+  for (let d = 0; d < days; d++) {
+    const date = formatDate(startMs + d * MS_PER_DAY);
+    byDay.push({
+      date,
+      tides: tides.filter((t) => t.time.startsWith(date)),
+    });
   }
+
+  return {
+    location: {
+      requested: { lat, lon },
+      modelled: series.modelled,
+    },
+    referenceStation: station
+      ? {
+          id: station.id,
+          name: station.name,
+          distanceKm: Math.round(station.distance * 10) / 10,
+        }
+      : null,
+    unit: series.unit,
+    range: {
+      startDate: formatDate(startMs),
+      endDate: formatDate(rangeEndExclusiveMs - MS_PER_DAY),
+      days,
+      timezone: series.timezone,
+    },
+    tides,
+    days: byDay,
+  };
 }
 
 module.exports = {
-  getTidalData
+  getTidalData,
+  // Exposed for unit testing — not part of the public API.
+  _internals: {
+    getDistance,
+    resolveStartDate,
+    parseTimestamp,
+    formatDateTime,
+    formatDate,
+    findNearestStation,
+    fetchSeaLevelSeries,
+    findTideExtrema,
+  },
 };
+
+// ---------- CLI entry point -------------------------------------------
+// Quick check:  node tides.js <lat> <lon> [days]
+if (require.main === module) {
+  const lat = Number(process.argv[2]);
+  const lon = Number(process.argv[3]);
+  const days = process.argv[4] ? Number(process.argv[4]) : DEFAULT_DAYS;
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    console.error('Usage: node tides.js <lat> <lon> [days]');
+    process.exit(1);
+  }
+
+  getTidalData(lat, lon, { days })
+    .then((data) => console.log(JSON.stringify(data, null, 2)))
+    .catch((err) => {
+      console.error('Failed:', err.message);
+      process.exit(1);
+    });
+}
