@@ -1,6 +1,6 @@
 import { Pressable, View, Text } from "react-native";
 import Svg, { Circle, ClipPath, Defs, G, Line, Path, Rect, Text as SvgText } from "react-native-svg";
-import { Navigation, Sailboat } from "lucide-react-native";
+import { Navigation } from "lucide-react-native";
 
 type Props = {
   size: number;
@@ -52,11 +52,6 @@ export function BeachMap({ size, wind, swell, unit = "kt", showDirection = true,
       <View className="absolute top-[17%] items-center">
         <Text className="text-[14px] font-semibold text-white">{swell}</Text>
         <Text className="text-[10px] font-medium text-white">SW 210°</Text>
-      </View>
-
-      <View className="absolute left-[17%] top-[47%] items-center rounded-xl bg-white px-2 py-1">
-        <Sailboat size={16} color="#1E293B" strokeWidth={1.8} />
-        <Text className="mt-0.5 text-[8px] font-bold text-ink">LAUNCH</Text>
       </View>
 
       <View className="absolute items-center">

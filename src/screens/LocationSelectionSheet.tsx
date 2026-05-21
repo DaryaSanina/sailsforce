@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { CheckCircle2, Map, MapPin, PlusCircle, Search, Star, Trash2, X } from "lucide-react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { CheckCircle2, MapPin, PlusCircle, Search, Star, Trash2, X } from "lucide-react-native";
 import Svg, { Path, Rect } from "react-native-svg";
 
 import { type Location } from "../data/prototype";
 import { shadows } from "../styles/shadows";
+import { RisingBackdrop, SlideUp } from "../components/Transitions";
 
 type Props = {
   visible: boolean;
@@ -16,7 +17,6 @@ type Props = {
   onToggleFavorite: (id: string) => void;
   onRemoveLocation: (id: string) => void;
   onOpenAdd: () => void;
-  onOpenMap: () => void;
 };
 
 export function LocationSelectionSheet({
@@ -29,7 +29,6 @@ export function LocationSelectionSheet({
   onToggleFavorite,
   onRemoveLocation,
   onOpenAdd,
-  onOpenMap,
 }: Props) {
   const [query, setQuery] = useState("");
   const [editMode, setEditMode] = useState(false);
@@ -46,12 +45,20 @@ export function LocationSelectionSheet({
   }, [favoriteIds, locations, normalised]);
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/45">
-        <Pressable className="absolute inset-0" onPress={onClose} />
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1, justifyContent: "flex-end" }}
+      >
+        {visible ? <RisingBackdrop onPress={onClose} /> : null}
+        {visible ? <SlideUp
+          from={520}
+          duration={320}
+          style={{ width: "100%", maxWidth: 430, alignSelf: "center", maxHeight: "92%" }}
+        >
         <View
-          className="w-full max-w-[430px] self-center rounded-t-[24px] bg-white pt-3"
-          style={[shadows.lift, { maxHeight: "92%" }]}
+          className="w-full rounded-t-[24px] bg-white pt-3"
+          style={shadows.lift}
         >
             <View className="mb-4 h-1 w-10 self-center rounded-full bg-ink-hair" />
             <View className="mb-4 flex-row items-center justify-between px-5">
@@ -122,14 +129,6 @@ export function LocationSelectionSheet({
                 <View className="mb-6">
                   <View className="mb-3 flex-row items-center justify-between">
                     <Text className="text-[12px] font-bold tracking-wider text-ink-faint">NEARBY SPOTS</Text>
-                    <Pressable
-                      onPress={onOpenMap}
-                      hitSlop={8}
-                      className="flex-row items-center gap-1 active:opacity-70"
-                    >
-                      <Text className="text-[14px] font-semibold text-accent">View on Map</Text>
-                      <Map size={16} color="#0F766E" />
-                    </Pressable>
                   </View>
                   <View className="overflow-hidden rounded-2xl border border-line-soft bg-white" style={shadows.soft}>
                     {nearby.map((item, index) => (
@@ -167,7 +166,8 @@ export function LocationSelectionSheet({
               </Pressable>
             </View>
         </View>
-      </View>
+        </SlideUp> : null}
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

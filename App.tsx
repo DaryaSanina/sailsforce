@@ -11,7 +11,6 @@ import { LocationSelectionSheet } from "./src/screens/LocationSelectionSheet";
 import { SettingsScreen } from "./src/screens/SettingsScreen";
 import { EditValueSheet, type EditField } from "./src/screens/EditValueSheet";
 import { AddLocationSheet } from "./src/screens/AddLocationSheet";
-import { MapViewSheet } from "./src/screens/MapViewSheet";
 import { CollectionEditSheet } from "./src/screens/CollectionEditSheet";
 import { InfoDetailSheet, type InfoDetail } from "./src/screens/InfoDetailSheet";
 import {
@@ -36,7 +35,6 @@ const INFO_DETAILS: Record<string, InfoDetail> = {
       { label: "Swell height", value: "2.4 m" },
       { label: "Swell direction", value: "SW 210°" },
       { label: "Swell period", value: "11 s" },
-      { label: "Water temp", value: "24 °C" },
     ],
   },
   windBeach: {
@@ -53,28 +51,14 @@ const INFO_DETAILS: Record<string, InfoDetail> = {
       { label: "Best sail size for 78 kg", value: "5.0 – 5.4 m²", accent: "good" },
     ],
   },
-  waterState: {
-    key: "waterState",
-    title: "Water state",
-    subtitle: "What the surface and swell look like right now",
-    rows: [
-      { label: "Significant wave height", value: "2.4 m" },
-      { label: "Primary swell", value: "SW 210° · 11 s" },
-      { label: "Wind sea", value: "ENE · 4 s" },
-      { label: "Surface", value: "Clean", accent: "good", description: "Chop is light, swells are organised" },
-      { label: "Tide", value: "Rising · 0.8 m" },
-      { label: "Currents", value: "Mild · westerly drift" },
-    ],
-  },
   safety: {
     key: "safety",
     title: "Safety overview",
-    subtitle: "Hazards, advisories and lifeguard status",
+    subtitle: "Advisories and lifeguard status",
     rows: [
       { label: "Overall", value: "GOOD", accent: "good" },
       { label: "Flag status", value: "Green", accent: "good" },
       { label: "Lifeguard on duty", value: "Yes · 09:00 – 17:00" },
-      { label: "Hazards reported", value: "None", description: "No incidents in last 24 h" },
       { label: "UV index", value: "5 · Moderate", accent: "warn" },
       { label: "Sunset", value: "18:42" },
     ],
@@ -126,7 +110,6 @@ export default function App() {
   const [selectedLocationId, setSelectedLocationId] = useState("hookipa");
   const [locationsOpen, setLocationsOpen] = useState(false);
   const [addLocationOpen, setAddLocationOpen] = useState(false);
-  const [mapOpen, setMapOpen] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(
     () => new Set(seedLocations.filter((l) => l.favorite).map((l) => l.id)),
   );
@@ -207,11 +190,6 @@ export default function App() {
     setSettings((prev) => ({ ...prev, [kind]: items }));
   };
 
-  const mapSpots = useMemo(
-    () => locations.map((l) => ({ ...l, favorite: favoriteIds.has(l.id) })),
-    [favoriteIds, locations],
-  );
-
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />
@@ -230,17 +208,13 @@ export default function App() {
                 onChangeMode={setMode}
                 onOpenMapDetail={() => setInfoDetail(INFO_DETAILS.map)}
                 onOpenWindBeach={() => setInfoDetail(INFO_DETAILS.windBeach)}
-                onOpenWaterState={() => setInfoDetail(INFO_DETAILS.waterState)}
                 onOpenSafety={() => setInfoDetail(INFO_DETAILS.safety)}
                 onOpenFooterInfo={(key) => setInfoDetail(INFO_DETAILS[key])}
               />
             ) : (
               <SettingsScreen
                 settings={settings}
-                homeSpotName={selectedLocation.name}
-                savedSpotsCount={favoriteIds.size}
                 onBack={() => setRoute("forecast")}
-                onOpenLocations={() => setLocationsOpen(true)}
                 onEditField={setEditField}
                 onEditSails={() => setEditCollection("sails")}
                 onEditBoards={() => setEditCollection("boards")}
@@ -261,7 +235,6 @@ export default function App() {
             onToggleFavorite={toggleFavorite}
             onRemoveLocation={removeLocation}
             onOpenAdd={() => setAddLocationOpen(true)}
-            onOpenMap={() => setMapOpen(true)}
           />
 
           <AddLocationSheet
@@ -270,17 +243,6 @@ export default function App() {
             onAdd={(input) => {
               addCustomLocation(input);
               setAddLocationOpen(false);
-            }}
-          />
-
-          <MapViewSheet
-            visible={mapOpen}
-            spots={mapSpots}
-            selectedLocationId={selectedLocationId}
-            onClose={() => setMapOpen(false)}
-            onSelectLocation={(id) => {
-              setSelectedLocationId(id);
-              setMapOpen(false);
             }}
           />
 

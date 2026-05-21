@@ -1,9 +1,21 @@
-import { useEffect, useMemo, useState } from "react";
-import { Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from "react-native";
 import { Anchor, Plus, Sailboat, Trash2, X } from "lucide-react-native";
 
 import type { GearItem } from "../data/prototype";
 import { shadows } from "../styles/shadows";
+import { RisingBackdrop, SlideUp } from "../components/Transitions";
 
 type Props = {
   visible: boolean;
@@ -15,12 +27,29 @@ type Props = {
   onChange: (items: GearItem[]) => void;
 };
 
+const SAIL_WHOLE_MIN = 2;
+const SAIL_WHOLE_MAX = 12;
+
+function parseSailSize(size: string): { whole: number; decimal: number } {
+  const match = size.match(/(\d+)(?:\.(\d))?/);
+  if (!match) return { whole: 5, decimal: 0 };
+  const whole = Math.min(SAIL_WHOLE_MAX, Math.max(SAIL_WHOLE_MIN, Number.parseInt(match[1], 10)));
+  const decimal = match[2] ? Number.parseInt(match[2], 10) : 0;
+  return { whole, decimal };
+}
+
+function formatSailSize(whole: number, decimal: number): string {
+  return `${whole}.${decimal} m²`;
+}
+
 export function CollectionEditSheet({ visible, title, itemNoun, kind, items, onClose, onChange }: Props) {
   const [draft, setDraft] = useState<GearItem[]>(items);
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formName, setFormName] = useState("");
   const [formSize, setFormSize] = useState("");
+  const [sailWhole, setSailWhole] = useState(5);
+  const [sailDecimal, setSailDecimal] = useState(3);
 
   useEffect(() => {
     if (visible) {
@@ -29,6 +58,8 @@ export function CollectionEditSheet({ visible, title, itemNoun, kind, items, onC
       setEditingId(null);
       setFormName("");
       setFormSize("");
+      setSailWhole(5);
+      setSailDecimal(3);
     }
   }, [visible, items]);
 
@@ -36,7 +67,9 @@ export function CollectionEditSheet({ visible, title, itemNoun, kind, items, onC
   const namePlaceholder = kind === "sail" ? "e.g. Severne S-1" : "e.g. JP Freestyle Wave";
   const Icon = kind === "sail" ? Sailboat : Anchor;
 
-  const formValid = formName.trim().length > 0 && formSize.trim().length > 0;
+  const sailSizeString = kind === "sail" ? formatSailSize(sailWhole, sailDecimal) : "";
+  const effectiveSize = kind === "sail" ? sailSizeString : formSize;
+  const formValid = formName.trim().length > 0 && effectiveSize.trim().length > 0;
   const dirty = useMemo(() => JSON.stringify(draft) !== JSON.stringify(items), [draft, items]);
 
   const beginAdd = () => {
@@ -44,6 +77,8 @@ export function CollectionEditSheet({ visible, title, itemNoun, kind, items, onC
     setEditingId(null);
     setFormName("");
     setFormSize("");
+    setSailWhole(5);
+    setSailDecimal(3);
   };
 
   const beginEdit = (item: GearItem) => {
@@ -51,15 +86,23 @@ export function CollectionEditSheet({ visible, title, itemNoun, kind, items, onC
     setAdding(false);
     setFormName(item.name);
     setFormSize(item.size);
+    if (kind === "sail") {
+      const { whole, decimal } = parseSailSize(item.size);
+      setSailWhole(whole);
+      setSailDecimal(decimal);
+    }
   };
 
   const commitForm = () => {
     if (!formValid) return;
+    const finalSize = kind === "sail" ? sailSizeString : formSize.trim();
     if (editingId) {
-      setDraft((prev) => prev.map((it) => (it.id === editingId ? { ...it, name: formName.trim(), size: formSize.trim() } : it)));
+      setDraft((prev) =>
+        prev.map((it) => (it.id === editingId ? { ...it, name: formName.trim(), size: finalSize } : it)),
+      );
     } else {
       const id = `${kind[0]}${Date.now().toString(36)}`;
-      setDraft((prev) => [...prev, { id, name: formName.trim(), size: formSize.trim() }]);
+      setDraft((prev) => [...prev, { id, name: formName.trim(), size: finalSize }]);
     }
     setAdding(false);
     setEditingId(null);
@@ -82,12 +125,20 @@ export function CollectionEditSheet({ visible, title, itemNoun, kind, items, onC
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/45">
-        <Pressable className="absolute inset-0" onPress={onClose} />
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1, justifyContent: "flex-end" }}
+      >
+        {visible ? <RisingBackdrop onPress={onClose} /> : null}
+        {visible ? <SlideUp
+          from={520}
+          duration={320}
+          style={{ width: "100%", maxWidth: 430, alignSelf: "center", maxHeight: "92%" }}
+        >
         <View
-          className="w-full max-w-[430px] self-center rounded-t-[24px] bg-white pt-3"
-          style={[shadows.lift, { maxHeight: "92%" }]}
+          className="w-full rounded-t-[24px] bg-white pt-3"
+          style={shadows.lift}
         >
             <View className="mb-3 h-1 w-10 self-center rounded-full bg-ink-hair" />
             <View className="mb-3 flex-row items-center justify-between px-5">
@@ -160,16 +211,27 @@ export function CollectionEditSheet({ visible, title, itemNoun, kind, items, onC
                     />
                   </View>
                   <Text className="mb-1 text-[11px] font-bold tracking-wider text-ink-soft">SIZE</Text>
-                  <View className="mb-4 rounded-xl border border-line-soft bg-surface px-3 py-3">
-                    <TextInput
-                      value={formSize}
-                      onChangeText={setFormSize}
-                      placeholder={sizePlaceholder}
-                      placeholderTextColor="#94A3B8"
-                      className="text-[16px] text-ink"
-                      style={{ outlineWidth: 0 } as any}
-                    />
-                  </View>
+                  {kind === "sail" ? (
+                    <View className="mb-4">
+                      <SailSizePicker
+                        whole={sailWhole}
+                        decimal={sailDecimal}
+                        onChangeWhole={setSailWhole}
+                        onChangeDecimal={setSailDecimal}
+                      />
+                    </View>
+                  ) : (
+                    <View className="mb-4 rounded-xl border border-line-soft bg-surface px-3 py-3">
+                      <TextInput
+                        value={formSize}
+                        onChangeText={setFormSize}
+                        placeholder={sizePlaceholder}
+                        placeholderTextColor="#94A3B8"
+                        className="text-[16px] text-ink"
+                        style={{ outlineWidth: 0 } as any}
+                      />
+                    </View>
+                  )}
                   <View className="flex-row gap-2">
                     <Pressable
                       onPress={cancelForm}
@@ -211,7 +273,146 @@ export function CollectionEditSheet({ visible, title, itemNoun, kind, items, onC
               </Pressable>
             </View>
         </View>
-      </View>
+        </SlideUp> : null}
+      </KeyboardAvoidingView>
     </Modal>
+  );
+}
+
+const ITEM_HEIGHT = 40;
+const VISIBLE = 5;
+
+function SailSizePicker({
+  whole,
+  decimal,
+  onChangeWhole,
+  onChangeDecimal,
+}: {
+  whole: number;
+  decimal: number;
+  onChangeWhole: (v: number) => void;
+  onChangeDecimal: (v: number) => void;
+}) {
+  const wholeOptions = useMemo(
+    () => Array.from({ length: SAIL_WHOLE_MAX - SAIL_WHOLE_MIN + 1 }, (_, i) => SAIL_WHOLE_MIN + i),
+    [],
+  );
+  const decimalOptions = useMemo(() => Array.from({ length: 10 }, (_, i) => i), []);
+
+  return (
+    <View
+      className="rounded-2xl border border-line-soft bg-surface px-4 pt-3 pb-3"
+    >
+      <Text className="mb-2 text-center text-[10px] font-bold tracking-widest text-ink-soft">
+        SCROLL TO PICK SIZE
+      </Text>
+      <View className="flex-row items-center justify-center">
+        <Wheel
+          options={wholeOptions}
+          value={whole}
+          onChange={onChangeWhole}
+          format={(n) => String(n)}
+          width={70}
+        />
+        <Text className="mx-1 text-[40px] font-extrabold leading-[44px] text-ink">.</Text>
+        <Wheel
+          options={decimalOptions}
+          value={decimal}
+          onChange={onChangeDecimal}
+          format={(n) => String(n)}
+          width={60}
+        />
+        <Text className="ml-3 text-[16px] font-semibold text-ink-soft">m²</Text>
+      </View>
+    </View>
+  );
+}
+
+function Wheel({
+  options,
+  value,
+  onChange,
+  format,
+  width,
+}: {
+  options: number[];
+  value: number;
+  onChange: (v: number) => void;
+  format: (n: number) => string;
+  width: number;
+}) {
+  const ref = useRef<ScrollView | null>(null);
+  const initialIndex = Math.max(0, options.indexOf(value));
+  const lastEmitted = useRef(value);
+
+  useEffect(() => {
+    const idx = options.indexOf(value);
+    if (idx >= 0) {
+      ref.current?.scrollTo({ y: idx * ITEM_HEIGHT, animated: false });
+    }
+  }, [options, value]);
+
+  const onMomentumEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const idx = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT);
+    const clamped = Math.max(0, Math.min(options.length - 1, idx));
+    const next = options[clamped];
+    if (next !== lastEmitted.current) {
+      lastEmitted.current = next;
+      onChange(next);
+    }
+    ref.current?.scrollTo({ y: clamped * ITEM_HEIGHT, animated: true });
+  };
+
+  const padding = (VISIBLE - 1) / 2;
+
+  return (
+    <View
+      style={{
+        width,
+        height: ITEM_HEIGHT * VISIBLE,
+      }}
+      className="relative overflow-hidden rounded-xl bg-white"
+    >
+      <View
+        pointerEvents="none"
+        className="absolute left-0 right-0 border-y border-accent"
+        style={{
+          top: ITEM_HEIGHT * padding,
+          height: ITEM_HEIGHT,
+        }}
+      />
+      <ScrollView
+        ref={ref}
+        showsVerticalScrollIndicator={false}
+        snapToInterval={ITEM_HEIGHT}
+        decelerationRate="fast"
+        onMomentumScrollEnd={onMomentumEnd}
+        contentOffset={{ x: 0, y: initialIndex * ITEM_HEIGHT }}
+        contentContainerStyle={{
+          paddingVertical: ITEM_HEIGHT * padding,
+        }}
+      >
+        {options.map((opt) => {
+          const isSelected = opt === value;
+          return (
+            <View
+              key={opt}
+              style={{ height: ITEM_HEIGHT }}
+              className="items-center justify-center"
+            >
+              <Text
+                className={
+                  isSelected
+                    ? "text-[28px] font-extrabold text-ink"
+                    : "text-[20px] font-medium text-ink-faint"
+                }
+              >
+                {format(opt)}
+              </Text>
+            </View>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }

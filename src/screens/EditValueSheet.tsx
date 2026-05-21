@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { Check, Minus, Plus, X } from "lucide-react-native";
 
 import { shadows } from "../styles/shadows";
+import { RisingBackdrop, SlideUp } from "../components/Transitions";
 
 export type EditField =
   | {
@@ -48,17 +49,24 @@ type Props = {
 
 export function EditValueSheet({ field, onClose, onSave }: Props) {
   return (
-    <Modal visible={field !== null} transparent animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/45">
-        <Pressable className="absolute inset-0" onPress={onClose} />
-        <View
-          className="w-full max-w-[430px] self-center rounded-t-[24px] bg-white pt-3"
-          style={shadows.lift}
-        >
-          <View className="mb-3 h-1 w-10 self-center rounded-full bg-ink-hair" />
-          {field !== null ? <EditBody field={field} onClose={onClose} onSave={onSave} /> : null}
-        </View>
-      </View>
+    <Modal visible={field !== null} transparent animationType="none" onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1, justifyContent: "flex-end" }}
+      >
+        {field !== null ? <RisingBackdrop onPress={onClose} /> : null}
+        {field !== null ? (
+          <SlideUp from={520} duration={320} style={{ width: "100%", maxWidth: 430, alignSelf: "center" }}>
+            <View
+              className="w-full rounded-t-[24px] bg-white pt-3"
+              style={shadows.lift}
+            >
+              <View className="mb-3 h-1 w-10 self-center rounded-full bg-ink-hair" />
+              <EditBody field={field} onClose={onClose} onSave={onSave} />
+            </View>
+          </SlideUp>
+        ) : null}
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

@@ -1,7 +1,8 @@
-import { Modal, Pressable, ScrollView, Text, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import { X } from "lucide-react-native";
 
 import { shadows } from "../styles/shadows";
+import { RisingBackdrop, SlideUp } from "../components/Transitions";
 
 export type InfoRow = {
   label: string;
@@ -32,12 +33,20 @@ type Props = {
 
 export function InfoDetailSheet({ detail, onClose }: Props) {
   return (
-    <Modal visible={detail !== null} transparent animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/45">
-        <Pressable className="absolute inset-0" onPress={onClose} />
+    <Modal visible={detail !== null} transparent animationType="none" onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1, justifyContent: "flex-end" }}
+      >
+        {detail !== null ? <RisingBackdrop onPress={onClose} /> : null}
+        {detail !== null ? <SlideUp
+          from={520}
+          duration={320}
+          style={{ width: "100%", maxWidth: 430, alignSelf: "center", maxHeight: "85%" }}
+        >
         <View
-          className="w-full max-w-[430px] self-center rounded-t-[24px] bg-white pt-3"
-          style={[shadows.lift, { maxHeight: "85%" }]}
+          className="w-full rounded-t-[24px] bg-white pt-3"
+          style={shadows.lift}
         >
           <View className="mb-3 h-1 w-10 self-center rounded-full bg-ink-hair" />
           {detail !== null ? (
@@ -80,7 +89,8 @@ export function InfoDetailSheet({ detail, onClose }: Props) {
             </View>
           ) : null}
         </View>
-      </View>
+        </SlideUp> : null}
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

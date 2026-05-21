@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Modal, Pressable, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, View } from "react-native";
 import { MapPin, X } from "lucide-react-native";
 
 import { shadows } from "../styles/shadows";
+import { RisingBackdrop, SlideUp } from "../components/Transitions";
 
 type Props = {
   visible: boolean;
@@ -26,10 +27,14 @@ export function AddLocationSheet({ visible, onClose, onAdd }: Props) {
   const valid = name.trim().length > 0 && region.trim().length > 0;
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/45">
-        <Pressable className="absolute inset-0" onPress={onClose} />
-        <View className="w-full max-w-[430px] self-center rounded-t-[24px] bg-white pt-3" style={shadows.lift}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1, justifyContent: "flex-end" }}
+      >
+        {visible ? <RisingBackdrop onPress={onClose} /> : null}
+        {visible ? <SlideUp from={520} duration={320} style={{ width: "100%", maxWidth: 430, alignSelf: "center" }}>
+        <View className="w-full rounded-t-[24px] bg-white pt-3" style={shadows.lift}>
             <View className="mb-3 h-1 w-10 self-center rounded-full bg-ink-hair" />
             <View className="px-5 pb-8">
               <View className="mb-4 flex-row items-center justify-between">
@@ -104,7 +109,8 @@ export function AddLocationSheet({ visible, onClose, onAdd }: Props) {
               </Pressable>
             </View>
         </View>
-      </View>
+        </SlideUp> : null}
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

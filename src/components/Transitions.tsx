@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { Animated, Easing, type StyleProp, type ViewStyle } from "react-native";
+import { Animated, Easing, Pressable, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 
 type FadeInProps = {
   children: ReactNode;
@@ -59,4 +59,38 @@ export function SlideUp({ children, from = 320, duration = 320, style }: SlideUp
   }, []);
 
   return <Animated.View style={[{ transform: [{ translateY: ty }] }, style]}>{children}</Animated.View>;
+}
+
+type RisingBackdropProps = {
+  onPress?: () => void;
+  dim?: number;
+  duration?: number;
+};
+
+export function RisingBackdrop({ onPress, dim = 0.45, duration = 240 }: RisingBackdropProps) {
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  return (
+    <Animated.View
+      pointerEvents="box-none"
+      style={[
+        StyleSheet.absoluteFillObject,
+        {
+          backgroundColor: `rgba(0,0,0,${dim})`,
+          opacity,
+        },
+      ]}
+    >
+      <Pressable style={StyleSheet.absoluteFill} onPress={onPress} />
+    </Animated.View>
+  );
 }

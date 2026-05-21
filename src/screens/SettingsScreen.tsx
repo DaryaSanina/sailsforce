@@ -3,13 +3,11 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import {
   ChevronLeft,
   ChevronRight,
-  MapPin,
   RectangleHorizontal,
   Ruler,
   Sailboat,
   Scale,
   Sparkles,
-  Star,
   UserRound,
   VenusAndMars,
   Wind,
@@ -29,10 +27,7 @@ import { shadows } from "../styles/shadows";
 
 type Props = {
   settings: UserSettings;
-  homeSpotName: string;
-  savedSpotsCount: number;
   onBack: () => void;
-  onOpenLocations: () => void;
   onEditField: (field: EditField) => void;
   onEditSails: () => void;
   onEditBoards: () => void;
@@ -40,10 +35,7 @@ type Props = {
 
 export function SettingsScreen({
   settings,
-  homeSpotName,
-  savedSpotsCount,
   onBack,
-  onOpenLocations,
   onEditField,
   onEditSails,
   onEditBoards,
@@ -84,12 +76,9 @@ export function SettingsScreen({
             </View>
             <View className="flex-1">
               <Text className="text-[18px] font-bold text-ink">{settings.name}</Text>
-              <Text className="text-[14px] text-ink-soft">{homeSpotName}</Text>
+              <Text className="text-[12px] text-ink-faint">Tap to edit</Text>
             </View>
-            <View className="items-center">
-              <Star size={23} color="#7CB3B5" fill="#7CB3B5" />
-              <Text className="mt-1 text-[12px] text-ink">Favorite spot</Text>
-            </View>
+            <ChevronRight size={18} color="#64748B" />
           </Pressable>
         </FadeIn>
 
@@ -176,16 +165,7 @@ export function SettingsScreen({
           />
         </SettingsSection>
 
-        <SettingsSection title="SPOTS & FAVORITES" index={3}>
-          <SettingsRow
-            label="Saved spots"
-            value={`${savedSpotsCount} spot${savedSpotsCount === 1 ? "" : "s"}`}
-            icon="pin"
-            onPress={onOpenLocations}
-          />
-        </SettingsSection>
-
-        <SettingsSection title="QUIVER" index={4}>
+        <SettingsSection title="QUIVER" index={3}>
           <QuiverRow
             label="Sails"
             count={settings.sails.length}
@@ -291,7 +271,6 @@ function rowIcon(name: string) {
   if (name === "gender") return <VenusAndMars {...props} />;
   if (name === "stars") return <Sparkles {...props} />;
   if (name === "wind") return <Wind {...props} />;
-  if (name === "pin") return <MapPin {...props} />;
   if (name === "sail") return <Sailboat {...props} />;
   if (name === "board") return <RectangleHorizontal {...props} />;
   return <UserRound {...props} />;
