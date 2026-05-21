@@ -280,19 +280,22 @@ function WeatherWidget({
     onChangeMode(detailed ? "summary" : "detailed");
   }, [detailed, onChangeMode]);
 
+  const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (viewportW <= 0) return;
     const x = e.nativeEvent.contentOffset.x;
     const idx = Math.round(x / CELL_W);
     const clamped = Math.max(0, Math.min(HOURS.length - 1, idx));
     if (clamped !== activeIndex) setActiveIndex(clamped);
-  };
 
-  const onMomentumEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const x = e.nativeEvent.contentOffset.x;
-    const idx = Math.round(x / CELL_W);
-    const clamped = Math.max(0, Math.min(HOURS.length - 1, idx));
-    scrollRef.current?.scrollTo({ x: clamped * CELL_W, animated: true });
+    if (scrollTimer.current) clearTimeout(scrollTimer.current);
+    scrollTimer.current = setTimeout(() => {
+      const snapped = Math.round(x / CELL_W) * CELL_W;
+      if (Math.abs(x - snapped) > 2) {
+        scrollRef.current?.scrollTo({ x: snapped, animated: true });
+      }
+    }, 150);
   };
 
   const onScrollViewLayout = (e: LayoutChangeEvent) => {
@@ -390,7 +393,7 @@ function WeatherWidget({
               disableIntervalMomentum
               decelerationRate="fast"
               onScroll={onScroll}
-              onMomentumScrollEnd={onMomentumEnd}
+
               scrollEventThrottle={1}
               contentContainerStyle={{ paddingHorizontal: sidePadding }}
             >
