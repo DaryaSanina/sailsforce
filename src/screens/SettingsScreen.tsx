@@ -95,7 +95,7 @@ export function SettingsScreen({
                 title: "Weight",
                 unitLabel: "kg",
                 value: settings.weightKg,
-                min: 30,
+                min: 10,
                 max: 200,
               })
             }
