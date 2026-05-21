@@ -9,7 +9,6 @@ import {
   Scale,
   Sparkles,
   UserRound,
-  VenusAndMars,
   Wind,
 } from "lucide-react-native";
 import Svg, { Circle, Path, Rect } from "react-native-svg";
@@ -17,7 +16,6 @@ import Svg, { Circle, Path, Rect } from "react-native-svg";
 import type { EditField } from "./EditValueSheet";
 import {
   abilityOptions,
-  genderOptions,
   windUnitLabel,
   windUnitOptions,
   type UserSettings,
@@ -114,21 +112,6 @@ export function SettingsScreen({
                 value: settings.heightCm,
                 min: 100,
                 max: 230,
-              })
-            }
-          />
-          <SettingsRow
-            label="Gender"
-            value={settings.gender}
-            icon="gender"
-            bordered
-            onPress={() =>
-              onEditField({
-                kind: "choice",
-                key: "gender",
-                title: "Gender",
-                value: settings.gender,
-                options: genderOptions.map((g) => ({ label: g, value: g })),
               })
             }
           />
@@ -268,7 +251,6 @@ function rowIcon(name: string) {
   const props = { size: 22, color: "#7CB3B5", strokeWidth: 1.8 };
   if (name === "scale") return <Scale {...props} />;
   if (name === "ruler") return <Ruler {...props} />;
-  if (name === "gender") return <VenusAndMars {...props} />;
   if (name === "stars") return <Sparkles {...props} />;
   if (name === "wind") return <Wind {...props} />;
   if (name === "sail") return <Sailboat {...props} />;

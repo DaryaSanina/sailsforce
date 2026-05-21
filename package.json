@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "test": "node --test 'weather_data_access/*.test.js'"
+    "test": "node --test 'weather_data_access/tests/*.test.js'"
   },
   "dependencies": {
     "@expo/metro-runtime": "^55.0.11",

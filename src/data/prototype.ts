@@ -25,9 +25,6 @@ export const locations: Location[] = [
   { id: "lossiemouth", name: "Lossiemouth East Beach", region: "Lossiemouth, Moray", lat: 57.7128757, lng: -3.2616881, normal: 40.1, favorite: false },
 ];
 
-export const genderOptions = ["Male", "Female", "Non-binary", "Prefer not to say"] as const;
-export type Gender = (typeof genderOptions)[number];
-
 export const abilityOptions = ["Beginner", "Intermediate", "Advanced", "Expert"] as const;
 export type Ability = (typeof abilityOptions)[number];
 
@@ -49,7 +46,6 @@ export type UserSettings = {
   name: string;
   weightKg: number;
   heightCm: number;
-  gender: Gender;
   ability: Ability;
   windUnit: WindUnit;
   sails: GearItem[];
@@ -60,7 +56,6 @@ export const defaultUserSettings: UserSettings = {
   name: "Cole",
   weightKg: 78,
   heightCm: 182,
-  gender: "Male",
   ability: "Intermediate",
   windUnit: "kt",
   sails: [

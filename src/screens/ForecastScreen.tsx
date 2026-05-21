@@ -261,8 +261,10 @@ function WeatherWidget({
   hasTide: boolean;
 }) {
   const scrollRef = useRef<ScrollView>(null);
+  const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [viewportW, setViewportW] = useState(0);
   const [activeIndex, setActiveIndex] = useState(nowIndex);
+  const [scrollX, setScrollX] = useState(nowIndex * CELL_W);
 
   const showTide = detailed && hasTide;
 
@@ -296,7 +298,19 @@ function WeatherWidget({
     }
     const contentW = hours.length * CELL_W;
     const fill = `${path} L ${(hours.length - 1) * CELL_W + CELL_W / 2} ${TIDE_ROW_H} L ${CELL_W / 2} ${TIDE_ROW_H} Z`;
-    return { path, fill, yFor, contentW };
+
+    // Tide-curve height at an arbitrary pixel x — the curve segments are cubic
+    // beziers with horizontal-tangent control points (control Y = endpoint Y).
+    const yAtX = (px: number): number => {
+      const frac = (px - CELL_W / 2) / CELL_W;
+      const i = Math.max(0, Math.min(hours.length - 2, Math.floor(frac)));
+      const t = Math.max(0, Math.min(1, frac - i));
+      const p0y = yFor(hours[i].tide);
+      const p3y = yFor(hours[i + 1].tide);
+      const mt = 1 - t;
+      return mt * mt * mt * p0y + 3 * mt * mt * t * p0y + 3 * mt * t * t * p3y + t * t * t * p3y;
+    };
+    return { path, fill, yFor, yAtX, contentW };
   }, [hours]);
 
   const onToggle = useCallback(() => {
@@ -306,16 +320,19 @@ function WeatherWidget({
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (viewportW <= 0) return;
     const x = e.nativeEvent.contentOffset.x;
+    setScrollX(x);
     const idx = Math.round(x / CELL_W);
     const clamped = Math.max(0, Math.min(hours.length - 1, idx));
     if (clamped !== activeIndex) setActiveIndex(clamped);
-  };
 
-  const onMomentumEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const x = e.nativeEvent.contentOffset.x;
-    const idx = Math.round(x / CELL_W);
-    const clamped = Math.max(0, Math.min(hours.length - 1, idx));
-    scrollRef.current?.scrollTo({ x: clamped * CELL_W, animated: true });
+    // Debounced snap: correct a misaligned rest position once scrolling stops.
+    if (scrollTimer.current) clearTimeout(scrollTimer.current);
+    scrollTimer.current = setTimeout(() => {
+      const snapped = Math.round(x / CELL_W) * CELL_W;
+      if (Math.abs(x - snapped) > 2) {
+        scrollRef.current?.scrollTo({ x: snapped, animated: true });
+      }
+    }, 150);
   };
 
   const onScrollViewLayout = (e: LayoutChangeEvent) => {
@@ -382,7 +399,7 @@ function WeatherWidget({
                   left: viewportW / 2 - 1,
                   top: HOUR_ROW_H + ICON_ROW_H + DATA_ROW_H * (3 + MODEL_LABELS.length + 1),
                   width: 2,
-                  height: tide.yFor(active.tide),
+                  height: tide.yAtX(scrollX + CELL_W / 2),
                   backgroundColor: "#0F766E",
                   opacity: 0.55,
                   zIndex: 1,
@@ -398,7 +415,6 @@ function WeatherWidget({
               disableIntervalMomentum
               decelerationRate="fast"
               onScroll={onScroll}
-              onMomentumScrollEnd={onMomentumEnd}
               scrollEventThrottle={1}
               contentContainerStyle={{ paddingHorizontal: sidePadding }}
             >
@@ -495,14 +511,6 @@ function WeatherWidget({
                           <Svg width={tide.contentW} height={TIDE_ROW_H}>
                             <Path d={tide.fill} fill="#EFF6FF" />
                             <Path d={tide.path} stroke="#3B82F6" strokeWidth={2} fill="none" />
-                            <Circle
-                              cx={activeIndex * CELL_W + CELL_W / 2}
-                              cy={tide.yFor(active.tide)}
-                              r={6}
-                              fill="#FFFFFF"
-                              stroke="#0F766E"
-                              strokeWidth={2}
-                            />
                           </Svg>
                         </View>
                       ) : null}
@@ -511,6 +519,26 @@ function WeatherWidget({
                 ) : null}
               </View>
             </ScrollView>
+            {viewportW > 0 && showTide ? (
+              <View
+                pointerEvents="none"
+                style={{
+                  position: "absolute",
+                  left: viewportW / 2 - 8,
+                  top:
+                    HOUR_ROW_H +
+                    ICON_ROW_H +
+                    DATA_ROW_H * (3 + MODEL_LABELS.length + 1) +
+                    tide.yAtX(scrollX + CELL_W / 2) -
+                    8,
+                  zIndex: 2,
+                }}
+              >
+                <Svg width={16} height={16}>
+                  <Circle cx={8} cy={8} r={6} fill="#FFFFFF" stroke="#0F766E" strokeWidth={2} />
+                </Svg>
+              </View>
+            ) : null}
           </View>
         </View>
 
