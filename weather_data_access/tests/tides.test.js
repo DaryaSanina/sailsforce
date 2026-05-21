@@ -11,7 +11,7 @@
 const { describe, it, afterEach } = require('node:test');
 const assert = require('node:assert/strict');
 
-const { getTidalData, _internals } = require('./tides.js');
+const { getTidalData, _internals } = require('../tides.js');
 const {
   getDistance,
   resolveStartDate,
