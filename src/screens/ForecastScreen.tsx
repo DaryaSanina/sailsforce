@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode } from "react";
+import { memo, useCallback, useRef, useState, type ReactNode } from "react";
 import {
   Pressable,
   ScrollView,
@@ -26,10 +26,12 @@ import {
   Wind,
 } from "lucide-react-native";
 
+import Svg, { Circle, Path } from "react-native-svg";
+
 import { FadeIn } from "../components/Transitions";
 
 import { BeachMap } from "../components/BeachMap";
-import { BeachWindGraphic, TideGraph } from "../components/Graphs";
+import { BeachWindGraphic } from "../components/Graphs";
 import { SailabilityMeter } from "../components/SailabilityMeter";
 import { locations } from "../data/prototype";
 import { shadows } from "../styles/shadows";
@@ -59,6 +61,7 @@ type HourData = {
   spread: number;
   models: [number, number][];
   conf: number;
+  tide: number;
   dayIndex: number;
   dayLabel: string;
   isDayStart: boolean;
@@ -88,6 +91,8 @@ function generateHours(): HourData[] {
         [Math.max(2, wind + ((h + 1) % 2)), gust - 1],
         [Math.max(2, wind + 1 - ((h + d) % 2)), gust],
       ];
+      const tideHr = d * 24 + h;
+      const tide = 1 + Math.sin((tideHr - 4) * ((2 * Math.PI) / 12.4)) * 0.8;
       out.push({
         hour: String(h).padStart(2, "0"),
         icon: iconForHour(h),
@@ -96,6 +101,7 @@ function generateHours(): HourData[] {
         spread,
         models,
         conf,
+        tide,
         dayIndex: d,
         dayLabel: DAY_LABELS[d],
         isDayStart: h === 0,
@@ -114,6 +120,39 @@ const KEY_W = 76;
 const HOUR_ROW_H = 22;
 const ICON_ROW_H = 28;
 const DATA_ROW_H = 26;
+const TIDE_ROW_H = 70;
+const TIDE_PAD_Y = 10;
+const TIDE_MIN = 0;
+const TIDE_MAX = 2.2;
+
+function tideYForValue(v: number): number {
+  const range = TIDE_MAX - TIDE_MIN;
+  const t = (v - TIDE_MIN) / range;
+  const usable = TIDE_ROW_H - TIDE_PAD_Y * 2;
+  return TIDE_PAD_Y + (1 - t) * usable;
+}
+
+function buildTidePath(): string {
+  let d = "";
+  for (let i = 0; i < HOURS.length; i++) {
+    const x = i * CELL_W + CELL_W / 2;
+    const y = tideYForValue(HOURS[i].tide);
+    if (i === 0) {
+      d += `M ${x} ${y}`;
+    } else {
+      const prevX = (i - 1) * CELL_W + CELL_W / 2;
+      const prevY = tideYForValue(HOURS[i - 1].tide);
+      const cx1 = prevX + CELL_W * 0.5;
+      const cx2 = x - CELL_W * 0.5;
+      d += ` C ${cx1} ${prevY} ${cx2} ${y} ${x} ${y}`;
+    }
+  }
+  return d;
+}
+
+const TIDE_PATH = buildTidePath();
+const TIDE_FILL_PATH = `${TIDE_PATH} L ${(HOURS.length - 1) * CELL_W + CELL_W / 2} ${TIDE_ROW_H} L ${CELL_W / 2} ${TIDE_ROW_H} Z`;
+const TIDE_CONTENT_W = HOURS.length * CELL_W;
 
 export function ForecastScreen({
   mode,
@@ -157,7 +196,7 @@ export function ForecastScreen({
           </View>
         </View>
 
-        <WeatherWidget detailed={detailed} onToggle={() => onChangeMode(detailed ? "summary" : "detailed")} />
+        <WeatherWidget detailed={detailed} onChangeMode={onChangeMode} />
 
         <MetricGrid
           onOpenWindBeach={onOpenWindBeach}
@@ -226,10 +265,20 @@ function IconButton({ children, onPress }: { children: ReactNode; onPress?: () =
   );
 }
 
-function WeatherWidget({ detailed, onToggle }: { detailed: boolean; onToggle: () => void }) {
+function WeatherWidget({
+  detailed,
+  onChangeMode,
+}: {
+  detailed: boolean;
+  onChangeMode: (mode: "summary" | "detailed") => void;
+}) {
   const scrollRef = useRef<ScrollView>(null);
   const [viewportW, setViewportW] = useState(0);
   const [activeIndex, setActiveIndex] = useState(INITIAL_INDEX);
+
+  const onToggle = useCallback(() => {
+    onChangeMode(detailed ? "summary" : "detailed");
+  }, [detailed, onChangeMode]);
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (viewportW <= 0) return;
@@ -291,6 +340,7 @@ function WeatherWidget({ detailed, onToggle }: { detailed: boolean; onToggle: ()
                 ))
               : null}
             {detailed ? <KeyRow height={DATA_ROW_H} label="CONF." iconKind="conf" /> : null}
+            {detailed ? <KeyRow height={TIDE_ROW_H} label="TIDE (m)" /> : null}
           </Pressable>
           <View className="flex-1 overflow-hidden relative" onLayout={onScrollViewLayout}>
             {viewportW > 0 ? (
@@ -313,6 +363,24 @@ function WeatherWidget({ detailed, onToggle }: { detailed: boolean; onToggle: ()
                 }}
               />
             ) : null}
+            {viewportW > 0 && detailed ? (
+              <View
+                pointerEvents="none"
+                style={{
+                  position: "absolute",
+                  left: viewportW / 2 - 1,
+                  top:
+                    HOUR_ROW_H +
+                    ICON_ROW_H +
+                    DATA_ROW_H * (3 + MODEL_LABELS.length + 1),
+                  width: 2,
+                  height: tideYForValue(active.tide),
+                  backgroundColor: "#0F766E",
+                  opacity: 0.55,
+                  zIndex: 1,
+                }}
+              />
+            ) : null}
             <ScrollView
               ref={scrollRef}
               horizontal
@@ -323,51 +391,63 @@ function WeatherWidget({ detailed, onToggle }: { detailed: boolean; onToggle: ()
               decelerationRate="fast"
               onScroll={onScroll}
               onMomentumScrollEnd={onMomentumEnd}
-              scrollEventThrottle={16}
+              scrollEventThrottle={1}
               contentContainerStyle={{ paddingHorizontal: sidePadding }}
             >
               <View>
                 <RowBand height={HOUR_ROW_H}>
                   {HOURS.map((h, i) => (
-                    <Cell key={i} width={CELL_W} active={i === activeIndex} dayStart={h.isDayStart && i > 0} onPress={onToggle}>
-                      <Text className={`text-[11px] font-medium ${i === activeIndex ? "text-accent font-bold" : "text-ink-soft"}`}>
-                        {h.hour}
-                      </Text>
-                    </Cell>
+                    <HourCell
+                      key={i}
+                      value={h.hour}
+                      active={i === activeIndex}
+                      dayStart={h.isDayStart && i > 0}
+                      onPress={onToggle}
+                    />
                   ))}
                 </RowBand>
                 <RowBand height={ICON_ROW_H}>
                   {HOURS.map((h, i) => (
-                    <Cell key={i} width={CELL_W} active={i === activeIndex} dayStart={h.isDayStart && i > 0} onPress={onToggle}>
-                      <WeatherIcon icon={h.icon} size={i === activeIndex ? 22 : 18} />
-                    </Cell>
+                    <IconCell
+                      key={i}
+                      value={h.icon}
+                      active={i === activeIndex}
+                      dayStart={h.isDayStart && i > 0}
+                      onPress={onToggle}
+                    />
                   ))}
                 </RowBand>
                 <RowBand height={DATA_ROW_H} bordered>
                   {HOURS.map((h, i) => (
-                    <Cell key={i} width={CELL_W} active={i === activeIndex} dayStart={h.isDayStart && i > 0} onPress={onToggle}>
-                      <Text className={`text-[13px] font-bold ${i === activeIndex ? "text-accent" : "text-ink"}`}>
-                        {h.wind}
-                      </Text>
-                    </Cell>
+                    <WindCell
+                      key={i}
+                      value={h.wind}
+                      active={i === activeIndex}
+                      dayStart={h.isDayStart && i > 0}
+                      onPress={onToggle}
+                    />
                   ))}
                 </RowBand>
                 <RowBand height={DATA_ROW_H} bordered>
                   {HOURS.map((h, i) => (
-                    <Cell key={i} width={CELL_W} active={i === activeIndex} dayStart={h.isDayStart && i > 0} onPress={onToggle}>
-                      <Text className={`text-[13px] font-bold ${i === activeIndex ? "text-warn" : "text-ink-soft"}`}>
-                        {h.gust}
-                      </Text>
-                    </Cell>
+                    <GustCell
+                      key={i}
+                      value={h.gust}
+                      active={i === activeIndex}
+                      dayStart={h.isDayStart && i > 0}
+                      onPress={onToggle}
+                    />
                   ))}
                 </RowBand>
                 <RowBand height={DATA_ROW_H} bordered>
                   {HOURS.map((h, i) => (
-                    <Cell key={i} width={CELL_W} active={i === activeIndex} dayStart={h.isDayStart && i > 0} onPress={onToggle}>
-                      <Text className={`text-[13px] font-bold ${i === activeIndex ? "text-info" : "text-ink-soft"}`}>
-                        {h.spread}
-                      </Text>
-                    </Cell>
+                    <SpreadCell
+                      key={i}
+                      value={h.spread}
+                      active={i === activeIndex}
+                      dayStart={h.isDayStart && i > 0}
+                      onPress={onToggle}
+                    />
                   ))}
                 </RowBand>
 
@@ -377,30 +457,45 @@ function WeatherWidget({ detailed, onToggle }: { detailed: boolean; onToggle: ()
                       {MODEL_LABELS.map((m, mi) => (
                         <RowBand key={m} height={DATA_ROW_H} bordered>
                           {HOURS.map((h, i) => (
-                            <Cell key={i} width={CELL_W} active={i === activeIndex} dayStart={h.isDayStart && i > 0} onPress={onToggle}>
-                              <Text className={`text-[12px] font-bold ${i === activeIndex ? "text-ink" : "text-ink-soft"}`}>
-                                {h.models[mi][0]}
-                              </Text>
-                              <Text className={`text-[9px] ${i === activeIndex ? "text-ink-soft" : "text-ink-faint"}`}>
-                                {h.models[mi][1]}
-                              </Text>
-                            </Cell>
+                            <ModelCell
+                              key={i}
+                              value={h.models[mi]}
+                              active={i === activeIndex}
+                              dayStart={h.isDayStart && i > 0}
+                              onPress={onToggle}
+                            />
                           ))}
                         </RowBand>
                       ))}
                       <RowBand height={DATA_ROW_H} bordered>
                         {HOURS.map((h, i) => (
-                          <Cell key={i} width={CELL_W} active={i === activeIndex} dayStart={h.isDayStart && i > 0} onPress={onToggle}>
-                            {i === activeIndex ? (
-                              <View className="rounded-md bg-accent px-1.5 py-0.5">
-                                <Text className="text-[10px] font-bold text-white">{h.conf}%</Text>
-                              </View>
-                            ) : (
-                              <Text className="text-[11px] font-semibold text-ink-soft">{h.conf}%</Text>
-                            )}
-                          </Cell>
+                          <ConfCell
+                            key={i}
+                            value={h.conf}
+                            active={i === activeIndex}
+                            dayStart={h.isDayStart && i > 0}
+                            onPress={onToggle}
+                          />
                         ))}
                       </RowBand>
+
+                      <View
+                        style={{ width: TIDE_CONTENT_W, height: TIDE_ROW_H }}
+                        className="border-t border-line-soft"
+                      >
+                        <Svg width={TIDE_CONTENT_W} height={TIDE_ROW_H}>
+                          <Path d={TIDE_FILL_PATH} fill="#EFF6FF" />
+                          <Path d={TIDE_PATH} stroke="#3B82F6" strokeWidth={2} fill="none" />
+                          <Circle
+                            cx={activeIndex * CELL_W + CELL_W / 2}
+                            cy={tideYForValue(active.tide)}
+                            r={6}
+                            fill="#FFFFFF"
+                            stroke="#0F766E"
+                            strokeWidth={2}
+                          />
+                        </Svg>
+                      </View>
                     </View>
                   </FadeIn>
                 ) : null}
@@ -408,13 +503,6 @@ function WeatherWidget({ detailed, onToggle }: { detailed: boolean; onToggle: ()
             </ScrollView>
           </View>
         </View>
-
-        {detailed ? (
-          <View className="mt-3 border-t border-line-soft pt-3">
-            <Text className="mb-1 text-[10px] font-bold tracking-wider text-ink-soft">TIDE (ft)</Text>
-            <TideGraph />
-          </View>
-        ) : null}
 
         <Pressable
           onPress={onToggle}
@@ -443,14 +531,12 @@ function RowBand({ height, bordered, children }: { height: number; bordered?: bo
   );
 }
 
-function Cell({
-  width,
-  active,
+function CellShell({
+  active: _active,
   dayStart,
   onPress,
   children,
 }: {
-  width: number;
   active: boolean;
   dayStart?: boolean;
   onPress?: () => void;
@@ -460,7 +546,7 @@ function Cell({
     <Pressable
       onPress={onPress}
       style={{
-        width,
+        width: CELL_W,
         borderLeftWidth: dayStart ? 2 : 0,
         borderLeftColor: "#7CB3B5",
       }}
@@ -470,6 +556,85 @@ function Cell({
     </Pressable>
   );
 }
+
+type CellProps<V> = {
+  value: V;
+  active: boolean;
+  dayStart?: boolean;
+  onPress?: () => void;
+};
+
+const HourCell = memo(function HourCell({ value, active, dayStart, onPress }: CellProps<string>) {
+  return (
+    <CellShell active={active} dayStart={dayStart} onPress={onPress}>
+      <Text className={`text-[11px] ${active ? "font-bold text-accent" : "font-medium text-ink-soft"}`}>
+        {value}
+      </Text>
+    </CellShell>
+  );
+});
+
+const IconCell = memo(function IconCell({ value, active, dayStart, onPress }: CellProps<IconKind>) {
+  return (
+    <CellShell active={active} dayStart={dayStart} onPress={onPress}>
+      <WeatherIcon icon={value} size={active ? 22 : 18} />
+    </CellShell>
+  );
+});
+
+const WindCell = memo(function WindCell({ value, active, dayStart, onPress }: CellProps<number>) {
+  return (
+    <CellShell active={active} dayStart={dayStart} onPress={onPress}>
+      <Text className={`text-[13px] font-bold ${active ? "text-accent" : "text-ink"}`}>{value}</Text>
+    </CellShell>
+  );
+});
+
+const GustCell = memo(function GustCell({ value, active, dayStart, onPress }: CellProps<number>) {
+  return (
+    <CellShell active={active} dayStart={dayStart} onPress={onPress}>
+      <Text className={`text-[13px] font-bold ${active ? "text-warn" : "text-ink-soft"}`}>{value}</Text>
+    </CellShell>
+  );
+});
+
+const SpreadCell = memo(function SpreadCell({ value, active, dayStart, onPress }: CellProps<number>) {
+  return (
+    <CellShell active={active} dayStart={dayStart} onPress={onPress}>
+      <Text className={`text-[13px] font-bold ${active ? "text-info" : "text-ink-soft"}`}>{value}</Text>
+    </CellShell>
+  );
+});
+
+const ModelCell = memo(function ModelCell({
+  value,
+  active,
+  dayStart,
+  onPress,
+}: CellProps<[number, number]>) {
+  return (
+    <CellShell active={active} dayStart={dayStart} onPress={onPress}>
+      <Text className={`text-[12px] font-bold ${active ? "text-ink" : "text-ink-soft"}`}>
+        {value[0]}
+      </Text>
+      <Text className={`text-[9px] ${active ? "text-ink-soft" : "text-ink-faint"}`}>{value[1]}</Text>
+    </CellShell>
+  );
+});
+
+const ConfCell = memo(function ConfCell({ value, active, dayStart, onPress }: CellProps<number>) {
+  return (
+    <CellShell active={active} dayStart={dayStart} onPress={onPress}>
+      {active ? (
+        <View className="rounded-md bg-accent px-1.5 py-0.5">
+          <Text className="text-[10px] font-bold text-white">{value}%</Text>
+        </View>
+      ) : (
+        <Text className="text-[11px] font-semibold text-ink-soft">{value}%</Text>
+      )}
+    </CellShell>
+  );
+});
 
 function KeyRow({
   height,
