@@ -52,9 +52,6 @@ export const modelRows = [
 export const confidence = [66, 70, 73, 78, 75, 68, 62];
 export const spread = ["2 kt", "2 kt", "2 kt", "3 kt", "2 kt", "1 kt", "1 kt"];
 
-export const genderOptions = ["Male", "Female", "Non-binary", "Prefer not to say"] as const;
-export type Gender = (typeof genderOptions)[number];
-
 export const abilityOptions = ["Beginner", "Intermediate", "Advanced", "Expert"] as const;
 export type Ability = (typeof abilityOptions)[number];
 
@@ -76,7 +73,6 @@ export type UserSettings = {
   name: string;
   weightKg: number;
   heightCm: number;
-  gender: Gender;
   ability: Ability;
   windUnit: WindUnit;
   sails: GearItem[];
@@ -87,7 +83,6 @@ export const defaultUserSettings: UserSettings = {
   name: "Cole",
   weightKg: 78,
   heightCm: 182,
-  gender: "Male",
   ability: "Intermediate",
   windUnit: "kt",
   sails: [
