@@ -1,9 +1,11 @@
 /**
  * Tides Service for Sailsforce
- * Handles tidal data collection from NOAA CO-OPS API.
+ * Handles tidal data collection for UK beaches.
+ * Uses UK Environment Agency for station locations and Open-Meteo for tidal predictions.
  */
-const NOAA_MDAPI_URL = 'https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json?type=waterlevels';
-const NOAA_DATAGETTER_URL = 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter';
+
+const EA_STATIONS_URL = 'https://environment.data.gov.uk/flood-monitoring/id/stations?type=TideGauge';
+const OPEN_METEO_MARINE_URL = 'https://marine-api.open-meteo.com/v1/marine';
 
 /**
  * Calculates the Haversine distance between two points on Earth.
@@ -21,15 +23,21 @@ function getDistance(lat1, lon1, lat2, lon2) {
 }
 
 /**
- * Fetches the list of tidal stations from NOAA.
+ * Fetches the list of tidal stations from the UK Environment Agency.
  */
 async function fetchStations() {
-  const response = await fetch(NOAA_MDAPI_URL);
+  const response = await fetch(EA_STATIONS_URL);
   if (!response.ok) {
-    throw new Error(`Failed to fetch NOAA stations: ${response.statusText}`);
+    throw new Error(`Failed to fetch UK EA stations: ${response.statusText}`);
   }
   const data = await response.json();
-  return data.stations || [];
+  // Map EA fields to the format expected by the service
+  return (data.items || []).map(station => ({
+    id: station.stationReference,
+    name: station.label,
+    lat: station.lat,
+    lng: station.long
+  }));
 }
 
 /**
@@ -48,9 +56,71 @@ async function findNearestStations(lat, lon, count = 2) {
 }
 
 /**
- * Fetches tidal predictions for a specific station.
+ * Fetches tidal predictions for a specific location using Open-Meteo.
+ * Since Open-Meteo provides hourly sea level height, we derive high/low tides
+ * by finding local maxima and minima.
+ * 
+ * @param {number} lat - Latitude
+ * @param {number} lon - Longitude
+ * @param {string} date - Date in YYYYMMDD format
+ * @returns {Promise<Array>} List of tidal events
  */
-//TODO: find api to get tidal station data
+async function fetchTidalPredictions(lat, lon, date) {
+  // Convert YYYYMMDD to YYYY-MM-DD
+  const targetDateStr = `${date.substring(0, 4)}-${date.substring(4, 6)}-${date.substring(6, 8)}`;
+  
+  // Fetch a 3-day window (yesterday, today, tomorrow) to ensure we find all peaks for the target day
+  const targetDate = new Date(targetDateStr);
+  const startDate = new Date(targetDate);
+  startDate.setDate(startDate.getDate() - 1);
+  const endDate = new Date(targetDate);
+  endDate.setDate(endDate.getDate() + 1);
+
+  const params = new URLSearchParams({
+    latitude: lat,
+    longitude: lon,
+    hourly: 'sea_level_height',
+    start_date: startDate.toISOString().split('T')[0],
+    end_date: endDate.toISOString().split('T')[0],
+    timezone: 'UTC'
+  });
+
+  const url = `${OPEN_METEO_MARINE_URL}?${params.toString()}`;
+  console.log('Open-Meteo URL:', url);
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Open-Meteo API error: ${response.statusText}`);
+  }
+  const data = await response.json();
+  
+  const hourlyTimes = data.hourly.time;
+  const hourlyHeights = data.hourly.sea_level_height;
+
+  // Find peaks (High) and troughs (Low) using a simple local extremum check
+  const predictions = [];
+  for (let i = 1; i < hourlyHeights.length - 1; i++) {
+    const prev = hourlyHeights[i - 1];
+    const curr = hourlyHeights[i];
+    const next = hourlyHeights[i + 1];
+
+    if (curr > prev && curr > next) {
+      predictions.push({
+        t: hourlyTimes[i].replace('T', ' '),
+        v: curr.toFixed(3),
+        type: 'H'
+      });
+    } else if (curr < prev && curr < next) {
+      predictions.push({
+        t: hourlyTimes[i].replace('T', ' '),
+        v: curr.toFixed(3),
+        type: 'L'
+      });
+    }
+  }
+
+  // Return only the events that fall on the target date
+  return predictions.filter(p => p.t.startsWith(targetDateStr));
+}
 
 /**
  * Averages two sets of tidal predictions.
@@ -112,7 +182,7 @@ async function getTidalData(lat, lon, date = null) {
     }
 
     const station1 = nearestStations[0];
-    const predictions1 = await fetchTidalPredictions(station1.id, date);
+    const predictions1 = await fetchTidalPredictions(station1.lat, station1.lng, date);
 
     // If we only have one station, or if it's very close (e.g. < 5km), don't average
     if (nearestStations.length === 1 || station1.distance < 5) {
@@ -130,7 +200,7 @@ async function getTidalData(lat, lon, date = null) {
     const station2 = nearestStations[1];
     let predictions2 = [];
     try {
-      predictions2 = await fetchTidalPredictions(station2.id, date);
+      predictions2 = await fetchTidalPredictions(station2.lat, station2.lng, date);
     } catch (e) {
       console.warn(`Failed to fetch predictions for second station ${station2.id}:`, e.message);
       return {
