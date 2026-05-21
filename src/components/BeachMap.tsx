@@ -6,13 +6,30 @@ type Props = {
   size: number;
   wind: number;
   swell: string;
+  /** Wind bearing in degrees — rotates the direction arrow. */
+  windDir?: number;
+  /** Wind direction label, e.g. "ENE (70°)". */
+  windLabel?: string;
+  /** Swell direction label, e.g. "SW 210°". */
+  swellLabel?: string;
   unit?: string;
   showDirection?: boolean;
   onPress?: () => void;
   accessibilityLabel?: string;
 };
 
-export function BeachMap({ size, wind, swell, unit = "kt", showDirection = true, onPress, accessibilityLabel }: Props) {
+export function BeachMap({
+  size,
+  wind,
+  swell,
+  windDir = 0,
+  windLabel,
+  swellLabel,
+  unit = "kt",
+  showDirection = true,
+  onPress,
+  accessibilityLabel,
+}: Props) {
   const radius = size / 2;
   const Container: any = onPress ? Pressable : View;
   const containerProps = onPress
@@ -51,16 +68,18 @@ export function BeachMap({ size, wind, swell, unit = "kt", showDirection = true,
 
       <View className="absolute top-[17%] items-center">
         <Text className="text-[14px] font-semibold text-white">{swell}</Text>
-        <Text className="text-[10px] font-medium text-white">SW 210°</Text>
+        {swellLabel ? <Text className="text-[10px] font-medium text-white">{swellLabel}</Text> : null}
       </View>
 
       <View className="absolute items-center">
-        <View style={{ transform: [{ rotate: "70deg" }] }}>
+        <View style={{ transform: [{ rotate: `${windDir}deg` }] }}>
           <Navigation size={32} color="#FFFFFF" fill="#FFFFFF" />
         </View>
         <Text className="mt-2 text-[48px] font-extrabold leading-[50px] text-white">{wind}</Text>
         <Text className="-mt-1 text-[16px] font-medium text-white">{unit}</Text>
-        {showDirection ? <Text className="mt-1 text-[14px] font-semibold text-white">ENE (70°)</Text> : null}
+        {showDirection && windLabel ? (
+          <Text className="mt-1 text-[14px] font-semibold text-white">{windLabel}</Text>
+        ) : null}
       </View>
     </Container>
   );

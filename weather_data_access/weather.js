@@ -33,22 +33,35 @@ async function fetchWeatherData(lat, lon) {
     timezone: 'auto'
   });
 
-  // Marine API: swell and wave data
+  // Marine API: swell, wave and sea-surface temperature data
   const marineParams = new URLSearchParams({
     latitude: lat,
     longitude: lon,
-    current: 'wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period',
-    hourly: 'wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period',
+    current: 'wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature',
+    hourly: 'wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,sea_surface_temperature',
+    timezone: 'auto'
+  });
+
+  // Air Quality API: UV index (not available from the standard forecast API).
+  const airQualityParams = new URLSearchParams({
+    latitude: lat,
+    longitude: lon,
+    current: 'uv_index',
+    hourly: 'uv_index',
     timezone: 'auto'
   });
 
   const weatherUrl = `https://api.open-meteo.com/v1/forecast?${weatherParams.toString()}`;
   const marineUrl = `https://marine-api.open-meteo.com/v1/marine?${marineParams.toString()}`;
+  const airQualityUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${airQualityParams.toString()}`;
 
   try {
-    const [weatherResponse, marineResponse] = await Promise.all([
+    // UV is supplementary — a failed air-quality request must not sink the
+    // whole forecast, so it is fetched best-effort.
+    const [weatherResponse, marineResponse, airResponse] = await Promise.all([
       fetch(weatherUrl),
-      fetch(marineUrl)
+      fetch(marineUrl),
+      fetch(airQualityUrl).catch(() => null)
     ]);
 
     if (!weatherResponse.ok) {
@@ -63,6 +76,10 @@ async function fetchWeatherData(lat, lon) {
 
     const weatherData = await weatherResponse.json();
     const marineData = await marineResponse.json();
+    const airData =
+      airResponse && airResponse.ok
+        ? await airResponse.json().catch(() => null)
+        : null;
 
     // Organize multi-model wind data from the hourly response
     // Open-Meteo appends the model name to the variable (e.g., wind_speed_10m_ecmwf_ifs025)
@@ -90,12 +107,14 @@ async function fetchWeatherData(lat, lon) {
       },
       current: {
         ...weatherData.current,
-        ...marineData.current
+        ...marineData.current,
+        uv_index: airData?.current?.uv_index ?? null
       },
       hourly: {
         time: weatherData.hourly.time,
         ...weatherData.hourly,
-        ...marineData.hourly
+        ...marineData.hourly,
+        uv_index: airData?.hourly?.uv_index ?? null
       },
       daily: weatherData.daily,
       wind_models: modelsData

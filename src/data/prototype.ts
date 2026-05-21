@@ -4,53 +4,26 @@ export type Location = {
   region: string;
   distance?: string;
   favorite: boolean;
+  /** Latitude — required to fetch live forecast data. */
+  lat?: number;
+  /** Longitude — required to fetch live forecast data. */
+  lng?: number;
+  /** Seaward beach normal in degrees (0–360), used for wind-vs-beach. */
+  normal?: number;
 };
 
-export type ForecastHour = {
-  hour: string;
-  icon: "sun" | "cloud-sun" | "wind";
-  wind: number;
-  gust: number;
-  tide: number;
-};
-
+// Seed spots: real UK beaches sourced from weather_data_access/beaches.json,
+// each carrying the coordinates and seaward normal the live APIs need.
 export const locations: Location[] = [
-  { id: "hookipa", name: "Hookipa Beach", region: "Maui, Hawaii", favorite: true },
-  { id: "kanaha", name: "Kanaha Beach Park", region: "Maui, Hawaii", distance: "12 km", favorite: true },
-  { id: "paia-bay", name: "Paia Bay", region: "Maui, Hawaii", distance: "15 km", favorite: true },
-  { id: "spreckelsville", name: "Spreckelsville", region: "Maui, Hawaii", distance: "8 km", favorite: false },
-  { id: "baldwin", name: "Baldwin Beach", region: "Maui, Hawaii", distance: "18 km", favorite: false },
-  { id: "kalama", name: "Kalama Beach Park", region: "Kihei, Hawaii", distance: "23 km", favorite: false },
-  { id: "hookipa-lookout", name: "Ho'okipa Lookout", region: "Maui, Hawaii", distance: "1.2 km", favorite: false },
+  { id: "watergate", name: "Watergate Beach", region: "Newquay, Cornwall", lat: 50.4446234, lng: -5.0465166, normal: 296.4, favorite: true },
+  { id: "bantham", name: "Bantham Beach", region: "South Hams, Devon", lat: 50.2803387, lng: -3.8818567, normal: 5.7, favorite: true },
+  { id: "rest-bay", name: "Rest Bay", region: "Porthcawl, Bridgend", lat: 51.4900053, lng: -3.7313428, normal: 234.6, favorite: true },
+  { id: "west-sands", name: "West Sands", region: "St Andrews, Fife", lat: 56.3587222, lng: -2.8120266, normal: 73.3, favorite: true },
+  { id: "brighton", name: "Brighton Beach", region: "Brighton & Hove", lat: 50.8237309, lng: -0.1924826, normal: 204.1, favorite: false },
+  { id: "camber", name: "Camber Sands", region: "Camber, East Sussex", lat: 50.9319289, lng: 0.7924184, normal: 186.5, favorite: false },
+  { id: "hunstanton", name: "Hunstanton Beach", region: "Hunstanton, Norfolk", lat: 52.9371497, lng: 0.4909134, normal: 292.2, favorite: false },
+  { id: "lossiemouth", name: "Lossiemouth East Beach", region: "Lossiemouth, Moray", lat: 57.7128757, lng: -3.2616881, normal: 40.1, favorite: false },
 ];
-
-export const summaryHours: ForecastHour[] = [
-  { hour: "10", icon: "cloud-sun", wind: 15, gust: 21, tide: 0.7 },
-  { hour: "11", icon: "cloud-sun", wind: 16, gust: 23, tide: 1.1 },
-  { hour: "12", icon: "sun", wind: 17, gust: 27, tide: 1.5 },
-  { hour: "13", icon: "sun", wind: 18, gust: 31, tide: 0.9 },
-  { hour: "14", icon: "wind", wind: 19, gust: 29, tide: 0.4 },
-  { hour: "15", icon: "sun", wind: 20, gust: 25, tide: 0.8 },
-];
-
-export const detailedHours: ForecastHour[] = [
-  { hour: "10", icon: "sun", wind: 16, gust: 21, tide: 0.3 },
-  { hour: "11", icon: "cloud-sun", wind: 16, gust: 23, tide: 0.8 },
-  { hour: "12", icon: "sun", wind: 19, gust: 27, tide: 1.1 },
-  { hour: "13", icon: "sun", wind: 21, gust: 31, tide: 1.6 },
-  { hour: "14", icon: "wind", wind: 20, gust: 29, tide: 1.2 },
-  { hour: "15", icon: "sun", wind: 18, gust: 25, tide: 0.6 },
-  { hour: "16", icon: "cloud-sun", wind: 16, gust: 22, tide: 0.4 },
-];
-
-export const modelRows = [
-  { name: "model1", icon: "shield", values: [[16, 23], [16, 29], [19, 27], [21, 31], [20, 28], [18, 25], [16, 22]] },
-  { name: "model2", icon: "swirl", values: [[15, 22], [18, 26], [17, 24], [19, 28], [18, 27], [17, 23], [15, 21]] },
-  { name: "model3", icon: "spark", values: [[17, 24], [17, 24], [19, 27], [20, 30], [19, 27], [18, 24], [16, 22]] },
-];
-
-export const confidence = [66, 70, 73, 78, 75, 68, 62];
-export const spread = ["2 kt", "2 kt", "2 kt", "3 kt", "2 kt", "1 kt", "1 kt"];
 
 export const genderOptions = ["Male", "Female", "Non-binary", "Prefer not to say"] as const;
 export type Gender = (typeof genderOptions)[number];
