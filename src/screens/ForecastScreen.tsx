@@ -150,6 +150,20 @@ function buildTidePath(): string {
   return d;
 }
 
+function tideYAtX(px: number): number {
+  const frac = (px - CELL_W / 2) / CELL_W;
+  const i = Math.max(0, Math.min(HOURS.length - 2, Math.floor(frac)));
+  const t = Math.max(0, Math.min(1, frac - i));
+
+  const p0y = tideYForValue(HOURS[i].tide);
+  const p3y = tideYForValue(HOURS[i + 1].tide);
+  const c1y = p0y;
+  const c2y = p3y;
+
+  const mt = 1 - t;
+  return mt * mt * mt * p0y + 3 * mt * mt * t * c1y + 3 * mt * t * t * c2y + t * t * t * p3y;
+}
+
 const TIDE_PATH = buildTidePath();
 const TIDE_FILL_PATH = `${TIDE_PATH} L ${(HOURS.length - 1) * CELL_W + CELL_W / 2} ${TIDE_ROW_H} L ${CELL_W / 2} ${TIDE_ROW_H} Z`;
 const TIDE_CONTENT_W = HOURS.length * CELL_W;
@@ -275,6 +289,7 @@ function WeatherWidget({
   const scrollRef = useRef<ScrollView>(null);
   const [viewportW, setViewportW] = useState(0);
   const [activeIndex, setActiveIndex] = useState(INITIAL_INDEX);
+  const [scrollX, setScrollX] = useState(INITIAL_INDEX * CELL_W);
 
   const onToggle = useCallback(() => {
     onChangeMode(detailed ? "summary" : "detailed");
@@ -285,6 +300,7 @@ function WeatherWidget({
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (viewportW <= 0) return;
     const x = e.nativeEvent.contentOffset.x;
+    setScrollX(x);
     const idx = Math.round(x / CELL_W);
     const clamped = Math.max(0, Math.min(HOURS.length - 1, idx));
     if (clamped !== activeIndex) setActiveIndex(clamped);
@@ -377,7 +393,7 @@ function WeatherWidget({
                     ICON_ROW_H +
                     DATA_ROW_H * (3 + MODEL_LABELS.length + 1),
                   width: 2,
-                  height: tideYForValue(active.tide),
+                  height: tideYAtX(scrollX + CELL_W / 2),
                   backgroundColor: "#0F766E",
                   opacity: 0.55,
                   zIndex: 1,
@@ -489,14 +505,6 @@ function WeatherWidget({
                         <Svg width={TIDE_CONTENT_W} height={TIDE_ROW_H}>
                           <Path d={TIDE_FILL_PATH} fill="#EFF6FF" />
                           <Path d={TIDE_PATH} stroke="#3B82F6" strokeWidth={2} fill="none" />
-                          <Circle
-                            cx={activeIndex * CELL_W + CELL_W / 2}
-                            cy={tideYForValue(active.tide)}
-                            r={6}
-                            fill="#FFFFFF"
-                            stroke="#0F766E"
-                            strokeWidth={2}
-                          />
                         </Svg>
                       </View>
                     </View>
@@ -504,6 +512,25 @@ function WeatherWidget({
                 ) : null}
               </View>
             </ScrollView>
+            {viewportW > 0 && detailed ? (
+              <View
+                pointerEvents="none"
+                style={{
+                  position: "absolute",
+                  left: viewportW / 2 - 8,
+                  top:
+                    HOUR_ROW_H +
+                    ICON_ROW_H +
+                    DATA_ROW_H * (3 + MODEL_LABELS.length + 1) +
+                    tideYAtX(scrollX + CELL_W / 2) - 8,
+                  zIndex: 2,
+                }}
+              >
+                <Svg width={16} height={16}>
+                  <Circle cx={8} cy={8} r={6} fill="#FFFFFF" stroke="#0F766E" strokeWidth={2} />
+                </Svg>
+              </View>
+            ) : null}
           </View>
         </View>
 
