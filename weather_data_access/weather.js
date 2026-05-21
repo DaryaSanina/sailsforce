@@ -12,13 +12,15 @@
  * @returns {Promise<Object>} Combined weather and marine data
  */
 async function fetchWeatherData(lat, lon) {
-  // TODO: Add additional models
-  // Models to fetch wind data from
-  // ecmwf_ifs025: ECMWF IFS (9 km, Global)
-  // gfs_seamless: NOAA GFS (Global + regional)
-  // icon_seamless: DWD ICON (Global + regional)
-  // ukmo_seamless: UK Met Office (Global + regional)
-  const windModels = ['ecmwf_ifs025', 'gfs_seamless', 'icon_seamless', 'ukmo_seamless'];
+  const windModels = [
+    'ecmwf_ifs025',
+    'gfs_seamless',
+    'icon_seamless',
+    'ukmo_seamless',
+    'meteofrance_seamless',
+    'knmi_seamless',
+    'gem_seamless',
+  ];
   
   // Weather Forecast API: wind, temperature, general conditions + specific wind models
   const weatherParams = new URLSearchParams({
