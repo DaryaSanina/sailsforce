@@ -301,7 +301,10 @@ function WeatherWidget({ detailed, onToggle }: { detailed: boolean; onToggle: ()
                   left: viewportW / 2 - CELL_W / 2,
                   top: 0,
                   width: CELL_W,
-                  height: HOUR_ROW_H + ICON_ROW_H + DATA_ROW_H * 3,
+                  height:
+                    HOUR_ROW_H +
+                    ICON_ROW_H +
+                    DATA_ROW_H * (3 + (detailed ? MODEL_LABELS.length + 1 : 0)),
                   borderRadius: 10,
                   borderWidth: 1.5,
                   borderColor: "#0F766E",
