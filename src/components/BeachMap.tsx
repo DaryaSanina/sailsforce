@@ -49,14 +49,14 @@ export function BeachMap({ size, wind, swell, unit = "kt", showDirection = true,
         <SvgText x={12} y={radius + 4} fill="#FFFFFF" fillOpacity="0.7" fontSize="12" fontWeight="700" textAnchor="middle">W</SvgText>
       </Svg>
 
-      <View className="absolute top-[17%] items-center">
+      <View className="absolute top-[12%] items-center">
         <Text className="text-[14px] font-semibold text-white">{swell}</Text>
         <Text className="text-[10px] font-medium text-white">SW 210°</Text>
       </View>
 
-      <View className="absolute items-center">
+      <View className="absolute items-center" style={{ paddingTop: 10 }}>
         <View style={{ transform: [{ rotate: "70deg" }] }}>
-          <Navigation size={32} color="#FFFFFF" fill="#FFFFFF" />
+          <Navigation size={28} color="#FFFFFF" fill="#FFFFFF" />
         </View>
         <Text className="mt-2 text-[48px] font-extrabold leading-[50px] text-white">{wind}</Text>
         <Text className="-mt-1 text-[16px] font-medium text-white">{unit}</Text>
