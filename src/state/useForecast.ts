@@ -17,8 +17,29 @@ function isForecastBundle(value: unknown): value is ForecastBundle {
     typeof value === "object" &&
     value !== null &&
     Array.isArray((value as ForecastBundle).hours) &&
+    (value as ForecastBundle).hours.length > 0 &&
     typeof (value as ForecastBundle).fetchedAt === "string"
   );
+}
+
+function average(values: number[]): number | null {
+  const finite = values.filter((value) => Number.isFinite(value));
+  if (finite.length === 0) return null;
+  return finite.reduce((sum, value) => sum + value, 0) / finite.length;
+}
+
+function normalizeCachedForecast(bundle: ForecastBundle): ForecastBundle {
+  const hours = bundle.hours.map((hour) => {
+    const modelWind = average(hour.models.map(([wind]) => wind));
+    const modelGust = average(hour.models.map(([, gust]) => gust));
+    const wind = hour.wind === 0 && modelWind != null && modelWind > 0 ? Math.round(modelWind) : hour.wind;
+    const gust = hour.gust === 0 && modelGust != null && modelGust > 0 ? Math.round(modelGust) : hour.gust;
+    const modelWinds = hour.models.map(([value]) => value).filter((value) => Number.isFinite(value));
+    const spread = hour.spread === 0 && modelWinds.length > 1 ? Math.max(...modelWinds) - Math.min(...modelWinds) : hour.spread;
+    return { ...hour, wind, gust, spread };
+  });
+  const current = hours[bundle.currentIndex] ?? hours[0] ?? null;
+  return { ...bundle, hours, current };
 }
 
 async function loadCachedForecast(locationId: string): Promise<ForecastBundle | null> {
@@ -26,7 +47,7 @@ async function loadCachedForecast(locationId: string): Promise<ForecastBundle | 
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw);
-    return isForecastBundle(parsed) ? parsed : null;
+    return isForecastBundle(parsed) ? normalizeCachedForecast(parsed) : null;
   } catch {
     return null;
   }

@@ -20,6 +20,12 @@ function round(value: number | null, decimals = 0): number | null {
   return Math.round(value * factor) / factor;
 }
 
+function mean(values: Array<number | null>): number | null {
+  const finite = values.filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+  if (finite.length === 0) return null;
+  return finite.reduce((sum, value) => sum + value, 0) / finite.length;
+}
+
 function iconForWeatherCode(code: number | null, windKt: number | null): ForecastIcon {
   if ((windKt ?? 0) >= 22) return "wind";
   if (code == null) return "cloud-sun";
@@ -39,22 +45,35 @@ export function adaptForecast(location: BeachLocation, raw: RawForecastResponse)
   const weatherHourly = raw.weather.hourly ?? {};
   const marineHourly = raw.marine.hourly ?? {};
   const times = (weatherHourly.time ?? []).filter((value): value is string => typeof value === "string");
+  if (times.length === 0) {
+    throw new Error("Forecast response did not include hourly times.");
+  }
+
+  const hasWindSeries =
+    Array.isArray(weatherHourly.wind_speed_10m) ||
+    WIND_MODELS.some((model) => Array.isArray(weatherHourly[`wind_speed_10m_${model}`]));
+  if (!hasWindSeries) {
+    throw new Error("Forecast response did not include wind speed data.");
+  }
+
   const currentIndex = findNearestHourIndex(times);
 
   const seaLevel = times.map((_, index) => round(numberAt(marineHourly.sea_level_height_msl, index), 2));
   const tides = findTideExtrema(times, seaLevel);
 
   const hours: ForecastHour[] = times.map((time, index) => {
-    const wind = round(numberAt(weatherHourly.wind_speed_10m, index)) ?? 0;
-    const gust = round(numberAt(weatherHourly.wind_gusts_10m, index)) ?? wind;
+    const modelWinds = WIND_MODELS.map((model) => round(modelValue(weatherHourly, "wind_speed_10m", model, index)));
+    const modelGusts = WIND_MODELS.map((model) => round(modelValue(weatherHourly, "wind_gusts_10m", model, index)));
+    const wind = round(numberAt(weatherHourly.wind_speed_10m, index)) ?? round(mean(modelWinds)) ?? 0;
+    const gust = round(numberAt(weatherHourly.wind_gusts_10m, index)) ?? round(mean(modelGusts)) ?? wind;
     const windDir = round(numberAt(weatherHourly.wind_direction_10m, index)) ?? 0;
 
-    const models: [number, number][] = WIND_MODELS.map((model) => [
-      round(modelValue(weatherHourly, "wind_speed_10m", model, index)) ?? wind,
-      round(modelValue(weatherHourly, "wind_gusts_10m", model, index)) ?? gust,
+    const models: [number, number][] = WIND_MODELS.map((_, modelIndex) => [
+      modelWinds[modelIndex] ?? wind,
+      modelGusts[modelIndex] ?? gust,
     ]);
-    const modelWinds = models.map(([modelWind]) => modelWind);
-    const spread = Math.max(...modelWinds) - Math.min(...modelWinds);
+    const spreadValues = modelWinds.filter((value): value is number => value != null);
+    const spread = spreadValues.length > 1 ? Math.max(...spreadValues) - Math.min(...spreadValues) : 0;
 
     return {
       time,
@@ -94,4 +113,3 @@ export function adaptForecast(location: BeachLocation, raw: RawForecastResponse)
     tides,
   };
 }
-

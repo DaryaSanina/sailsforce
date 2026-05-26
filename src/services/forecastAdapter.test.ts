@@ -70,6 +70,36 @@ describe("adaptForecast", () => {
     assert.equal(forecast.tides.length, 1);
     assert.equal(forecast.tides[0].type, "high");
   });
+
+  it("uses model wind values when Open-Meteo omits the base wind series", () => {
+    const raw: RawForecastResponse = {
+      fetchedAt: "2026-05-21T12:00:00.000Z",
+      weather: {
+        hourly: {
+          time: ["2026-05-21T00:00"],
+          wind_speed_10m_ecmwf_ifs025: [9],
+          wind_speed_10m_gfs_seamless: [12],
+          wind_speed_10m_icon_seamless: [15],
+          wind_gusts_10m_ecmwf_ifs025: [14],
+          wind_gusts_10m_gfs_seamless: [17],
+          wind_gusts_10m_icon_seamless: [20],
+          wind_direction_10m: [270],
+        },
+      },
+      marine: { hourly: {} },
+    };
+
+    const forecast = adaptForecast(location, raw);
+
+    assert.equal(forecast.hours[0].wind, 12);
+    assert.equal(forecast.hours[0].gust, 17);
+    assert.equal(forecast.hours[0].spread, 6);
+    assert.deepEqual(forecast.hours[0].models, [
+      [9, 14],
+      [12, 17],
+      [15, 20],
+    ]);
+  });
 });
 
 describe("forecastMath", () => {
@@ -80,4 +110,3 @@ describe("forecastMath", () => {
     assert.equal(windBeachOrientation(270, 90), "OFFSHORE");
   });
 });
-

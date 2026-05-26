@@ -8,6 +8,9 @@ import { shadows } from "../styles/shadows";
 import { RisingBackdrop, SlideUp } from "../components/Transitions";
 import { KeyboardAvoider } from "../components/KeyboardAvoider";
 
+const INITIAL_SPOT_LIMIT = 24;
+const SEARCH_RESULT_LIMIT = 60;
+
 type Props = {
   visible: boolean;
   selectedLocationId: string;
@@ -33,13 +36,17 @@ export function LocationSelectionSheet({
   const [editMode, setEditMode] = useState(false);
   const normalised = query.trim().toLowerCase();
 
-  const { favorites, nearby } = useMemo(() => {
+  const { favorites, nearby, hiddenCount } = useMemo(() => {
     const matches = normalised
       ? locations.filter((l) => l.name.toLowerCase().includes(normalised) || l.region.toLowerCase().includes(normalised))
       : locations;
+    const nonFavorites = matches.filter((l) => !favoriteIds.has(l.id));
+    const limit = normalised ? SEARCH_RESULT_LIMIT : INITIAL_SPOT_LIMIT;
+    const visibleNearby = nonFavorites.slice(0, limit);
     return {
       favorites: matches.filter((l) => favoriteIds.has(l.id)),
-      nearby: matches.filter((l) => !favoriteIds.has(l.id)),
+      nearby: visibleNearby,
+      hiddenCount: Math.max(0, nonFavorites.length - visibleNearby.length),
     };
   }, [favoriteIds, locations, normalised]);
 
@@ -124,7 +131,9 @@ export function LocationSelectionSheet({
               {nearby.length > 0 ? (
                 <View className="mb-6">
                   <View className="mb-3 flex-row items-center justify-between">
-                    <Text className="text-[12px] font-bold tracking-wider text-ink-faint">NEARBY SPOTS</Text>
+                    <Text className="text-[12px] font-bold tracking-wider text-ink-faint">
+                      {normalised ? "MATCHING SPOTS" : "NEARBY SPOTS"}
+                    </Text>
                   </View>
                   <View className="overflow-hidden rounded-2xl border border-line-soft bg-white" style={shadows.soft}>
                     {nearby.map((item, index) => (
@@ -142,6 +151,13 @@ export function LocationSelectionSheet({
                       />
                     ))}
                   </View>
+                  {hiddenCount > 0 ? (
+                    <Text className="mt-3 text-center text-[12px] font-medium text-ink-soft">
+                      {normalised
+                        ? `${hiddenCount} more matches. Keep typing to narrow the search.`
+                        : `${hiddenCount} more spots. Search to find a specific beach.`}
+                    </Text>
+                  ) : null}
                 </View>
               ) : null}
 
