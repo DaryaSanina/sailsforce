@@ -1,1 +1,6 @@
-Using react native instead of flutter: 
+Using react native instead of flutter
+Pre calculating beach normals
+Using open meteo's averaging algorithm for wind models.
+Real map instead of image
+Changed scrolling direction after realising navigation difficulties once implemented. 
+Removed some labels due to small text being illegible. 
