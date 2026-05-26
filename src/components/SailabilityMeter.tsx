@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { Animated, Easing, View, Text } from "react-native";
+import { Animated, View, Text } from "react-native";
 import Svg, { Defs, LinearGradient, Rect, Stop, Circle } from "react-native-svg";
 
 type Props = {
@@ -26,17 +26,17 @@ export const SailabilityMeter = memo(function SailabilityMeter({ compact = false
   }, [animated]);
 
   useEffect(() => {
-    Animated.timing(animated, {
+    Animated.spring(animated, {
       toValue: clamped,
-      duration: 260,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: false,
+      speed: 14,
+      bounciness: 0,
+      useNativeDriver: true,
     }).start();
   }, [clamped, animated]);
 
   const markerY = animated.interpolate({
     inputRange: [0, max],
-    outputRange: [height - MARKER_SIZE / 2, -MARKER_SIZE / 2],
+    outputRange: [height, 0],
     extrapolate: "clamp",
   });
 
@@ -70,9 +70,10 @@ export const SailabilityMeter = memo(function SailabilityMeter({ compact = false
           style={{
             position: "absolute",
             left: 15 - 7,
-            top: markerY,
+            top: -MARKER_SIZE / 2,
             width: BAR_WIDTH + 14,
             height: MARKER_SIZE,
+            transform: [{ translateY: markerY }],
           }}
         >
           <Svg width={BAR_WIDTH + 14} height={MARKER_SIZE}>

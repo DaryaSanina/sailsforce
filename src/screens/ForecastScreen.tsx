@@ -254,7 +254,6 @@ const WeatherWidget = memo(function WeatherWidget({
   onActiveIndexChange: (idx: number) => void;
 }) {
   const scrollRef = useRef<ScrollView>(null);
-  const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [viewportW, setViewportW] = useState(0);
   const [activeIndex, setActiveIndex] = useState(initialIndex);
   const [scrollX, setScrollX] = useState(initialIndex * CELL_W);
@@ -270,17 +269,10 @@ const WeatherWidget = memo(function WeatherWidget({
     setScrollX(x);
     const idx = Math.round(x / CELL_W);
     const clamped = Math.max(0, Math.min(hours.length - 1, idx));
-    if (scrollTimer.current) clearTimeout(scrollTimer.current);
-    scrollTimer.current = setTimeout(() => {
-      if (clamped !== activeIndex) {
-        setActiveIndex(clamped);
-        onActiveIndexChange(clamped);
-      }
-      const snapped = clamped * CELL_W;
-      if (Math.abs(x - snapped) > 2) {
-        scrollRef.current?.scrollTo({ x: snapped, animated: true });
-      }
-    }, 300);
+    if (clamped !== activeIndex) {
+      setActiveIndex(clamped);
+      onActiveIndexChange(clamped);
+    }
   };
 
   const onScrollViewLayout = (e: LayoutChangeEvent) => {
@@ -566,13 +558,7 @@ const ModelCell = memo(function ModelCell({ value, active, dayStart }: CellProps
 const ConfCell = memo(function ConfCell({ value, active, dayStart }: CellProps<number>) {
   return (
     <CellShell dayStart={dayStart}>
-      {active ? (
-        <View className="rounded-md bg-accent px-1.5 py-0.5">
-          <Text className="text-[10px] font-bold text-white">{value}%</Text>
-        </View>
-      ) : (
-        <Text className="text-[11px] font-semibold text-ink-soft">{value}%</Text>
-      )}
+      <Text className={`text-[11px] ${active ? "font-bold text-accent" : "font-semibold text-ink-soft"}`}>{value}%</Text>
     </CellShell>
   );
 });
