@@ -631,7 +631,7 @@ function MetricGrid({
             <Text className="mt-1 text-[12px] text-ink-soft">{safety.reason}</Text>
             <View className="mt-auto">
               <Text className="text-[10px] font-medium text-ink-soft">
-                Gusts {formatWind(active?.gust, windUnit)} · Swell {formatNumber(active?.swellHeightM, "m", 1)}
+                Wind {formatWind(active?.wind, windUnit)} · Swell {formatNumber(active?.swellHeightM, "m", 1)}
               </Text>
             </View>
           </MetricCard>
@@ -746,26 +746,61 @@ function windBeachDetail(location: BeachLocation, hour: ForecastHour, windUnit: 
 
 function safetySummary(hour: ForecastHour | null) {
   if (!hour) return { label: "--", reason: "Waiting for forecast data", color: "#94A3B8", className: "text-ink-soft" };
-  if (hour.gust >= 35 || (hour.swellHeightM ?? 0) >= 3) {
-    return { label: "HIGH", reason: "Strong gusts or large swell", color: "#EF4444", className: "text-bad" };
+
+  const wind = hour.wind; // knots — primary rating axis
+  const swell = hour.swellHeightM ?? 0;
+
+  // High-wind bands: wind alone determines the rating; swell is irrelevant.
+  if (wind >= 33) {
+    return { label: "RISKY", reason: "Wind far too strong — dangerously overpowered", color: "#EF4444", className: "text-bad" };
   }
-  if (hour.gust >= 25 || (hour.swellHeightM ?? 0) >= 2) {
-    return { label: "CAUTION", reason: "Elevated gusts or swell", color: "#F59E0B", className: "text-warn" };
+  if (wind >= 27) {
+    return { label: "CAUTION", reason: "Strong wind — experienced riders only", color: "#F59E0B", className: "text-warn" };
   }
-  return { label: "GOOD", reason: "Moderate wind and swell", color: "#22C55E", className: "text-good" };
+  if (wind >= 19) {
+    return { label: "VERY GOOD", reason: "Prime windsurfing conditions", color: "#0F766E", className: "text-accent" };
+  }
+  if (wind >= 14) {
+    return { label: "GOOD", reason: "Good conditions for most windsurfers", color: "#22C55E", className: "text-good" };
+  }
+
+  // Low-wind bands (< 14 kt): swell can push the rating up to CAUTION.
+  if (wind >= 10) {
+    // 10–13 kt — marginal wind
+    if (swell >= 2.0) {
+      return { label: "CAUTION", reason: "Light wind and large swell — hard to control in breaking waves", color: "#F59E0B", className: "text-warn" };
+    }
+    if (swell >= 1.0) {
+      return { label: "POOR", reason: "Marginal wind with moderate swell — both limiting", color: "#64748B", className: "text-ink-soft" };
+    }
+    return { label: "POOR", reason: "Wind too light for comfortable windsurfing", color: "#64748B", className: "text-ink-soft" };
+  }
+
+  // < 10 kt — insufficient wind
+  if (swell >= 1.5) {
+    return { label: "CAUTION", reason: "Too little wind to sail back — swell creates offshore drift risk", color: "#F59E0B", className: "text-warn" };
+  }
+  return { label: "BAD", reason: "Insufficient wind to windsurf", color: "#94A3B8", className: "text-ink-faint" };
 }
 
 function safetyDetail(hour: ForecastHour): InfoDetail {
   const safety = safetySummary(hour);
+  const overallAccent =
+    safety.label === "VERY GOOD" || safety.label === "GOOD" ? ("good" as const) :
+    safety.label === "CAUTION" ? ("warn" as const) :
+    safety.label === "RISKY" ? ("bad" as const) :
+    ("default" as const); // POOR / BAD
   return {
     key: "safety",
     title: "Condition overview",
     subtitle: "Derived from live forecast values",
     rows: [
-      { label: "Overall", value: safety.label, accent: safety.label === "GOOD" ? "good" : safety.label === "CAUTION" ? "warn" : "bad" },
+      { label: "Overall", value: safety.label, accent: overallAccent },
       { label: "Reason", value: safety.reason },
-      { label: "Gusts", value: `${hour.gust} kt` },
+      { label: "Wind", value: `${Math.round(hour.wind)} kt` },
+      { label: "Gusts", value: `${Math.round(hour.gust)} kt` },
       { label: "Swell height", value: formatNumber(hour.swellHeightM, "m", 1) },
+      { label: "Swell period", value: formatNumber(hour.swellPeriodS, "s", 1) },
       { label: "Wave height", value: formatNumber(hour.waveHeightM, "m", 1) },
       { label: "UV index", value: hour.uvIndex == null ? "--" : `${hour.uvIndex} · ${uvLabel(hour.uvIndex)}` },
     ],
