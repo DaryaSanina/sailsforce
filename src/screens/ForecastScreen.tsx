@@ -88,13 +88,14 @@ export function ForecastScreen({
 }: Props) {
   const detailed = mode === "detailed";
   const hours = forecast?.hours ?? [];
-  const [activeIndex, setActiveIndex] = useState(forecast?.currentIndex ?? 0);
+  const initialIndex = forecast?.currentIndex ?? 0;
+  const [viewingIndex, setViewingIndex] = useState(initialIndex);
 
   useEffect(() => {
-    setActiveIndex(forecast?.currentIndex ?? 0);
-  }, [forecast?.locationId, forecast?.fetchedAt, forecast?.currentIndex]);
+    setViewingIndex(forecast?.currentIndex ?? 0);
+  }, [forecast?.locationId, forecast?.currentIndex]);
 
-  const active = hours[Math.max(0, Math.min(hours.length - 1, activeIndex))] ?? forecast?.current ?? null;
+  const active = hours[Math.max(0, Math.min(hours.length - 1, viewingIndex))] ?? forecast?.current ?? null;
   const sailability = active ? sailabilityFromWind(active.wind) : 0;
   const swellText = active?.swellHeightM != null ? `${active.swellHeightM.toFixed(1)} m` : "--";
 
@@ -128,11 +129,12 @@ export function ForecastScreen({
         </View>
 
         <WeatherWidget
+          key={location.id}
           detailed={detailed}
           hours={hours}
           windUnit={windUnit}
-          activeIndex={activeIndex}
-          onActiveIndexChange={setActiveIndex}
+          initialIndex={initialIndex}
+          onActiveIndexChange={setViewingIndex}
           onChangeMode={onChangeMode}
         />
 
@@ -237,25 +239,26 @@ function DataStatus({
   );
 }
 
-function WeatherWidget({
+const WeatherWidget = memo(function WeatherWidget({
   detailed,
   hours,
   windUnit,
-  activeIndex,
+  initialIndex,
   onChangeMode,
   onActiveIndexChange,
 }: {
   detailed: boolean;
   hours: ForecastHour[];
   windUnit: WindUnit;
-  activeIndex: number;
+  initialIndex: number;
   onChangeMode: (mode: "summary" | "detailed") => void;
   onActiveIndexChange: (idx: number) => void;
 }) {
   const scrollRef = useRef<ScrollView>(null);
-  const activeIndexFromScrollRef = useRef<number | null>(null);
+  const scrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [viewportW, setViewportW] = useState(0);
-  const [scrollX, setScrollX] = useState(activeIndex * CELL_W);
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
+  const [scrollX, setScrollX] = useState(initialIndex * CELL_W);
   const active = hours[Math.max(0, Math.min(hours.length - 1, activeIndex))];
 
   const onToggle = useCallback(() => {
@@ -269,40 +272,24 @@ function WeatherWidget({
     const idx = Math.round(x / CELL_W);
     const clamped = Math.max(0, Math.min(hours.length - 1, idx));
     if (clamped !== activeIndex) {
-      activeIndexFromScrollRef.current = clamped;
+      setActiveIndex(clamped);
       onActiveIndexChange(clamped);
     }
-  };
-
-  const onMomentumEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const idx = Math.round(e.nativeEvent.contentOffset.x / CELL_W);
-    const clamped = Math.max(0, Math.min(hours.length - 1, idx));
-    const nextX = clamped * CELL_W;
-    if (clamped !== activeIndex) {
-      activeIndexFromScrollRef.current = clamped;
-      onActiveIndexChange(clamped);
-    }
-    setScrollX(nextX);
-    if (Math.abs(e.nativeEvent.contentOffset.x - nextX) > 1) {
-      scrollRef.current?.scrollTo({ x: nextX, animated: false });
-    }
+    if (scrollTimer.current) clearTimeout(scrollTimer.current);
+    scrollTimer.current = setTimeout(() => {
+      const snapped = Math.round(x / CELL_W) * CELL_W;
+      if (Math.abs(x - snapped) > 2) {
+        scrollRef.current?.scrollTo({ x: snapped, animated: true });
+      }
+    }, 150);
   };
 
   const onScrollViewLayout = (e: LayoutChangeEvent) => {
     const w = e.nativeEvent.layout.width;
+    if (w === viewportW) return;
     setViewportW(w);
+    requestAnimationFrame(() => scrollRef.current?.scrollTo({ x: initialIndex * CELL_W, animated: false }));
   };
-
-  useEffect(() => {
-    if (viewportW <= 0 || hours.length === 0) return;
-    if (activeIndexFromScrollRef.current === activeIndex) {
-      activeIndexFromScrollRef.current = null;
-      return;
-    }
-    const nextX = activeIndex * CELL_W;
-    setScrollX(nextX);
-    requestAnimationFrame(() => scrollRef.current?.scrollTo({ x: nextX, animated: false }));
-  }, [activeIndex, hours.length, viewportW]);
 
   const sidePadding = Math.max(0, viewportW / 2 - CELL_W / 2);
   const tideGraph = useMemo(() => buildTideGraph(hours), [hours]);
@@ -384,8 +371,7 @@ function WeatherWidget({
                 disableIntervalMomentum
                 decelerationRate="fast"
                 onScroll={onScroll}
-                onMomentumScrollEnd={onMomentumEnd}
-                scrollEventThrottle={16}
+                scrollEventThrottle={1}
                 contentContainerStyle={{ paddingHorizontal: sidePadding }}
               >
                 <View>
@@ -486,7 +472,7 @@ function WeatherWidget({
       </View>
     </View>
   );
-}
+});
 
 function buildTideGraph(hours: ForecastHour[]) {
   const values = hours.map((hour) => hour.tide).filter((value): value is number => value != null);

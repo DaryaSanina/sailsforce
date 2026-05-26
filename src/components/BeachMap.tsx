@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import MapView, { type Region } from "react-native-maps";
 import { Locate, Navigation2 } from "lucide-react-native";
@@ -43,10 +43,10 @@ export const BeachMap = memo(function BeachMap({
   const handleRegionChange = useCallback(
     (region: Region) => {
       const drifted =
-        Math.abs(region.latitude - lat) > 0.0002 ||
-        Math.abs(region.longitude - lon) > 0.0002 ||
-        Math.abs(region.latitudeDelta - 0.005) > 0.0005 ||
-        Math.abs(region.longitudeDelta - 0.005) > 0.0005;
+        Math.abs(region.latitude - lat) > 1e-5 ||
+        Math.abs(region.longitude - lon) > 1e-5 ||
+        Math.abs(region.latitudeDelta - 0.005) > 1e-5 ||
+        Math.abs(region.longitudeDelta - 0.005) > 1e-5;
       setMoved(drifted);
     },
     [lat, lon],
@@ -57,51 +57,61 @@ export const BeachMap = memo(function BeachMap({
     setMoved(false);
   }, [originRegion]);
 
+  useEffect(() => {
+    mapRef.current?.animateToRegion(
+      { latitude: lat, longitude: lon, latitudeDelta: 0.005, longitudeDelta: 0.005 },
+      300,
+    );
+    setMoved(false);
+  }, [lat, lon]);
+
   return (
-    <View
-      style={{ width: size, height: size, borderRadius: radius, overflow: "hidden" }}
-      className="relative items-center justify-center"
-    >
-      <MapView
-        ref={mapRef}
-        style={{ width: size, height: size }}
-        initialRegion={originRegion}
-        onRegionChangeComplete={handleRegionChange}
-        mapType="satellite"
-        showsCompass={false}
-        showsScale={false}
-        showsBuildings={false}
-        showsTraffic={false}
-        showsIndoors={false}
-        showsPointsOfInterest={false}
-        toolbarEnabled={false}
-        legalLabelInsets={{ top: 0, left: 0, bottom: -200, right: -200 }}
-        rotateEnabled={false}
-        zoomEnabled
-        scrollEnabled
-        pitchEnabled={false}
-      />
+    <View style={{ width: size, height: size }} className="relative items-center justify-center">
+      <View
+        style={{ width: size, height: size, borderRadius: radius, overflow: "hidden" }}
+        className="items-center justify-center"
+      >
+        <MapView
+          ref={mapRef}
+          style={{ width: size, height: size }}
+          initialRegion={originRegion}
+          onRegionChangeComplete={handleRegionChange}
+          mapType="satellite"
+          showsCompass={false}
+          showsScale={false}
+          showsBuildings={false}
+          showsTraffic={false}
+          showsIndoors={false}
+          showsPointsOfInterest={false}
+          toolbarEnabled={false}
+          legalLabelInsets={{ top: 0, left: 0, bottom: -200, right: -200 }}
+          rotateEnabled={false}
+          zoomEnabled
+          scrollEnabled
+          pitchEnabled={false}
+        />
 
-      <View pointerEvents="box-none" className="absolute inset-0 items-center justify-center">
-        <View pointerEvents="none" className="absolute top-[12%] items-center">
-          <Text className="text-[14px] font-semibold text-white">{swell}</Text>
-        </View>
-
-        {onPress ? (
-          <Pressable
-            onPress={onPress}
-            accessibilityRole="button"
-            accessibilityLabel={accessibilityLabel}
-            className="items-center px-4 py-2 active:opacity-70"
-            style={{ paddingTop: 10 }}
-          >
-            <WindBlock wind={wind} unit={unit} windDir={windDir} windDirLabel={windDirLabel} showDirection={showDirection} />
-          </Pressable>
-        ) : (
-          <View pointerEvents="none" className="items-center px-4 py-2" style={{ paddingTop: 10 }}>
-            <WindBlock wind={wind} unit={unit} windDir={windDir} windDirLabel={windDirLabel} showDirection={showDirection} />
+        <View pointerEvents="box-none" className="absolute inset-0 items-center justify-center">
+          <View pointerEvents="none" className="absolute top-[12%] items-center">
+            <Text className="text-[14px] font-semibold text-white">{swell}</Text>
           </View>
-        )}
+
+          {onPress ? (
+            <Pressable
+              onPress={onPress}
+              accessibilityRole="button"
+              accessibilityLabel={accessibilityLabel}
+              className="items-center px-4 py-2 active:opacity-70"
+              style={{ paddingTop: 10 }}
+            >
+              <WindBlock wind={wind} unit={unit} windDir={windDir} windDirLabel={windDirLabel} showDirection={showDirection} />
+            </Pressable>
+          ) : (
+            <View pointerEvents="none" className="items-center px-4 py-2" style={{ paddingTop: 10 }}>
+              <WindBlock wind={wind} unit={unit} windDir={windDir} windDirLabel={windDirLabel} showDirection={showDirection} />
+            </View>
+          )}
+        </View>
       </View>
 
       {moved ? (
@@ -110,10 +120,10 @@ export const BeachMap = memo(function BeachMap({
           accessibilityRole="button"
           accessibilityLabel="Recenter map"
           hitSlop={8}
-          className="absolute bottom-3 right-3 h-9 w-9 items-center justify-center rounded-full active:opacity-70"
-          style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
+          className="absolute h-9 w-9 items-center justify-center active:opacity-60"
+          style={{ left: 0, top: size - 36, zIndex: 10, elevation: 6 }}
         >
-          <Locate size={18} color="#FFFFFF" />
+          <Locate size={20} color="#94A3B8" />
         </Pressable>
       ) : null}
     </View>

@@ -27,6 +27,7 @@ const path = require('path');
 
 const DEFAULT_OUTPUT_PATH = path.join(__dirname, 'beaches.json');
 const CHECKPOINT_PATH     = path.join(__dirname, 'beaches_checkpoint.json');
+const BEACH_CENTER_CACHE_PATH = path.join(__dirname, 'overpass_named_beaches_latest.json');
 const BEACH_GEOMETRY_CACHE_PATH = path.join(__dirname, 'overpass_named_beaches_geom_latest.json');
 const COASTLINE_GEOMETRY_CACHE_PATH = path.join(__dirname, 'overpass_uk_coastline_geom_latest.json');
 
@@ -100,6 +101,10 @@ function hasGeometry(elements) {
   return Array.isArray(elements) && elements.some(el => Array.isArray(el.geometry));
 }
 
+function elementKey(el) {
+  return `${el.type}/${el.id}`;
+}
+
 // ---------- Data fetching -------------------------------------------------
 
 /**
@@ -109,57 +114,98 @@ function hasGeometry(elements) {
  * @param {string[]} [opts.areas]  Named UK counties/regions (OSM admin areas).
  * @param {object}  [opts.bbox]   { south, west, north, east } in decimal degrees.
  */
-async function fetchUKBeaches({ areas, bbox } = {}) {
-  console.log('Querying Overpass API for UK beaches...');
-
-  const canUseCache = (!areas || areas.length === 0) && !bbox;
-  if (canUseCache) {
-    const cached = readJsonIfExists(BEACH_GEOMETRY_CACHE_PATH);
-    if (cached?.elements && hasGeometry(cached.elements)) {
-      console.log(`Loaded ${cached.elements.length} beach elements from ${BEACH_GEOMETRY_CACHE_PATH}.`);
-      return cached.elements;
-    }
-  }
-
-  let areaFilter;
-
+function buildBeachAreaFilter({ areas, bbox } = {}) {
   if (areas && areas.length > 0) {
     // Resolve each named area to an OSM admin_level area and union the results.
     const areaLookups = areas
       .map(a => `area["name"="${a}"]["boundary"="administrative"]->.a${areas.indexOf(a)};`)
       .join('\n    ');
     const areaUnion = areas.map((_, i) => `(area.a${i})`).join('');
-    areaFilter = `
+    return `
     ${areaLookups}
     (
       node["natural"="beach"]["name"]${areaUnion};
       way["natural"="beach"]["name"]${areaUnion};
       relation["natural"="beach"]["name"]${areaUnion};
     );`;
-  } else if (bbox) {
-    // Bounding box filter — no area lookup needed.
+  }
+
+  if (bbox) {
+    // Bounding box filter, no area lookup needed.
     const { south, west, north, east } = bbox;
-    areaFilter = `
+    return `
     (
       node["natural"="beach"]["name"](${south},${west},${north},${east});
       way["natural"="beach"]["name"](${south},${west},${north},${east});
       relation["natural"="beach"]["name"](${south},${west},${north},${east});
     );`;
-  } else {
-    // Default: the United Kingdom.
-    areaFilter = `
+  }
+
+  // Default: the United Kingdom.
+  return `
     area["ISO3166-1"="GB"][admin_level=2]->.uk;
     (
       node["natural"="beach"]["name"](area.uk);
       way["natural"="beach"]["name"](area.uk);
       relation["natural"="beach"]["name"](area.uk);
     );`;
+}
+
+async function fetchUKBeachCenters({ areas, bbox } = {}) {
+  const canUseCache = (!areas || areas.length === 0) && !bbox;
+  if (canUseCache) {
+    const cached = readJsonIfExists(BEACH_CENTER_CACHE_PATH);
+    if (cached?.elements) {
+      console.log(`Loaded ${cached.elements.length} beach centers from ${BEACH_CENTER_CACHE_PATH}.`);
+      return cached.elements;
+    }
   }
 
-  const query = `[out:json][timeout:180];${areaFilter}\nout center geom tags;`;
+  console.log('Querying Overpass API for UK beach centers...');
+  const areaFilter = buildBeachAreaFilter({ areas, bbox });
+  const query = `[out:json][timeout:180];${areaFilter}\nout center tags;`;
   const data = await overpassPost(query);
-  if (canUseCache) writeJson(BEACH_GEOMETRY_CACHE_PATH, data);
+  if (canUseCache) writeJson(BEACH_CENTER_CACHE_PATH, data);
   return data.elements ?? [];
+}
+
+function mergeBeachCenters(elements, centers) {
+  const centerByKey = new Map();
+  for (const el of centers) {
+    const center = el.center ?? (el.type === 'node' ? { lat: el.lat, lon: el.lon } : null);
+    if (center) centerByKey.set(elementKey(el), center);
+  }
+
+  return elements.map(el => {
+    if (el.center || el.type === 'node') return el;
+    const center = centerByKey.get(elementKey(el));
+    return center ? { ...el, center } : el;
+  });
+}
+
+async function fetchUKBeaches({ areas, bbox } = {}) {
+  console.log('Querying Overpass API for UK beaches...');
+
+  const canUseCache = (!areas || areas.length === 0) && !bbox;
+  let elements = null;
+  if (canUseCache) {
+    const cached = readJsonIfExists(BEACH_GEOMETRY_CACHE_PATH);
+    if (cached?.elements && hasGeometry(cached.elements)) {
+      console.log(`Loaded ${cached.elements.length} beach elements from ${BEACH_GEOMETRY_CACHE_PATH}.`);
+      elements = cached.elements;
+    }
+  }
+
+  if (!elements) {
+    const areaFilter = buildBeachAreaFilter({ areas, bbox });
+    const query = `[out:json][timeout:180];${areaFilter}\nout center geom tags;`;
+    const data = await overpassPost(query);
+    if (canUseCache) writeJson(BEACH_GEOMETRY_CACHE_PATH, data);
+    elements = data.elements ?? [];
+  }
+
+  const centers = await fetchUKBeachCenters({ areas, bbox });
+  return mergeBeachCenters(elements, centers);
 }
 
 async function fetchUKCoastlineWays() {
@@ -236,6 +282,26 @@ function beachPolygonBearing(segA, segB, nodes, cosLat) {
 
 function roundedBearing(bearing) {
   return Math.round(bearing * 10) / 10;
+}
+
+function centerFromGeometry(nodes) {
+  if (!Array.isArray(nodes) || nodes.length === 0) return null;
+  let minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
+  for (const node of nodes) {
+    if (!Number.isFinite(node.lat) || !Number.isFinite(node.lon)) continue;
+    minLat = Math.min(minLat, node.lat);
+    maxLat = Math.max(maxLat, node.lat);
+    minLon = Math.min(minLon, node.lon);
+    maxLon = Math.max(maxLon, node.lon);
+  }
+  if (!Number.isFinite(minLat) || !Number.isFinite(minLon)) return null;
+  return { lat: (minLat + maxLat) / 2, lon: (minLon + maxLon) / 2 };
+}
+
+function centerForElement(el) {
+  return el.center ??
+    (el.type === 'node' ? { lat: el.lat, lon: el.lon } : null) ??
+    centerFromGeometry(el.geometry);
 }
 
 function cellCoord(value) {
@@ -334,7 +400,7 @@ function nearestGeometrySegment(nodes, lat, lon) {
 }
 
 function calculateBeachNormal(el, coastIndex, beachIndex) {
-  const center = el.center ?? (el.type === 'node' ? { lat: el.lat, lon: el.lon } : null);
+  const center = centerForElement(el);
   if (!center) return null;
 
   const { lat, lon } = center;
@@ -401,37 +467,48 @@ async function generateBeachesJson({ areas, bbox, limit, output } = {}) {
     }
   }
 
-  // Fetch element list once, or reuse from checkpoint.
-  const elements = checkpoint.elements ?? await fetchUKBeaches({ areas, bbox });
-  checkpoint.elements = elements;
+  // Fetch element list once. Old checkpoints may have pre-geometry elements,
+  // so only reuse checkpoint elements when they contain geometry.
+  const elements = hasGeometry(checkpoint.elements)
+    ? checkpoint.elements
+    : await fetchUKBeaches({ areas, bbox });
 
   const cap = limit ?? elements.length;
-  console.log(`${elements.length} named beach elements found — processing up to ${cap}.`);
 
   // Merge checkpoint entries into the existing map.
+  checkpoint.processed ??= {};
   for (const beach of Object.values(checkpoint.processed)) existing.set(beach.id, beach);
-  let processed = 0;
 
-  for (let i = 0; i < elements.length; i++) {
-    if (processed >= cap) break;
-
-    const el   = elements[i];
+  const candidates = [];
+  for (let i = 0; i < elements.length && i < cap; i++) {
+    const el = elements[i];
     const name = el.tags?.name;
-    if (!name) continue;
+    const center = centerForElement(el);
+    if (!name || !center) continue;
 
-    const center = el.center ?? (el.type === 'node' ? { lat: el.lat, lon: el.lon } : null);
-    if (!center) continue;
+    const id = makeId(name, center.lat, center.lon);
+    const prior = existing.get(id);
+    if (!prior || !Number.isFinite(prior.normal)) {
+      candidates.push({ el, name, center, id, prior });
+    }
+  }
+
+  console.log(`${elements.length} named beach elements found — ${candidates.length} to add or refresh.`);
+
+  let coastIndex = null;
+  let beachIndex = null;
+  if (candidates.length > 0) {
+    const coastlineWays = await fetchUKCoastlineWays();
+    console.log('Indexing coastline and beach geometry...');
+    coastIndex = buildSegmentIndex(coastlineWays);
+    beachIndex = buildSegmentIndex(elements);
+  }
+
+  for (let i = 0; i < candidates.length; i++) {
+    const { el, name, center, id, prior } = candidates[i];
 
     const { lat, lon } = center;
-    const id = makeId(name, lat, lon);
-
-    const prior = existing.get(id);
-
-    // Skip complete existing records. Records with a missing normal are
-    // refreshed because the app filters them out.
-    if (prior && Number.isFinite(prior.normal)) { processed++; continue; }
-
-    process.stdout.write(`[${processed + 1}/${cap}] ${name}${prior ? ' (refresh normal)' : ''} ... `);
+    process.stdout.write(`[${i + 1}/${candidates.length}] ${name}${prior ? ' (refresh normal)' : ''} ... `);
 
     // Reverse geocode (rate-limited).
     let locationInfo = prior
@@ -450,14 +527,10 @@ async function generateBeachesJson({ areas, bbox, limit, output } = {}) {
       }
     }
 
-    // Beach normal — failures leave normal as null rather than skipping the beach.
-    let normal = prior?.normal ?? null;
-    try {
-      const result = await getBeachNormalWithFallback(lat, lon);
-      normal = result.bearing;
-    } catch (err) {
-      process.stdout.write(`(normal failed: ${err.message}) `);
-    }
+    // Beach normal — unresolved geometry leaves normal as null rather than
+    // skipping the beach.
+    const normal = calculateBeachNormal(el, coastIndex, beachIndex);
+    if (!Number.isFinite(normal)) process.stdout.write('(normal unavailable) ');
 
     const beach = {
       id,
@@ -472,10 +545,9 @@ async function generateBeachesJson({ areas, bbox, limit, output } = {}) {
 
     existing.set(id, beach);
     checkpoint.processed[id] = beach;
-    fs.writeFileSync(CHECKPOINT_PATH, JSON.stringify(checkpoint));
+    fs.writeFileSync(CHECKPOINT_PATH, JSON.stringify({ processed: checkpoint.processed, elements: null }));
 
     console.log(`OK (${locationInfo.county ?? '?'}, normal: ${normal ?? '?'}°)`);
-    processed++;
   }
 
   const beaches = Array.from(existing.values());

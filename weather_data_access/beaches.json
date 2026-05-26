@@ -47,7 +47,7 @@
     "postcode": "CT10 3QL",
     "lat": 51.3845202,
     "lng": 1.4427112,
-    "normal": null
+    "normal": 46.7
   },
   {
     "id": "fish-sands-5469--118",
@@ -187,7 +187,7 @@
     "postcode": "KY16 8LD",
     "lat": 56.3359591,
     "lng": -2.7789477,
-    "normal": null
+    "normal": 71.1
   },
   {
     "id": "west-sands-5636--281",
@@ -347,7 +347,7 @@
     "postcode": "TR21 0JL",
     "lat": 49.9133217,
     "lng": -6.314444,
-    "normal": null
+    "normal": 185.2
   },
   {
     "id": "porth-minick-4991--630",
@@ -547,7 +547,7 @@
     "postcode": "LL46 2SD",
     "lat": 52.8335487,
     "lng": -4.1267384,
-    "normal": null
+    "normal": 265.2
   },
   {
     "id": "man-o-war-cove-5062--227",
@@ -607,7 +607,7 @@
     "postcode": "YO21 3JL",
     "lat": 54.5005816,
     "lng": -0.6438411,
-    "normal": null
+    "normal": 11
   },
   {
     "id": "runswick-sands-5453--75",
@@ -887,7 +887,7 @@
     "postcode": "SY23 2BH",
     "lat": 52.4194977,
     "lng": -4.0861713,
-    "normal": null
+    "normal": 279.9
   },
   {
     "id": "prinsted-beach-5084--91",
@@ -897,7 +897,7 @@
     "postcode": "PO10 8HS",
     "lat": 50.8398073,
     "lng": -0.911708,
-    "normal": null
+    "normal": 182.3
   },
   {
     "id": "rockham-beach-5119--421",
@@ -1057,7 +1057,7 @@
     "postcode": null,
     "lat": 54.8304182,
     "lng": -4.8858988,
-    "normal": null
+    "normal": 147.4
   },
   {
     "id": "readymoney-cove-beach-5033--465",
@@ -1127,7 +1127,7 @@
     "postcode": "PL26 6PH",
     "lat": 50.2645258,
     "lng": -4.7839109,
-    "normal": null
+    "normal": 96.7
   },
   {
     "id": "scart-island-5621--340",
@@ -1257,7 +1257,7 @@
     "postcode": "PL27 7FS",
     "lat": 50.475845,
     "lng": -5.0368065,
-    "normal": null
+    "normal": 203.2
   },
   {
     "id": "crantock-beach-5041--512",
@@ -1627,7 +1627,7 @@
     "postcode": "SY23 2BH",
     "lat": 52.4123643,
     "lng": -4.0908123,
-    "normal": null
+    "normal": 241.6
   },
   {
     "id": "traeth-tan-y-bwlch-5240--409",
@@ -1717,7 +1717,7 @@
     "postcode": "EX39 5EA",
     "lat": 50.9909413,
     "lng": -4.3303357,
-    "normal": null
+    "normal": 3
   },
   {
     "id": "shorthorn-beach-5034--472",
@@ -1777,7 +1777,7 @@
     "postcode": "SA3 1PN",
     "lat": 51.5870014,
     "lng": -4.3008617,
-    "normal": null
+    "normal": 253.2
   },
   {
     "id": "port-enyon-beach-5155--420",
@@ -1947,7 +1947,7 @@
     "postcode": "SA2 0BE",
     "lat": 51.5909737,
     "lng": -3.9645004,
-    "normal": null
+    "normal": 144.1
   },
   {
     "id": "swansea-beach-5160--397",
@@ -2017,7 +2017,7 @@
     "postcode": "TR11 5JZ",
     "lat": 50.0948668,
     "lng": -5.1143167,
-    "normal": null
+    "normal": 22.2
   },
   {
     "id": "gyllyngvase-beach-5014--507",
@@ -2077,7 +2077,7 @@
     "postcode": "TQ8 8PU",
     "lat": 50.2302086,
     "lng": -3.766726,
-    "normal": null
+    "normal": 271.6
   },
   {
     "id": "wardie-bay-beach-5598--322",
@@ -2127,7 +2127,7 @@
     "postcode": "CF36 5NG",
     "lat": 51.4751449,
     "lng": -3.6841316,
-    "normal": null
+    "normal": 209.8
   },
   {
     "id": "coney-beach-5148--369",
@@ -2187,7 +2187,7 @@
     "postcode": "HS2 0NQ",
     "lat": 58.3381236,
     "lng": -6.1961044,
-    "normal": null
+    "normal": 142.4
   },
   {
     "id": "east-beach-5071--276",
@@ -2247,7 +2247,7 @@
     "postcode": "TQ7 2EL",
     "lat": 50.2559347,
     "lng": -3.6552527,
-    "normal": null
+    "normal": 103.5
   },
   {
     "id": "hallsands-5024--366",
@@ -2307,7 +2307,7 @@
     "postcode": "DD11 5ST",
     "lat": 56.6469404,
     "lng": -2.5020441,
-    "normal": null
+    "normal": 91.8
   },
   {
     "id": "compass-cove-5033--357",
@@ -2367,7 +2367,7 @@
     "postcode": "TR12 7LR",
     "lat": 50.006132,
     "lng": -5.1597129,
-    "normal": null
+    "normal": 137.4
   },
   {
     "id": "sandham-5569--179",
@@ -2457,7 +2457,7 @@
     "postcode": "TR2 5HA",
     "lat": 50.1455392,
     "lng": -5.0156386,
-    "normal": null
+    "normal": 257.2
   },
   {
     "id": "little-molunan-5014--501",
@@ -2507,7 +2507,7 @@
     "postcode": "PA34 5TU",
     "lat": 56.4358195,
     "lng": -5.4753714,
-    "normal": null
+    "normal": 356.6
   },
   {
     "id": "little-ganavan-beach-5643--548",
@@ -2567,7 +2567,7 @@
     "postcode": "ZE2 9DL",
     "lat": 60.6634927,
     "lng": -0.8895363,
-    "normal": null
+    "normal": 200.8
   },
   {
     "id": "west-beach-6068--91",
@@ -2697,7 +2697,7 @@
     "postcode": "HS2 9HU",
     "lat": 58.2172283,
     "lng": -6.9294693,
-    "normal": null
+    "normal": 16.6
   },
   {
     "id": "coryton-s-cove-beach-5058--347",
@@ -3087,7 +3087,7 @@
     "postcode": null,
     "lat": 51.7707012,
     "lng": 1.0681501,
-    "normal": null
+    "normal": 165.8
   },
   {
     "id": "duke-s-mound-naturist-beach-5081--11",
@@ -3437,7 +3437,7 @@
     "postcode": "ZE2 9QE",
     "lat": 60.3839771,
     "lng": -1.1635466,
-    "normal": null
+    "normal": 268
   },
   {
     "id": "tr-igh-ostaig-5708--588",
@@ -3497,7 +3497,7 @@
     "postcode": "TR26 1PR",
     "lat": 50.2157656,
     "lng": -5.4757877,
-    "normal": null
+    "normal": 91.5
   },
   {
     "id": "cattersty-sands-5457--90",
@@ -3827,7 +3827,7 @@
     "postcode": "HS9 5YR",
     "lat": 57.0231565,
     "lng": -7.4343748,
-    "normal": null
+    "normal": 140.1
   },
   {
     "id": "tr-igh-eais-5703--745",
@@ -3847,7 +3847,7 @@
     "postcode": "HS9 5YE",
     "lat": 57.049646,
     "lng": -7.4319023,
-    "normal": null
+    "normal": 342.4
   },
   {
     "id": "tr-igh-siar-5692--754",
@@ -3907,7 +3907,7 @@
     "postcode": "TR22 0PL",
     "lat": 49.8851842,
     "lng": -6.3422203,
-    "normal": null
+    "normal": 297.9
   },
   {
     "id": "beady-pool-4989--634",
@@ -3967,7 +3967,7 @@
     "postcode": null,
     "lat": 56.2900644,
     "lng": -6.2063466,
-    "normal": null
+    "normal": 222.9
   },
   {
     "id": "ardalanish-beach-5629--624",
@@ -4347,7 +4347,7 @@
     "postcode": "NE30 4JH",
     "lat": 55.027824,
     "lng": -1.4252231,
-    "normal": null
+    "normal": 67.7
   },
   {
     "id": "poldhu-cove-5003--526",
@@ -4597,7 +4597,7 @@
     "postcode": null,
     "lat": 55.7344104,
     "lng": -1.961331,
-    "normal": null
+    "normal": 67.9
   },
   {
     "id": "pamflete-beach-5032--394",
@@ -4637,7 +4637,7 @@
     "postcode": "CH47 1HZ",
     "lat": 53.398911,
     "lng": -3.1925102,
-    "normal": null
+    "normal": 311.1
   },
   {
     "id": "broomhill-sands-5095-97",
@@ -4697,7 +4697,7 @@
     "postcode": "YO25 8PJ",
     "lat": 54.0211842,
     "lng": -0.2135328,
-    "normal": null
+    "normal": 82.2
   },
   {
     "id": "traeth-y-mwnt-5214--464",
@@ -4757,7 +4757,7 @@
     "postcode": "PA48 7UE",
     "lat": 55.7523687,
     "lng": -6.4614012,
-    "normal": null
+    "normal": 255
   },
   {
     "id": "traigh-himiligh-5767--740",
@@ -4827,7 +4827,7 @@
     "postcode": "SA62 5UU",
     "lat": 51.9753218,
     "lng": -5.0837836,
-    "normal": null
+    "normal": 272.9
   },
   {
     "id": "pwll-whiting-5196--514",
@@ -4887,7 +4887,7 @@
     "postcode": "SA71 5DQ",
     "lat": 51.600355,
     "lng": -4.9264675,
-    "normal": null
+    "normal": 17.4
   },
   {
     "id": "flimston-bay-5161--499",
@@ -4937,7 +4937,7 @@
     "postcode": "SA69 9EU",
     "lat": 51.7121087,
     "lng": -4.6935959,
-    "normal": null
+    "normal": 122.1
   },
   {
     "id": "maidencombe-beach-5051--351",
@@ -4967,7 +4967,7 @@
     "postcode": "EX10 0NW",
     "lat": 50.6740179,
     "lng": -3.2535852,
-    "normal": null
+    "normal": 161.6
   },
   {
     "id": "hooken-beach-5069--311",
@@ -5097,7 +5097,7 @@
     "postcode": "PA76 6SP",
     "lat": 56.3214798,
     "lng": -6.4009636,
-    "normal": null
+    "normal": 284.2
   },
   {
     "id": "st-columba-s-bay-5631--643",
@@ -5157,7 +5157,7 @@
     "postcode": null,
     "lat": 56.7513333,
     "lng": -5.9065569,
-    "normal": null
+    "normal": 334.5
   },
   {
     "id": "singing-sands-5675--590",
@@ -5167,7 +5167,7 @@
     "postcode": null,
     "lat": 56.7525098,
     "lng": -5.9021527,
-    "normal": null
+    "normal": 355.4
   },
   {
     "id": "sallochy-beach-5613--461",
@@ -5227,7 +5227,7 @@
     "postcode": null,
     "lat": 58.0147173,
     "lng": -7.0879211,
-    "normal": null
+    "normal": 303.4
   },
   {
     "id": "coombe-haven-5033--465",
@@ -5287,7 +5287,7 @@
     "postcode": "HS2 9EX",
     "lat": 58.1777303,
     "lng": -7.0494673,
-    "normal": null
+    "normal": 12.5
   },
   {
     "id": "broadsands-5027--388",
@@ -5487,7 +5487,7 @@
     "postcode": "TR26 2ED",
     "lat": 50.2090638,
     "lng": -5.4750961,
-    "normal": null
+    "normal": 44.7
   },
   {
     "id": "portstewart-strand-5517--675",
@@ -5517,7 +5517,7 @@
     "postcode": "PO35 5PB",
     "lat": 50.6945698,
     "lng": -1.0938038,
-    "normal": null
+    "normal": 218.2
   },
   {
     "id": "caerbwdy-bay-5187--525",
@@ -5527,7 +5527,7 @@
     "postcode": "SA62 6QR",
     "lat": 51.8734683,
     "lng": -5.245379,
-    "normal": null
+    "normal": 216.6
   },
   {
     "id": "pendine-5173--449",
@@ -5537,7 +5537,7 @@
     "postcode": null,
     "lat": 51.7278872,
     "lng": -4.4886595,
-    "normal": null
+    "normal": 188.2
   },
   {
     "id": "porth-lleuog-5186--534",
@@ -5577,7 +5577,7 @@
     "postcode": "LL35 0NT",
     "lat": 52.5356987,
     "lng": -4.0778461,
-    "normal": null
+    "normal": 228
   },
   {
     "id": "porth-meudwy-5280--473",
@@ -5627,7 +5627,7 @@
     "postcode": "PL9 0AT",
     "lat": 50.3356533,
     "lng": -4.1198754,
-    "normal": null
+    "normal": 253.5
   },
   {
     "id": "newburgh-seal-beach-5732--198",
@@ -5687,7 +5687,7 @@
     "postcode": "YO14 9TD",
     "lat": 54.1635027,
     "lng": -0.2327697,
-    "normal": null
+    "normal": 29.8
   },
   {
     "id": "midfield-beach-5855--444",
@@ -5727,7 +5727,7 @@
     "postcode": null,
     "lat": 53.165165,
     "lng": -4.4504256,
-    "normal": null
+    "normal": 179.4
   },
   {
     "id": "porth-twyn-mawr-5316--445",
@@ -5797,7 +5797,7 @@
     "postcode": null,
     "lat": 57.838825,
     "lng": -7.017105,
-    "normal": null
+    "normal": 309.5
   },
   {
     "id": "the-warren-5284--449",
@@ -5837,7 +5837,7 @@
     "postcode": "PA66 6BL",
     "lat": 56.3072146,
     "lng": -6.367839,
-    "normal": null
+    "normal": 325.9
   },
   {
     "id": "porthloo-beach-4992--631",
@@ -5927,7 +5927,7 @@
     "postcode": "KA10 6EG",
     "lat": 55.536136,
     "lng": -4.6581262,
-    "normal": null
+    "normal": 241.1
   },
   {
     "id": "tr-igh-foisigearraidh-5766--746",
@@ -5967,7 +5967,7 @@
     "postcode": "LL54 5LB",
     "lat": 52.9985186,
     "lng": -4.4226847,
-    "normal": null
+    "normal": 33
   },
   {
     "id": "amity-beach-5140--51",
@@ -6017,7 +6017,7 @@
     "postcode": "PL13 2JT",
     "lat": 50.3390977,
     "lng": -4.4710402,
-    "normal": null
+    "normal": 255.3
   },
   {
     "id": "traeth-crigyll-5324--454",
@@ -6027,7 +6027,7 @@
     "postcode": "LL65 3LW",
     "lat": 53.2352085,
     "lng": -4.5365051,
-    "normal": null
+    "normal": 198.4
   },
   {
     "id": "lekerock-cove-5033--450",
@@ -6097,7 +6097,7 @@
     "postcode": "PA20 0QF",
     "lat": 55.809521,
     "lng": -5.129537,
-    "normal": null
+    "normal": 169.5
   },
   {
     "id": "scalpsie-bay-5578--510",
@@ -6147,7 +6147,7 @@
     "postcode": "TQ8 8PD",
     "lat": 50.2358488,
     "lng": -3.7619882,
-    "normal": null
+    "normal": 209.1
   },
   {
     "id": "rickham-sand-5022--375",
@@ -6207,7 +6207,7 @@
     "postcode": null,
     "lat": 56.4431273,
     "lng": -6.9193884,
-    "normal": null
+    "normal": 120.4
   },
   {
     "id": "cul-sgathain-sand-5645--689",
@@ -6267,7 +6267,7 @@
     "postcode": "TR8 4DQ",
     "lat": 50.4673931,
     "lng": -5.0328353,
-    "normal": null
+    "normal": 176.2
   },
   {
     "id": "porth-ceiriad-5279--450",
@@ -6407,7 +6407,7 @@
     "postcode": "TR20 9NB",
     "lat": 50.1116327,
     "lng": -5.4427722,
-    "normal": null
+    "normal": 206
   },
   {
     "id": "bell-wharf-beach-5154-65",
@@ -6467,7 +6467,7 @@
     "postcode": "PO36 8PL",
     "lat": 50.6400353,
     "lng": -1.1684873,
-    "normal": null
+    "normal": 101.6
   },
   {
     "id": "musselburgh-sands-5595--304",
@@ -6547,7 +6547,7 @@
     "postcode": "EH39 5PL",
     "lat": 56.0589189,
     "lng": -2.6729945,
-    "normal": null
+    "normal": 32.1
   },
   {
     "id": "west-beach-5606--272",
@@ -6577,7 +6577,7 @@
     "postcode": "TQ5 9AH",
     "lat": 50.401388,
     "lng": -3.4971021,
-    "normal": null
+    "normal": 76.7
   },
   {
     "id": "st-mary-s-bay-5039--350",
@@ -6587,7 +6587,7 @@
     "postcode": "TQ5 9FU",
     "lat": 50.386583,
     "lng": -3.5030768,
-    "normal": null
+    "normal": 75.2
   },
   {
     "id": "livermead-beach-5046--354",
@@ -6647,7 +6647,7 @@
     "postcode": null,
     "lat": 55.8423882,
     "lng": -6.4519068,
-    "normal": null
+    "normal": 252.3
   },
   {
     "id": "cleats-shore-5544--525",
@@ -6817,7 +6817,7 @@
     "postcode": null,
     "lat": 56.686925,
     "lng": -6.483587,
-    "normal": null
+    "normal": 331.9
   },
   {
     "id": "tr-igh-logabhaig-5669--646",
@@ -6827,7 +6827,7 @@
     "postcode": null,
     "lat": 56.6884649,
     "lng": -6.4628681,
-    "normal": null
+    "normal": 342.2
   },
   {
     "id": "tr-igh-tuath-5669--646",
@@ -6837,7 +6837,7 @@
     "postcode": null,
     "lat": 56.6874344,
     "lng": -6.4569895,
-    "normal": null
+    "normal": 344.9
   },
   {
     "id": "tr-igh-thorastain-5668--652",
@@ -6887,7 +6887,7 @@
     "postcode": "G44 3PG",
     "lat": 55.8019129,
     "lng": -4.2645193,
-    "normal": null
+    "normal": 281.8
   },
   {
     "id": "traigh-bhorgaidh-5822--698",
@@ -6907,7 +6907,7 @@
     "postcode": "CF64 5XX",
     "lat": 51.3993658,
     "lng": -3.2328179,
-    "normal": null
+    "normal": 104.5
   },
   {
     "id": "lancing-beach-5082--32",
@@ -7027,7 +7027,7 @@
     "postcode": "PO4 9UB",
     "lat": 50.7836308,
     "lng": -1.0356417,
-    "normal": null
+    "normal": 166.6
   },
   {
     "id": "peanmeanach-beach-5686--576",
@@ -7045,9 +7045,9 @@
     "city": "Greater London",
     "county": null,
     "postcode": "TW8 0DT",
-    "lat": 51.4870131,
-    "lng": -0.2928259,
-    "normal": null
+    "lat": 51.4875075,
+    "lng": -0.2887501,
+    "normal": 161.4
   },
   {
     "id": "hog-hole-5149--29",
@@ -7107,7 +7107,7 @@
     "postcode": "KY3 9YF",
     "lat": 56.0623523,
     "lng": -3.1888577,
-    "normal": null
+    "normal": 204.1
   },
   {
     "id": "burntisland-sands-5606--321",
@@ -7187,7 +7187,7 @@
     "postcode": "LL72 8NL",
     "lat": 53.3616418,
     "lng": -4.2591607,
-    "normal": null
+    "normal": 27.8
   },
   {
     "id": "benllech-sands-5331--421",
@@ -7257,7 +7257,7 @@
     "postcode": "PO40 9TU",
     "lat": 50.6695681,
     "lng": -1.509305,
-    "normal": null
+    "normal": 198.7
   },
   {
     "id": "barassie-5556--466",
@@ -7317,7 +7317,7 @@
     "postcode": "CF36 5DS",
     "lat": 51.4747077,
     "lng": -3.656029,
-    "normal": null
+    "normal": 212.6
   },
   {
     "id": "carnoustie-beach-5650--270",
@@ -7347,7 +7347,7 @@
     "postcode": "DG5 4QE",
     "lat": 54.8635441,
     "lng": -3.7953151,
-    "normal": null
+    "normal": 248.1
   },
   {
     "id": "half-moon-bay-5404--291",
@@ -7417,7 +7417,7 @@
     "postcode": null,
     "lat": 54.2507133,
     "lng": -5.6907007,
-    "normal": null
+    "normal": 193.3
   },
   {
     "id": "tyrella-beach-5425--574",
@@ -7597,7 +7597,7 @@
     "postcode": "SA45 9PL",
     "lat": 52.2188412,
     "lng": -4.3634631,
-    "normal": null
+    "normal": 26.6
   },
   {
     "id": "worthing-beach-5082--34",
@@ -7737,7 +7737,7 @@
     "postcode": "TS10 5AT",
     "lat": 54.6324968,
     "lng": -1.0977418,
-    "normal": null
+    "normal": 31.1
   },
   {
     "id": "penguin-beach-5118--84",
@@ -7787,7 +7787,7 @@
     "postcode": "TR23 0PR",
     "lat": 49.9456684,
     "lng": -6.3574922,
-    "normal": null
+    "normal": 231.6
   },
   {
     "id": "shakespeare-s-beach-5111-130",
@@ -7837,7 +7837,7 @@
     "postcode": "NE34 7TP",
     "lat": 54.9862021,
     "lng": -1.3851674,
-    "normal": null
+    "normal": 33.2
   },
   {
     "id": "traeth-dyffryn-5213--454",
@@ -7847,7 +7847,7 @@
     "postcode": "SA43 2DB",
     "lat": 52.1345263,
     "lng": -4.5449555,
-    "normal": null
+    "normal": 80.6
   },
   {
     "id": "whitesands-beach-5189--530",
@@ -7877,7 +7877,7 @@
     "postcode": null,
     "lat": 51.4827108,
     "lng": 0.5582577,
-    "normal": null
+    "normal": 0.5
   },
   {
     "id": "st-mary-s-bay-beach-5148-58",
@@ -7937,7 +7937,7 @@
     "postcode": "ME3 0BS",
     "lat": 51.4606608,
     "lng": 0.7187615,
-    "normal": null
+    "normal": 29.3
   },
   {
     "id": "sandbanks-beach-5069--194",
@@ -7987,7 +7987,7 @@
     "postcode": "BH2 5DU",
     "lat": 50.7145416,
     "lng": -1.8817472,
-    "normal": null
+    "normal": 160.7
   },
   {
     "id": "bournemouth-east-beach-5072--186",
@@ -8017,7 +8017,7 @@
     "postcode": "BH6 3PW",
     "lat": 50.7205618,
     "lng": -1.8172165,
-    "normal": null
+    "normal": 186.5
   },
   {
     "id": "southbourne-beach-5072--180",
@@ -8077,7 +8077,7 @@
     "postcode": "TR12 6QP",
     "lat": 50.0498154,
     "lng": -5.064259,
-    "normal": null
+    "normal": 114.6
   },
   {
     "id": "penarvon-cove-5009--514",
@@ -8117,7 +8117,7 @@
     "postcode": "TR21 0NX",
     "lat": 49.9285302,
     "lng": -6.281478,
-    "normal": null
+    "normal": 48
   },
   {
     "id": "church-ope-cove-5054--243",
@@ -8337,7 +8337,7 @@
     "postcode": "PL8 1EU",
     "lat": 50.3099476,
     "lng": -4.0643665,
-    "normal": null
+    "normal": 235.4
   },
   {
     "id": "camas-gaineamhaich-5786--545",
@@ -8427,7 +8427,7 @@
     "postcode": "DG8 9JH",
     "lat": 54.87603,
     "lng": -4.4061388,
-    "normal": null
+    "normal": 88.8
   },
   {
     "id": "baldoon-sands-5484--439",
@@ -8437,7 +8437,7 @@
     "postcode": "DG8 9JH",
     "lat": 54.8410427,
     "lng": -4.3878867,
-    "normal": null
+    "normal": 87.4
   },
   {
     "id": "marine-lake-beach-5491--503",
@@ -8617,7 +8617,7 @@
     "postcode": null,
     "lat": 57.857941,
     "lng": -4.0813429,
-    "normal": null
+    "normal": 179.1
   },
   {
     "id": "dornoch-sands-5787--403",
@@ -8637,7 +8637,7 @@
     "postcode": "PL26 6AX",
     "lat": 50.3234722,
     "lng": -4.7656416,
-    "normal": null
+    "normal": 126.4
   },
   {
     "id": "duporth-beach-5033--476",
@@ -8727,7 +8727,7 @@
     "postcode": "TD15 1BE",
     "lat": 55.7684789,
     "lng": -2.0100511,
-    "normal": null
+    "normal": 86.5
   },
   {
     "id": "davie-s-batt-5576--200",
@@ -8897,7 +8897,7 @@
     "postcode": "TQ6 0RQ",
     "lat": 50.3144736,
     "lng": -3.6153851,
-    "normal": null
+    "normal": 138.7
   },
   {
     "id": "forest-cove-beach-5031--362",
@@ -9287,7 +9287,7 @@
     "postcode": "CO15 1PS",
     "lat": 51.7872711,
     "lng": 1.1563534,
-    "normal": null
+    "normal": 151.7
   },
   {
     "id": "borrow-pit-bay-5181-122",
@@ -9457,7 +9457,7 @@
     "postcode": "CO15 6JR",
     "lat": 51.7930804,
     "lng": 1.1718217,
-    "normal": null
+    "normal": 139.5
   },
   {
     "id": "brooklands-beach-5177-110",
@@ -9517,7 +9517,7 @@
     "postcode": null,
     "lat": 55.8114866,
     "lng": -6.4586377,
-    "normal": null
+    "normal": 276.7
   },
   {
     "id": "traigh-fleisgein-bheag-5582--646",
@@ -9587,7 +9587,7 @@
     "postcode": "PA77 6TP",
     "lat": 56.5198848,
     "lng": -6.7890923,
-    "normal": null
+    "normal": 285.4
   },
   {
     "id": "wildersmouth-beach-5121--412",
@@ -9597,7 +9597,7 @@
     "postcode": "EX34 9BZ",
     "lat": 51.2109985,
     "lng": -4.1218539,
-    "normal": null
+    "normal": 350.2
   },
   {
     "id": "the-beach-5317--106",
@@ -9617,7 +9617,7 @@
     "postcode": "TS24 0QZ",
     "lat": 54.6945825,
     "lng": -1.1773842,
-    "normal": null
+    "normal": 150.7
   },
   {
     "id": "red-haven-5485--384",
@@ -9677,7 +9677,7 @@
     "postcode": "PL34 0BA",
     "lat": 50.6718051,
     "lng": -4.7349559,
-    "normal": null
+    "normal": 36.3
   },
   {
     "id": "tr-igh-na-doirlinn-5714--741",
@@ -9827,7 +9827,7 @@
     "postcode": "TR20 9PD",
     "lat": 50.0996518,
     "lng": -5.421406,
-    "normal": null
+    "normal": 187
   },
   {
     "id": "king-s-cove-5010--542",
@@ -9887,7 +9887,7 @@
     "postcode": "NR32 4PQ",
     "lat": 52.4991825,
     "lng": 1.7559838,
-    "normal": null
+    "normal": 77.7
   },
   {
     "id": "corton-sands-5251-175",
@@ -9897,7 +9897,7 @@
     "postcode": "NR32 5EF",
     "lat": 52.5075557,
     "lng": 1.7524253,
-    "normal": null
+    "normal": 70.6
   },
   {
     "id": "kingston-beach-5083--25",
@@ -10017,7 +10017,7 @@
     "postcode": "LL53 8HR",
     "lat": 52.8055229,
     "lng": -4.6600867,
-    "normal": null
+    "normal": 231.3
   },
   {
     "id": "shingle-beach-5498--176",
@@ -10077,7 +10077,7 @@
     "postcode": null,
     "lat": 57.7433772,
     "lng": -7.076904,
-    "normal": null
+    "normal": 43.1
   },
   {
     "id": "stort-beach-5178-10",
@@ -10227,7 +10227,7 @@
     "postcode": "EX33 1LB",
     "lat": 51.1485043,
     "lng": -4.2220478,
-    "normal": null
+    "normal": 293
   },
   {
     "id": "traeth-harlech-5285--412",
@@ -10277,7 +10277,7 @@
     "postcode": "DD6 8LA",
     "lat": 56.4316101,
     "lng": -2.9631682,
-    "normal": null
+    "normal": 346.7
   },
   {
     "id": "wormit-bay-5642--299",
@@ -10317,7 +10317,7 @@
     "postcode": "LL65 4YG",
     "lat": 53.3364316,
     "lng": -4.5729374,
-    "normal": null
+    "normal": 298.7
   },
   {
     "id": "tr-igh-nam-fuaran-5589--634",
@@ -10497,7 +10497,7 @@
     "postcode": "YO25 8SY",
     "lat": 53.9576377,
     "lng": -0.1869015,
-    "normal": null
+    "normal": 76.3
   },
   {
     "id": "tr-igh-bhalla-5654--679",
@@ -10627,7 +10627,7 @@
     "postcode": null,
     "lat": 56.5022108,
     "lng": -7.0046454,
-    "normal": null
+    "normal": 34
   },
   {
     "id": "withernsea-beach-5373-4",
@@ -10687,7 +10687,7 @@
     "postcode": "LL53 8LP",
     "lat": 52.8543344,
     "lng": -4.716276,
-    "normal": null
+    "normal": 81.5
   },
   {
     "id": "ireland-sands-5026--387",
@@ -10847,7 +10847,7 @@
     "postcode": null,
     "lat": 55.9873168,
     "lng": -3.2759265,
-    "normal": null
+    "normal": 8.8
   },
   {
     "id": "white-park-bay-5524--640",
@@ -10867,7 +10867,7 @@
     "postcode": "BS22 9UP",
     "lat": 51.3758321,
     "lng": -2.9639964,
-    "normal": null
+    "normal": 271
   },
   {
     "id": "orford-beach-5207-152",
@@ -10927,7 +10927,7 @@
     "postcode": "TR7 1FL",
     "lat": 50.4182741,
     "lng": -5.1023226,
-    "normal": null
+    "normal": 294.2
   },
   {
     "id": "trerathick-5048--504",
@@ -11047,7 +11047,7 @@
     "postcode": "PL27 6US",
     "lat": 50.5772195,
     "lng": -4.9199002,
-    "normal": null
+    "normal": 226.7
   },
   {
     "id": "brea-beach-5054--490",
@@ -11057,7 +11057,7 @@
     "postcode": "PL27 6LQ",
     "lat": 50.54308,
     "lng": -4.898528,
-    "normal": null
+    "normal": 128.5
   },
   {
     "id": "tr-igh-bh-n-5635--638",
@@ -11107,7 +11107,7 @@
     "postcode": null,
     "lat": 55.2054847,
     "lng": -6.2284903,
-    "normal": null
+    "normal": 348
   },
   {
     "id": "west-strand-5520--666",
@@ -11127,7 +11127,7 @@
     "postcode": null,
     "lat": 55.1805096,
     "lng": -6.8888701,
-    "normal": null
+    "normal": 15.3
   },
   {
     "id": "south-gut-5107--422",
@@ -11137,7 +11137,7 @@
     "postcode": null,
     "lat": 51.0688461,
     "lng": -4.2222792,
-    "normal": null
+    "normal": 350.8
   },
   {
     "id": "north-bank-5344--311",
@@ -11147,7 +11147,7 @@
     "postcode": "CH46 2QY",
     "lat": 53.4398792,
     "lng": -3.1075807,
-    "normal": null
+    "normal": 12
   },
   {
     "id": "tr-igh-mhealaboist-5823--633",
@@ -11247,7 +11247,7 @@
     "postcode": "HS6 5BY",
     "lat": 57.6461473,
     "lng": -7.396012,
-    "normal": null
+    "normal": 127.5
   },
   {
     "id": "tr-igh-ear-5766--733",
@@ -11257,7 +11257,7 @@
     "postcode": null,
     "lat": 57.6644416,
     "lng": -7.3254771,
-    "normal": null
+    "normal": 121.6
   },
   {
     "id": "tr-igh-nan-gilean-5647--698",
@@ -11287,7 +11287,7 @@
     "postcode": "PA77 6UN",
     "lat": 56.4894134,
     "lng": -6.8614036,
-    "normal": null
+    "normal": 165.3
   },
   {
     "id": "tr-igh-sh-rabaidh-5647--689",
@@ -11327,7 +11327,7 @@
     "postcode": "EH42 1XP",
     "lat": 56.036289,
     "lng": -2.6085308,
-    "normal": null
+    "normal": 78.8
   },
   {
     "id": "seacliff-beach-5605--263",
@@ -11357,7 +11357,7 @@
     "postcode": "DD5 4NH",
     "lat": 56.4765842,
     "lng": -2.8131122,
-    "normal": null
+    "normal": 200.6
   },
   {
     "id": "botany-bay-5139-143",
@@ -11407,7 +11407,7 @@
     "postcode": null,
     "lat": 57.6539935,
     "lng": -3.6871201,
-    "normal": null
+    "normal": 347.4
   },
   {
     "id": "saunton-sands-5109--421",
@@ -11417,7 +11417,7 @@
     "postcode": null,
     "lat": 51.0919909,
     "lng": -4.2118772,
-    "normal": null
+    "normal": 268.6
   },
   {
     "id": "hunstanton-beach-5294-49",
@@ -11457,7 +11457,7 @@
     "postcode": null,
     "lat": 52.9029725,
     "lng": 0.452068,
-    "normal": null
+    "normal": 291.4
   },
   {
     "id": "snettisham-scalp-5287-44",
@@ -11467,7 +11467,7 @@
     "postcode": null,
     "lat": 52.8656021,
     "lng": 0.4388253,
-    "normal": null
+    "normal": 252.6
   },
   {
     "id": "brancaster-beach-5298-65",
@@ -11497,7 +11497,7 @@
     "postcode": null,
     "lat": 52.979727,
     "lng": 0.9524531,
-    "normal": null
+    "normal": 304.7
   },
   {
     "id": "high-sand-5297-93",
@@ -11527,7 +11527,7 @@
     "postcode": null,
     "lat": 56.0416187,
     "lng": -6.248372,
-    "normal": null
+    "normal": 134.2
   },
   {
     "id": "samalman-beach-5683--583",
@@ -11547,7 +11547,7 @@
     "postcode": "TR7 1DY",
     "lat": 50.416974,
     "lng": -5.079402,
-    "normal": null
+    "normal": 36.9
   },
   {
     "id": "roker-beach-5493--136",
@@ -11727,7 +11727,7 @@
     "postcode": "TQ7 3JS",
     "lat": 50.2642062,
     "lng": -3.8617244,
-    "normal": null
+    "normal": 223.4
   },
   {
     "id": "tr-igh-thodhrasdail-5649--698",
@@ -11777,7 +11777,7 @@
     "postcode": null,
     "lat": 57.8707488,
     "lng": -6.9567585,
-    "normal": null
+    "normal": 284.4
   },
   {
     "id": "tr-igh-a-phuirt-5849--623",
@@ -11787,7 +11787,7 @@
     "postcode": "HS2 0XA",
     "lat": 58.4908944,
     "lng": -6.22649,
-    "normal": null
+    "normal": 82.2
   },
   {
     "id": "machrihanish-beach-5545--572",
@@ -11817,7 +11817,7 @@
     "postcode": null,
     "lat": 55.3072988,
     "lng": -5.6815919,
-    "normal": null
+    "normal": 170.5
   },
   {
     "id": "grogport-beach-5564--548",
@@ -11897,7 +11897,7 @@
     "postcode": "HS6 5HP",
     "lat": 57.5089222,
     "lng": -7.2458741,
-    "normal": null
+    "normal": 28.2
   },
   {
     "id": "king-s-walk-5058--347",
@@ -11967,7 +11967,7 @@
     "postcode": "BH13 7PR",
     "lat": 50.6962669,
     "lng": -1.926913,
-    "normal": null
+    "normal": 133.5
   },
   {
     "id": "canford-cliffs-beach-5070--192",
@@ -11978,5 +11978,1255 @@
     "lat": 50.7016559,
     "lng": -1.9180552,
     "normal": 139.2
+  },
+  {
+    "id": "morfa-abererch-5290--435",
+    "name": "Morfa Abererch",
+    "city": "Pwllheli",
+    "county": "Gwynedd",
+    "postcode": null,
+    "lat": 52.896303,
+    "lng": -4.3529775,
+    "normal": 189.4
+  },
+  {
+    "id": "morfa-harlech-5288--414",
+    "name": "Morfa Harlech",
+    "city": "Harlech",
+    "county": "Gwynedd",
+    "postcode": null,
+    "lat": 52.8807688,
+    "lng": -4.1441875,
+    "normal": 247.4
+  },
+  {
+    "id": "holkham-naturist-beach-5298-79",
+    "name": "Holkham Naturist Beach",
+    "city": "North Norfolk",
+    "county": "Norfolk",
+    "postcode": null,
+    "lat": 52.9773885,
+    "lng": 0.7887908,
+    "normal": 11.6
+  },
+  {
+    "id": "tregardock-5062--477",
+    "name": "Tregardock",
+    "city": "Treligga",
+    "county": "Cornwall",
+    "postcode": "PL33 9EB",
+    "lat": 50.6240515,
+    "lng": -4.770595,
+    "normal": 242
+  },
+  {
+    "id": "salmon-beach-5786--563",
+    "name": "Salmon Beach",
+    "city": "Mellon Charles",
+    "county": "Highland",
+    "postcode": "IV22 2HU",
+    "lat": 57.8564082,
+    "lng": -5.6317866,
+    "normal": 224.5
+  },
+  {
+    "id": "long-sands-5036--352",
+    "name": "Long Sands",
+    "city": "South Hams",
+    "county": "Devon",
+    "postcode": "TQ6 0EF",
+    "lat": 50.3620607,
+    "lng": -3.5195213,
+    "normal": 105
+  },
+  {
+    "id": "horse-isles-5485--381",
+    "name": "Horse Isles",
+    "city": "Kippford",
+    "county": "Dumfries and Galloway",
+    "postcode": "DG5 4LJ",
+    "lat": 54.8531066,
+    "lng": -3.8128726,
+    "normal": 8
+  },
+  {
+    "id": "white-port-5485--381",
+    "name": "White Port",
+    "city": "Rockcliffe",
+    "county": "Dumfries and Galloway",
+    "postcode": "DG5 4QQ",
+    "lat": 54.8478935,
+    "lng": -3.806709,
+    "normal": 182.6
+  },
+  {
+    "id": "denge-beach-5092-95",
+    "name": "Denge Beach",
+    "city": "Folkestone and Hythe District",
+    "county": "Kent",
+    "postcode": null,
+    "lat": 50.9228831,
+    "lng": 0.9493419,
+    "normal": 184.5
+  },
+  {
+    "id": "shellbeach-5138-94",
+    "name": "Shellbeach",
+    "city": "Borough of Swale",
+    "county": "Kent",
+    "postcode": "ME12 4RL",
+    "lat": 51.3819149,
+    "lng": 0.9434796,
+    "normal": 62.5
+  },
+  {
+    "id": "pentireglaze-haven-5058--492",
+    "name": "Pentireglaze Haven",
+    "city": "New Polzeath",
+    "county": "Cornwall",
+    "postcode": "PL27 6US",
+    "lat": 50.5799217,
+    "lng": -4.9182391,
+    "normal": 350.4
+  },
+  {
+    "id": "pentire-haven-5058--492",
+    "name": "Pentire Haven",
+    "city": "New Polzeath",
+    "county": "Cornwall",
+    "postcode": "PL27 6US",
+    "lat": 50.5804659,
+    "lng": -4.9209987,
+    "normal": 283.6
+  },
+  {
+    "id": "long-beach-5703--567",
+    "name": "Long Beach",
+    "city": "Inverie",
+    "county": "Highland",
+    "postcode": null,
+    "lat": 57.0292841,
+    "lng": -5.670214,
+    "normal": 269.4
+  },
+  {
+    "id": "heddon-s-mouth-5123--393",
+    "name": "Heddon's Mouth",
+    "city": "North Devon",
+    "county": "Devon",
+    "postcode": "EX31 4PY",
+    "lat": 51.2302702,
+    "lng": -3.929052,
+    "normal": 358.5
+  },
+  {
+    "id": "budleigh-salterton-5062--335",
+    "name": "Budleigh Salterton",
+    "city": "East Devon",
+    "county": "Devon",
+    "postcode": "EX9 6DG",
+    "lat": 50.6205262,
+    "lng": -3.3488559,
+    "normal": 151.1
+  },
+  {
+    "id": "holkham-naturist-beach-5297-81",
+    "name": "Holkham Naturist Beach",
+    "city": "North Norfolk",
+    "county": "Norfolk",
+    "postcode": "NR23 1RJ",
+    "lat": 52.9718969,
+    "lng": 0.8062663,
+    "normal": 296.6
+  },
+  {
+    "id": "portslade-5083--22",
+    "name": "Portslade",
+    "city": "Adur",
+    "county": "West Sussex",
+    "postcode": "BN41 1AZ",
+    "lat": 50.8281073,
+    "lng": -0.2222487,
+    "normal": 191
+  },
+  {
+    "id": "trimley-shores-5199-128",
+    "name": "Trimley Shores",
+    "city": "East Suffolk",
+    "county": "Suffolk",
+    "postcode": "IP11 0SH",
+    "lat": 51.9894738,
+    "lng": 1.2831373,
+    "normal": 278.7
+  },
+  {
+    "id": "giggen-cove-5033--451",
+    "name": "Giggen Cove",
+    "city": "Porthallow",
+    "county": "Cornwall",
+    "postcode": "PL13 2FJ",
+    "lat": 50.3312413,
+    "lng": -4.5072058,
+    "normal": 221.8
+  },
+  {
+    "id": "long-hills-5297-99",
+    "name": "Long Hills",
+    "city": "North Norfolk",
+    "county": "Norfolk",
+    "postcode": "NR25 7DJ",
+    "lat": 52.9746378,
+    "lng": 0.9862553,
+    "normal": 120.4
+  },
+  {
+    "id": "crook-ness-5433--42",
+    "name": "Crook Ness",
+    "city": "Burniston",
+    "county": "North Yorkshire",
+    "postcode": null,
+    "lat": 54.3263288,
+    "lng": -0.4216832,
+    "normal": 116.9
+  },
+  {
+    "id": "lantic-bay-5033--460",
+    "name": "Lantic Bay",
+    "city": "Polruan",
+    "county": "Cornwall",
+    "postcode": "PL23 1QL",
+    "lat": 50.3283243,
+    "lng": -4.6045252,
+    "normal": 186.4
+  },
+  {
+    "id": "ripple-sand-5023--377",
+    "name": "Ripple Sand",
+    "city": "South Hams",
+    "county": "Devon",
+    "postcode": "TQ8 8JU",
+    "lat": 50.2262845,
+    "lng": -3.7736261,
+    "normal": 204.3
+  },
+  {
+    "id": "cladach-cr-iain-dheirg-5912--584",
+    "name": "Cladach Crò Iain Dheirg",
+    "city": null,
+    "county": "Western Isles",
+    "postcode": null,
+    "lat": 59.1197962,
+    "lng": -5.8378681,
+    "normal": 314.5
+  },
+  {
+    "id": "leac-na-sgr-b-5912--583",
+    "name": "Leac na Sgròb",
+    "city": null,
+    "county": "Western Isles",
+    "postcode": null,
+    "lat": 59.1193033,
+    "lng": -5.831299,
+    "normal": 153.4
+  },
+  {
+    "id": "sandy-cove-old-picnic-spot-5577--414",
+    "name": "Sandy Cove (Old Picnic Spot)",
+    "city": "East Kilbride",
+    "county": "South Lanarkshire",
+    "postcode": "G74 2LQ",
+    "lat": 55.7668907,
+    "lng": -4.1394981,
+    "normal": null
+  },
+  {
+    "id": "sandy-bays-5577--414",
+    "name": "Sandy Bays",
+    "city": "East Kilbride",
+    "county": "South Lanarkshire",
+    "postcode": "G74 2LQ",
+    "lat": 55.7663369,
+    "lng": -4.1406622,
+    "normal": null
+  },
+  {
+    "id": "taylor-s-bank-5353--312",
+    "name": "Taylor's Bank",
+    "city": "Formby",
+    "county": "Liverpool City Region",
+    "postcode": null,
+    "lat": 53.5319469,
+    "lng": -3.1150579,
+    "normal": 228.5
+  },
+  {
+    "id": "abbot-s-cliff-beach-5110-125",
+    "name": "Abbot's Cliff Beach",
+    "city": "Dover",
+    "county": "Kent",
+    "postcode": "CT18 7HZ",
+    "lat": 51.1004641,
+    "lng": 1.2492342,
+    "normal": 178.5
+  },
+  {
+    "id": "traeth-y-gaerglwyd-5217--446",
+    "name": "Traeth y Gaerglwyd",
+    "city": "Llangrannog",
+    "county": "Ceredigion",
+    "postcode": "SA44 6AX",
+    "lat": 52.1674696,
+    "lng": -4.4553545,
+    "normal": 355.5
+  },
+  {
+    "id": "southsea-nudist-beach-5079--104",
+    "name": "Southsea nudist beach",
+    "city": "Portsmouth",
+    "county": null,
+    "postcode": "PO4 9UE",
+    "lat": 50.7861817,
+    "lng": -1.0378028,
+    "normal": 166.6
+  },
+  {
+    "id": "kilve-beach-5119--323",
+    "name": "Kilve Beach",
+    "city": "Kilve",
+    "county": "Somerset",
+    "postcode": "TA5 1EF",
+    "lat": 51.1915139,
+    "lng": -3.2253928,
+    "normal": 339
+  },
+  {
+    "id": "avon-beach-5073--173",
+    "name": "Avon Beach",
+    "city": "Highcliffe-on-Sea",
+    "county": "Bournemouth, Christchurch and Poole",
+    "postcode": "BH23 4DX",
+    "lat": 50.7282544,
+    "lng": -1.7348827,
+    "normal": 129.1
+  },
+  {
+    "id": "porthsychan-bay-5203--505",
+    "name": "Porthsychan Bay",
+    "city": null,
+    "county": "Pembrokeshire",
+    "postcode": "SA64 0JL",
+    "lat": 52.0266134,
+    "lng": -5.0533238,
+    "normal": 119.7
+  },
+  {
+    "id": "pwlluog-bay-5203--506",
+    "name": "Pwlluog Bay",
+    "city": null,
+    "county": "Pembrokeshire",
+    "postcode": "SA64 0JL",
+    "lat": 52.0284745,
+    "lng": -5.0571817,
+    "normal": 163.7
+  },
+  {
+    "id": "pwll-bach-bay-5203--506",
+    "name": "Pwll Bach Bay",
+    "city": null,
+    "county": "Pembrokeshire",
+    "postcode": "SA64 0JL",
+    "lat": 52.0304328,
+    "lng": -5.0594596,
+    "normal": 81.6
+  },
+  {
+    "id": "tr-igh-n-staig-5588--635",
+    "name": "Tràigh Nòstaig",
+    "city": null,
+    "county": "Argyll and Bute",
+    "postcode": null,
+    "lat": 55.8808717,
+    "lng": -6.34991,
+    "normal": 328.6
+  },
+  {
+    "id": "tr-igh-nan-cisteachan-5588--633",
+    "name": "Tràigh nan Cisteachan",
+    "city": null,
+    "county": "Argyll and Bute",
+    "postcode": null,
+    "lat": 55.8796928,
+    "lng": -6.3268025,
+    "normal": 106.3
+  },
+  {
+    "id": "south-beach-5064--194",
+    "name": "South Beach",
+    "city": "Studland",
+    "county": "Dorset",
+    "postcode": "BH19 3AL",
+    "lat": 50.6426766,
+    "lng": -1.944112,
+    "normal": 49.7
+  },
+  {
+    "id": "pondfield-5062--218",
+    "name": "Pondfield",
+    "city": "East Lulworth",
+    "county": "Dorset",
+    "postcode": null,
+    "lat": 50.6155315,
+    "lng": -2.1836774,
+    "normal": 244
+  },
+  {
+    "id": "branscombe-beach-5069--312",
+    "name": "Branscombe Beach",
+    "city": "East Devon",
+    "county": "Devon",
+    "postcode": "EX12 3DP",
+    "lat": 50.6870226,
+    "lng": -3.1237418,
+    "normal": 180.3
+  },
+  {
+    "id": "fossil-beach-5163--264",
+    "name": "Fossil Beach",
+    "city": "Forest of Dean",
+    "county": "Gloucestershire",
+    "postcode": "NP16 7BE",
+    "lat": 51.6347564,
+    "lng": -2.6425687,
+    "normal": 135.2
+  },
+  {
+    "id": "fairlight-glen-naturist-beach-5087-63",
+    "name": "Fairlight Glen Naturist Beach",
+    "city": "Hastings",
+    "county": "East Sussex",
+    "postcode": "TN35 5DR",
+    "lat": 50.8652127,
+    "lng": 0.631661,
+    "normal": 163
+  },
+  {
+    "id": "sand-geo-5909--335",
+    "name": "Sand Geo",
+    "city": "Birsay",
+    "county": "Orkney Islands",
+    "postcode": "KW17 2ND",
+    "lat": 59.0910459,
+    "lng": -3.3490292,
+    "normal": 327.7
+  },
+  {
+    "id": "mallows-bay-5407--287",
+    "name": "Mallows Bay",
+    "city": "Lancaster",
+    "county": "Lancashire",
+    "postcode": "LA4 5AW",
+    "lat": 54.0740245,
+    "lng": -2.8674638,
+    "normal": 324.7
+  },
+  {
+    "id": "long-ayre-5881--298",
+    "name": "Long Ayre",
+    "city": "St Margaret's Hope",
+    "county": "Orkney Islands",
+    "postcode": "KW17 2TW",
+    "lat": 58.8130334,
+    "lng": -2.9838445,
+    "normal": 262.9
+  },
+  {
+    "id": "saltburn-sands-5459--97",
+    "name": "Saltburn Sands",
+    "city": "Saltburn by the Sea",
+    "county": "Redcar and Cleveland",
+    "postcode": "TS12 1EH",
+    "lat": 54.5876079,
+    "lng": -0.9729074,
+    "normal": 18.6
+  },
+  {
+    "id": "ayre-of-banks-5881--300",
+    "name": "Ayre of Banks",
+    "city": "Herston",
+    "county": "Orkney Islands",
+    "postcode": "KW17 2RH",
+    "lat": 58.8071095,
+    "lng": -2.9986836,
+    "normal": 61.8
+  },
+  {
+    "id": "the-warren-5109-120",
+    "name": "The Warren",
+    "city": "Folkestone and Hythe District",
+    "county": "Kent",
+    "postcode": "CT19 6PR",
+    "lat": 51.0896088,
+    "lng": 1.2033192,
+    "normal": 131.1
+  },
+  {
+    "id": "sand-of-cornquoy-5888--283",
+    "name": "Sand of Cornquoy",
+    "city": null,
+    "county": "Orkney Islands",
+    "postcode": null,
+    "lat": 58.8803179,
+    "lng": -2.832701,
+    "normal": 258.8
+  },
+  {
+    "id": "porth-dre-fadog-5334--457",
+    "name": "Porth Dre-fadog",
+    "city": "Llanfaethlu",
+    "county": "Isle of Anglesey",
+    "postcode": "LL65 4PF",
+    "lat": 53.3443589,
+    "lng": -4.5678678,
+    "normal": 247.4
+  },
+  {
+    "id": "porth-trwyn-5336--456",
+    "name": "Porth Trwyn",
+    "city": "Llanfaethlu",
+    "county": "Isle of Anglesey",
+    "postcode": "LL65 4HD",
+    "lat": 53.3593116,
+    "lng": -4.5619526,
+    "normal": 290.4
+  },
+  {
+    "id": "porth-y-cychod-5337--456",
+    "name": "Porth y Cychod",
+    "city": "Porth Swtan",
+    "county": "Isle of Anglesey",
+    "postcode": "LL65 4ET",
+    "lat": 53.3718993,
+    "lng": -4.5572845,
+    "normal": 1.1
+  },
+  {
+    "id": "porth-tyddyn-uchaf-5337--456",
+    "name": "Porth Tyddyn-uchaf",
+    "city": "Porth Swtan",
+    "county": "Isle of Anglesey",
+    "postcode": "LL65 4HA",
+    "lat": 53.3689547,
+    "lng": -4.5579616,
+    "normal": 277.8
+  },
+  {
+    "id": "sands-of-green-5915--276",
+    "name": "Sands of Green",
+    "city": "Backaland",
+    "county": "Orkney Islands",
+    "postcode": "KW17 2AA",
+    "lat": 59.145352,
+    "lng": -2.7561449,
+    "normal": 175.2
+  },
+  {
+    "id": "cladach-m-r-5764--750",
+    "name": "Cladach Mòr",
+    "city": "Scolpaig",
+    "county": "Western Isles",
+    "postcode": "HS6 5DH",
+    "lat": 57.6358995,
+    "lng": -7.4996104,
+    "normal": 265.1
+  },
+  {
+    "id": "shell-beach-5865--305",
+    "name": "Shell Beach",
+    "city": "John o' Groats",
+    "county": "Highland",
+    "postcode": null,
+    "lat": 58.6466046,
+    "lng": -3.0461508,
+    "normal": 8.9
+  },
+  {
+    "id": "tr-igh-an-t-sean-bhaile-5805--543",
+    "name": "Tràigh an t-Sean Bhaile",
+    "city": "Altandhu",
+    "county": null,
+    "postcode": "IV26 2YR",
+    "lat": 58.0469882,
+    "lng": -5.4333023,
+    "normal": 350.9
+  },
+  {
+    "id": "caerfai-beach-5187--525",
+    "name": "Caerfai Beach",
+    "city": "St Davids",
+    "county": "Pembrokeshire",
+    "postcode": "SA62 6QT",
+    "lat": 51.8724748,
+    "lng": -5.2540078,
+    "normal": 265.7
+  },
+  {
+    "id": "cilborth-beach-5216--447",
+    "name": "Cilborth Beach",
+    "city": "Llangrannog",
+    "county": "Ceredigion",
+    "postcode": "SA44 6SE",
+    "lat": 52.1619103,
+    "lng": -4.4705114,
+    "normal": 301.4
+  },
+  {
+    "id": "sandy-mouth-beach-5086--456",
+    "name": "Sandy Mouth Beach",
+    "city": "Coombe",
+    "county": "Cornwall",
+    "postcode": "EX23 9JN",
+    "lat": 50.8614311,
+    "lng": -4.5568217,
+    "normal": 256.5
+  },
+  {
+    "id": "northcott-mouth-beach-5085--456",
+    "name": "Northcott Mouth beach",
+    "city": "Bude",
+    "county": "Cornwall",
+    "postcode": "EX23 9EE",
+    "lat": 50.8482639,
+    "lng": -4.555924,
+    "normal": 273.6
+  },
+  {
+    "id": "wren-beach-5088--456",
+    "name": "Wren Beach",
+    "city": "Coombe",
+    "county": "Cornwall",
+    "postcode": "EX23 9JN",
+    "lat": 50.8811503,
+    "lng": -4.5614706,
+    "normal": 283.4
+  },
+  {
+    "id": "holacombe-beach-5089--456",
+    "name": "Holacombe Beach",
+    "city": "Coombe",
+    "county": "Cornwall",
+    "postcode": "EX23 9JN",
+    "lat": 50.8880454,
+    "lng": -4.5631038,
+    "normal": 296.8
+  },
+  {
+    "id": "rane-beach-5089--456",
+    "name": "Rane Beach",
+    "city": "Coombe",
+    "county": "Cornwall",
+    "postcode": "EX23 9JN",
+    "lat": 50.8899878,
+    "lng": -4.5629911,
+    "normal": 250.7
+  },
+  {
+    "id": "stanbury-beach-5089--456",
+    "name": "Stanbury Beach",
+    "city": "Shop",
+    "county": "Cornwall",
+    "postcode": "EX23 9JH",
+    "lat": 50.8917186,
+    "lng": -4.5631715,
+    "normal": 339
+  },
+  {
+    "id": "caunter-beach-5090--456",
+    "name": "Caunter Beach",
+    "city": "Shop",
+    "county": "Cornwall",
+    "postcode": "EX23 9JH",
+    "lat": 50.8960673,
+    "lng": -4.5639784,
+    "normal": 242.4
+  },
+  {
+    "id": "cotton-beach-5091--456",
+    "name": "Cotton Beach",
+    "city": "Shop",
+    "county": "Cornwall",
+    "postcode": "EX23 9JH",
+    "lat": 50.9087798,
+    "lng": -4.5638216,
+    "normal": 268
+  },
+  {
+    "id": "greenway-beach-5090--456",
+    "name": "Greenway Beach",
+    "city": "Shop",
+    "county": "Cornwall",
+    "postcode": "EX23 9JH",
+    "lat": 50.9005323,
+    "lng": -4.5642561,
+    "normal": 280.2
+  },
+  {
+    "id": "vinegar-cove-5084--456",
+    "name": "Vinegar Cove",
+    "city": "Bude",
+    "county": "Cornwall",
+    "postcode": "EX23 9EE",
+    "lat": 50.8441655,
+    "lng": -4.5565557,
+    "normal": 188.3
+  },
+  {
+    "id": "pearce-s-cove-5084--456",
+    "name": "Pearce's Cove",
+    "city": "Bude",
+    "county": "Cornwall",
+    "postcode": "EX23 9EE",
+    "lat": 50.8436315,
+    "lng": -4.5566492,
+    "normal": 314.4
+  },
+  {
+    "id": "furzy-cove-5084--456",
+    "name": "Furzy Cove",
+    "city": "Bude",
+    "county": "Cornwall",
+    "postcode": "EX23 9EE",
+    "lat": 50.8423096,
+    "lng": -4.5569518,
+    "normal": 319.2
+  },
+  {
+    "id": "maer-high-cliff-beach-5084--456",
+    "name": "Maer High Cliff Beach",
+    "city": "Bude",
+    "county": "Cornwall",
+    "postcode": "EX23 9EE",
+    "lat": 50.8408323,
+    "lng": -4.5556494,
+    "normal": 266.4
+  },
+  {
+    "id": "maer-low-cliff-beach-5084--456",
+    "name": "Maer Low Cliff beach",
+    "city": "Bude",
+    "county": "Cornwall",
+    "postcode": "EX23 8NE",
+    "lat": 50.8384906,
+    "lng": -4.5562845,
+    "normal": 268.2
+  },
+  {
+    "id": "first-cove-5084--456",
+    "name": "First Cove",
+    "city": "Bude",
+    "county": "Cornwall",
+    "postcode": "EX23 8NE",
+    "lat": 50.8371535,
+    "lng": -4.5555715,
+    "normal": 282.9
+  },
+  {
+    "id": "compass-cove-5083--456",
+    "name": "Compass Cove",
+    "city": "Bude",
+    "county": "Cornwall",
+    "postcode": "EX23 8LH",
+    "lat": 50.8279119,
+    "lng": -4.5567963,
+    "normal": 257.3
+  },
+  {
+    "id": "warren-long-beach-5086--456",
+    "name": "Warren Long Beach",
+    "city": "Coombe",
+    "county": "Cornwall",
+    "postcode": "EX23 9JN",
+    "lat": 50.8636711,
+    "lng": -4.5583516,
+    "normal": 305.7
+  },
+  {
+    "id": "eliza-beach-5087--456",
+    "name": "Eliza Beach",
+    "city": "Coombe",
+    "county": "Cornwall",
+    "postcode": "EX23 9JN",
+    "lat": 50.8670092,
+    "lng": -4.5588397,
+    "normal": 300.5
+  },
+  {
+    "id": "warren-gutter-beach-5087--456",
+    "name": "Warren Gutter Beach",
+    "city": "Coombe",
+    "county": "Cornwall",
+    "postcode": "EX23 9JN",
+    "lat": 50.8708172,
+    "lng": -4.5602593,
+    "normal": 238.7
+  },
+  {
+    "id": "yoel-mouth-5092--456",
+    "name": "Yoel Mouth",
+    "city": null,
+    "county": "Cornwall",
+    "postcode": null,
+    "lat": 50.9189616,
+    "lng": -4.5575205,
+    "normal": 289.5
+  },
+  {
+    "id": "tramberly-cove-5068--473",
+    "name": "Tramberly Cove",
+    "city": "Tintagel",
+    "county": "Cornwall",
+    "postcode": "PL34 0BG",
+    "lat": 50.6798689,
+    "lng": -4.7281664,
+    "normal": 298.3
+  },
+  {
+    "id": "castle-beach-5170--516",
+    "name": "Castle Beach",
+    "city": "Dale",
+    "county": "Pembrokeshire",
+    "postcode": "SA62 3RD",
+    "lat": 51.7016439,
+    "lng": -5.158139,
+    "normal": 121
+  },
+  {
+    "id": "ness-5909--281",
+    "name": "Ness",
+    "city": null,
+    "county": "Orkney Islands",
+    "postcode": null,
+    "lat": 59.0861333,
+    "lng": -2.8112346,
+    "normal": 329.5
+  },
+  {
+    "id": "inganess-beach-5896--291",
+    "name": "Inganess beach",
+    "city": "Kirkwall",
+    "county": "Orkney Islands",
+    "postcode": "KW15 1SR",
+    "lat": 58.9628114,
+    "lng": -2.9144499,
+    "normal": 35.9
+  },
+  {
+    "id": "touch-down-5157--398",
+    "name": "Touch Down",
+    "city": "Swansea",
+    "county": "Swansea",
+    "postcode": "SA3 4EN",
+    "lat": 51.5685219,
+    "lng": -3.976788,
+    "normal": 89.1
+  },
+  {
+    "id": "coral-beach-plockton-5733--568",
+    "name": "Coral Beach - Plockton",
+    "city": "Plockton",
+    "county": "Highland",
+    "postcode": "IV52 8TX",
+    "lat": 57.3293987,
+    "lng": -5.6814942,
+    "normal": 338.9
+  },
+  {
+    "id": "hendra-beach-5010--538",
+    "name": "Hendra Beach",
+    "city": "Praa Sands",
+    "county": "Cornwall",
+    "postcode": "TR13 9TX",
+    "lat": 50.09879,
+    "lng": -5.3781736,
+    "normal": 199.2
+  },
+  {
+    "id": "arthur-s-beach-sunny-cove-5013--508",
+    "name": "Arthur's Beach (Sunny Cove)",
+    "city": "Falmouth",
+    "county": "Cornwall",
+    "postcode": "TR11 5JJ",
+    "lat": 50.132726,
+    "lng": -5.0793335,
+    "normal": 139.3
+  },
+  {
+    "id": "car-park-beach-5358--232",
+    "name": "Car Park Beach",
+    "city": "Bury",
+    "county": "Greater Manchester",
+    "postcode": "BL8 2EN",
+    "lat": 53.5835387,
+    "lng": -2.31878,
+    "normal": null
+  },
+  {
+    "id": "creek-beach-south-5358--232",
+    "name": "Creek Beach South",
+    "city": "Bury",
+    "county": "Greater Manchester",
+    "postcode": "BL8 2DF",
+    "lat": 53.5815809,
+    "lng": -2.3216485,
+    "normal": null
+  },
+  {
+    "id": "stone-beach-5358--232",
+    "name": "Stone Beach",
+    "city": "Bury",
+    "county": "Greater Manchester",
+    "postcode": "M26 4FN",
+    "lat": 53.5799594,
+    "lng": -2.3171818,
+    "normal": null
+  },
+  {
+    "id": "creek-beach-north-5358--232",
+    "name": "Creek  Beach North",
+    "city": "Bury",
+    "county": "Greater Manchester",
+    "postcode": "BL8 2EN",
+    "lat": 53.5819243,
+    "lng": -2.321559,
+    "normal": null
+  },
+  {
+    "id": "wader-point-5358--232",
+    "name": "Wader Point",
+    "city": "Bury",
+    "county": "Greater Manchester",
+    "postcode": "BL8 2DF",
+    "lat": 53.5784113,
+    "lng": -2.3222819,
+    "normal": null
+  },
+  {
+    "id": "queen-s-bay-loch-staosnaig-5606--619",
+    "name": "Queen's Bay / Loch Staosnaig",
+    "city": "Scalasaig",
+    "county": "Argyll and Bute",
+    "postcode": "PA61 7YP",
+    "lat": 56.0612648,
+    "lng": -6.1922563,
+    "normal": 69.6
+  },
+  {
+    "id": "westpark-beach-5085--456",
+    "name": "Westpark Beach",
+    "city": "Bude",
+    "county": "Cornwall",
+    "postcode": "EX23 9EE",
+    "lat": 50.8526296,
+    "lng": -4.5571098,
+    "normal": 269.8
+  },
+  {
+    "id": "mill-quarter-beach-5432--554",
+    "name": "Mill Quarter Beach",
+    "city": "Kilclief",
+    "county": null,
+    "postcode": null,
+    "lat": 54.3199397,
+    "lng": -5.5410304,
+    "normal": 67.9
+  },
+  {
+    "id": "abcc-meeting-point-5161--394",
+    "name": "ABCC Meeting Point",
+    "city": "Swansea",
+    "county": "Swansea",
+    "postcode": "SA1 1UB",
+    "lat": 51.6142301,
+    "lng": -3.9365165,
+    "normal": 181
+  },
+  {
+    "id": "oitir-an-leisgein-5710--730",
+    "name": "Oitir an Leisgein",
+    "city": "Rhuban",
+    "county": "Western Isles",
+    "postcode": "HS8 5JR",
+    "lat": 57.0973503,
+    "lng": -7.3008783,
+    "normal": 127.6
+  },
+  {
+    "id": "jutty-5056--493",
+    "name": "Jutty",
+    "city": "Trebetherick",
+    "county": "Cornwall",
+    "postcode": "PL27 6FG",
+    "lat": 50.563242,
+    "lng": -4.9308621,
+    "normal": 244.5
+  },
+  {
+    "id": "sker-beach-5153--376",
+    "name": "Sker Beach",
+    "city": "Kenfig",
+    "county": "Bridgend County Borough",
+    "postcode": null,
+    "lat": 51.525467,
+    "lng": -3.7578667,
+    "normal": 251
+  },
+  {
+    "id": "morfa-beach-5154--376",
+    "name": "Morfa Beach",
+    "city": "Port Talbot",
+    "county": "Neath Port Talbot",
+    "postcode": "SA13 2NG",
+    "lat": 51.5372475,
+    "lng": -3.7619452,
+    "normal": 280.8
+  },
+  {
+    "id": "gilpin-harbour-5429--555",
+    "name": "Gilpin Harbour",
+    "city": "Ballyhornan",
+    "county": null,
+    "postcode": "BT30 7PQ",
+    "lat": 54.2921281,
+    "lng": -5.5482622,
+    "normal": 344.2
+  },
+  {
+    "id": "corton-beach-5251-175",
+    "name": "Corton Beach",
+    "city": "East Suffolk",
+    "county": "Suffolk",
+    "postcode": "NR32 5EF",
+    "lat": 52.5061552,
+    "lng": 1.7534145,
+    "normal": 67.3
+  },
+  {
+    "id": "port-ceit-5644--693",
+    "name": "Port Ceit",
+    "city": "Balephuil",
+    "county": "Argyll and Bute",
+    "postcode": null,
+    "lat": 56.44312,
+    "lng": -6.9270283,
+    "normal": 204.7
+  },
+  {
+    "id": "hestan-rack-5484--381",
+    "name": "Hestan Rack",
+    "city": "Rockcliffe",
+    "county": "Dumfries and Galloway",
+    "postcode": "DG5 4QE",
+    "lat": 54.8385083,
+    "lng": -3.8098138,
+    "normal": 268.6
+  },
+  {
+    "id": "exmouth-beach-5062--342",
+    "name": "Exmouth Beach",
+    "city": "East Devon",
+    "county": "Devon",
+    "postcode": "EX8 2AZ",
+    "lat": 50.6155605,
+    "lng": -3.4151756,
+    "normal": 205.3
+  },
+  {
+    "id": "dawlish-town-beach-5058--347",
+    "name": "Dawlish Town Beach",
+    "city": "Teignbridge",
+    "county": "Devon",
+    "postcode": "EX7 9PH",
+    "lat": 50.5794744,
+    "lng": -3.4652738,
+    "normal": 126.3
+  },
+  {
+    "id": "paignton-beach-5044--356",
+    "name": "Paignton Beach",
+    "city": "Paignton",
+    "county": "Torbay",
+    "postcode": "TQ3 2NJ",
+    "lat": 50.4400382,
+    "lng": -3.5575811,
+    "normal": 100.9
+  },
+  {
+    "id": "hardy-s-bay-5146--364",
+    "name": "Hardy’s Bay",
+    "city": "Ogmore-by-Sea",
+    "county": "Vale of Glamorgan",
+    "postcode": "CF32 0PG",
+    "lat": 51.460876,
+    "lng": -3.6378164,
+    "normal": 268.5
+  },
+  {
+    "id": "black-beach-5653--623",
+    "name": "Black Beach",
+    "city": "Burg",
+    "county": "Argyll and Bute",
+    "postcode": null,
+    "lat": 56.5294098,
+    "lng": -6.2275079,
+    "normal": 227.6
+  },
+  {
+    "id": "weymarks-beach-5175-92",
+    "name": "Weymarks Beach",
+    "city": "Maldon",
+    "county": "Essex",
+    "postcode": "CM0 7QF",
+    "lat": 51.7483547,
+    "lng": 0.9227264,
+    "normal": 8.2
+  },
+  {
+    "id": "library-5252--146",
+    "name": "library",
+    "city": "Nuneaton and Bedworth",
+    "county": "Warwickshire",
+    "postcode": "CV11 4DR",
+    "lat": 52.5221,
+    "lng": -1.4641601,
+    "normal": null
+  },
+  {
+    "id": "cata-sand-5925--252",
+    "name": "Cata Sand",
+    "city": "Lady Village",
+    "county": "Orkney Islands",
+    "postcode": null,
+    "lat": 59.2523963,
+    "lng": -2.5157265,
+    "normal": 356.4
+  },
+  {
+    "id": "briw-cerrig-5276--478",
+    "name": "Briw Cerrig",
+    "city": null,
+    "county": "Gwynedd",
+    "postcode": "LL53 8DE",
+    "lat": 52.7611472,
+    "lng": -4.7797674,
+    "normal": 92.8
+  },
+  {
+    "id": "beach-at-doncaster-lakeside-5351--111",
+    "name": "Beach at Doncaster Lakeside",
+    "city": "Doncaster",
+    "county": "South Yorkshire",
+    "postcode": "DN4 5NQ",
+    "lat": 53.5110003,
+    "lng": -1.1052743,
+    "normal": 189.2
+  },
+  {
+    "id": "cladach-melvaig-5781--581",
+    "name": "Cladach Melvaig",
+    "city": "Melvaig",
+    "county": "Highland",
+    "postcode": "IV21 2EA",
+    "lat": 57.8112654,
+    "lng": -5.8094386,
+    "normal": 257.4
+  },
+  {
+    "id": "cladach-an-uillt-ghr-sean-5781--581",
+    "name": "Cladach an Uillt Ghrìsean",
+    "city": "Aultgrishan",
+    "county": "Highland",
+    "postcode": "IV21 2DZ",
+    "lat": 57.8051344,
+    "lng": -5.8073961,
+    "normal": 271.7
+  },
+  {
+    "id": "newtownabbey-bay-hazelbank-beach-5466--590",
+    "name": "Newtownabbey Bay (Hazelbank) Beach",
+    "city": "Newtownabbey",
+    "county": "County Antrim",
+    "postcode": "BT37 9JQ",
+    "lat": 54.6629641,
+    "lng": -5.8989361,
+    "normal": 97.3
+  },
+  {
+    "id": "tr-igh-ghrianal-5649--698",
+    "name": "Tràigh Ghrianal",
+    "city": "Balevullin",
+    "county": "Argyll and Bute",
+    "postcode": "PA77 6XQ",
+    "lat": 56.4896895,
+    "lng": -6.9754984,
+    "normal": 221.2
+  },
+  {
+    "id": "y-wig-5280--469",
+    "name": "Y Wig",
+    "city": "Aberdaron",
+    "county": "Gwynedd",
+    "postcode": "LL53 8BL",
+    "lat": 52.7995434,
+    "lng": -4.6930592,
+    "normal": 203.8
+  },
+  {
+    "id": "wig-bach-5280--469",
+    "name": "Wig Bach",
+    "city": "Aberdaron",
+    "county": "Gwynedd",
+    "postcode": "LL53 8BL",
+    "lat": 52.7977563,
+    "lng": -4.6916269,
+    "normal": 281.7
+  },
+  {
+    "id": "banc-sidan-5280--471",
+    "name": "Banc Sidan",
+    "city": "Aberdaron",
+    "county": "Gwynedd",
+    "postcode": "LL53 8BG",
+    "lat": 52.8025846,
+    "lng": -4.7092798,
+    "normal": 187.4
+  },
+  {
+    "id": "sandy-cove-5030--401",
+    "name": "Sandy Cove",
+    "city": "South Hams",
+    "county": "Devon",
+    "postcode": "PL8 1HG",
+    "lat": 50.3027822,
+    "lng": -4.0094531,
+    "normal": 133.4
+  },
+  {
+    "id": "little-beach-5055--242",
+    "name": "Little Beach",
+    "city": "The Grove",
+    "county": "Dorset",
+    "postcode": "DT5 1DL",
+    "lat": 50.5486117,
+    "lng": -2.4171458,
+    "normal": 132.7
+  },
+  {
+    "id": "beach-costa-del-ceanfield-5403--605",
+    "name": "Beach - Costa del Ceanfield",
+    "city": "Kilkeel",
+    "county": "County Down",
+    "postcode": "BT34 4LP",
+    "lat": 54.0270671,
+    "lng": -6.0547432,
+    "normal": 137.2
   }
 ]
