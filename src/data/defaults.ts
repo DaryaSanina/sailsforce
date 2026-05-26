@@ -8,8 +8,17 @@ export const defaultUserSettings: UserSettings = {
   gender: "Prefer not to say",
   ability: "Intermediate",
   windUnit: "kt",
-  sails: [],
-  boards: [],
+  sails: [
+    { id: "s-default-1", name: "Severne Blade", size: "4.5 m²" },
+    { id: "s-default-2", name: "Severne Gator", size: "5.5 m²" },
+    { id: "s-default-3", name: "Severne Convert", size: "6.5 m²" },
+    { id: "s-default-4", name: "Severne NCX", size: "7.5 m²" },
+  ],
+  boards: [
+    { id: "b-default-1", name: "JP Freestyle Wave", size: "95 L" },
+    { id: "b-default-2", name: "Starboard Carve", size: "120 L" },
+    { id: "b-default-3", name: "Starboard GO", size: "150 L" },
+  ],
 };
 
 export function windUnitLabel(value: WindUnit): string {

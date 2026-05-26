@@ -97,6 +97,7 @@ export default function App() {
                   error={error}
                   stale={stale}
                   windUnit={state.settings.windUnit}
+                  userSettings={state.settings}
                   isFavorite={isFavorite}
                   onToggleFavorite={() => toggleFavorite(selectedLocation.id)}
                   onShare={handleShare}

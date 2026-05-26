@@ -75,6 +75,66 @@ export function dayIndexFor(timestamp: string, base = new Date()): number {
   return Math.max(0, Math.round((dateMidnight - baseMidnight) / 86_400_000));
 }
 
+export type AbilityLevel = "Beginner" | "Intermediate" | "Advanced" | "Expert";
+
+const ABILITY_SAIL_FACTOR: Record<AbilityLevel, number> = {
+  Beginner: 1.15,
+  Intermediate: 1.0,
+  Advanced: 0.9,
+  Expert: 0.82,
+};
+
+const ABILITY_BOARD_FACTOR: Record<AbilityLevel, number> = {
+  Beginner: 1.4,
+  Intermediate: 1.0,
+  Advanced: 0.75,
+  Expert: 0.55,
+};
+
+export function parseSailM2(size: string): number {
+  const match = size.match(/(\d+(?:\.\d+)?)/);
+  return match ? Number.parseFloat(match[1]) : 0;
+}
+
+export function parseBoardL(size: string): number {
+  const match = size.match(/(\d+(?:\.\d+)?)/);
+  return match ? Number.parseFloat(match[1]) : 0;
+}
+
+export function idealSailSize(windKt: number, weightKg: number, heightCm: number, ability: AbilityLevel): number {
+  if (windKt < 5) return 0;
+  const heightFactor = 1 + (heightCm - 180) * 0.0015;
+  const raw = (weightKg * 1.35 * heightFactor * ABILITY_SAIL_FACTOR[ability]) / windKt;
+  return Math.max(2.5, Math.min(9.5, raw));
+}
+
+export function idealBoardVolume(windKt: number, weightKg: number, ability: AbilityLevel): number {
+  const windBuffer = Math.max(15, 220 / Math.max(windKt, 5) - 5);
+  const buffer = windBuffer * ABILITY_BOARD_FACTOR[ability];
+  return weightKg + buffer;
+}
+
+export type GearPick<T> = { item: T; size: number; deltaPct: number } | null;
+
+export function pickClosest<T>(items: T[], getSize: (item: T) => number, ideal: number): GearPick<T> {
+  if (items.length === 0 || ideal <= 0) return null;
+  let best: T | null = null;
+  let bestSize = 0;
+  let bestDiff = Infinity;
+  for (const item of items) {
+    const size = getSize(item);
+    if (size <= 0) continue;
+    const diff = Math.abs(size - ideal);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = item;
+      bestSize = size;
+    }
+  }
+  if (!best) return null;
+  return { item: best, size: bestSize, deltaPct: ((bestSize - ideal) / ideal) * 100 };
+}
+
 export function findNearestHourIndex(times: string[], target = Date.now()): number {
   if (times.length === 0) return 0;
   let bestIndex = 0;

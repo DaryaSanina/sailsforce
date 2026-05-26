@@ -16,6 +16,7 @@ import {
   CloudSun,
   Menu,
   Navigation2,
+  Sailboat,
   Share2,
   Shield,
   ShieldCheck,
@@ -31,13 +32,19 @@ import { BeachMap } from "../components/BeachMap";
 import { SailabilityMeter } from "../components/SailabilityMeter";
 import { FadeIn } from "../components/Transitions";
 import type { InfoDetail } from "./InfoDetailSheet";
-import type { BeachLocation, ForecastBundle, ForecastHour, ForecastStatus, WindUnit } from "../domain/models";
+import type { BeachLocation, ForecastBundle, ForecastHour, ForecastStatus, UserSettings, WindUnit } from "../domain/models";
 import { displayWindValue, formatNumber, formatWind, knotsToUnit } from "../services/format";
 import {
   angleDifference,
+  idealBoardVolume,
+  idealSailSize,
+  parseBoardL,
+  parseSailM2,
+  pickClosest,
   sailabilityFromWind,
   windBeachOrientation,
   windComponents,
+  type AbilityLevel,
 } from "../services/forecastMath";
 import { shadows } from "../styles/shadows";
 
@@ -49,6 +56,7 @@ type Props = {
   error: string | null;
   stale: boolean;
   windUnit: WindUnit;
+  userSettings: UserSettings;
   isFavorite: boolean;
   onToggleFavorite: () => void;
   onShare: () => void;
@@ -77,6 +85,7 @@ export function ForecastScreen({
   error,
   stale,
   windUnit,
+  userSettings,
   isFavorite,
   onToggleFavorite,
   onShare,
@@ -142,6 +151,7 @@ export function ForecastScreen({
           active={active}
           forecast={forecast}
           windUnit={windUnit}
+          userSettings={userSettings}
           onOpenDetail={onOpenDetail}
         />
       </ScrollView>
@@ -589,17 +599,20 @@ function MetricGrid({
   active,
   forecast,
   windUnit,
+  userSettings,
   onOpenDetail,
 }: {
   location: BeachLocation;
   active: ForecastHour | null;
   forecast: ForecastBundle | null;
   windUnit: WindUnit;
+  userSettings: UserSettings;
   onOpenDetail: (detail: InfoDetail) => void;
 }) {
   const orientation = active ? windBeachOrientation(active.windDir, location.normal) : "--";
   const safety = safetySummary(active);
   const nextTide = forecast?.tides.find((tide) => active && tide.time > active.time);
+  const recommendation = active ? recommendGear(active.wind, userSettings) : null;
 
   return (
     <View className="px-4">
@@ -680,6 +693,33 @@ function MetricGrid({
               <Text className="text-[10px] font-medium text-ink-soft">
                 {nextTide ? `Next ${nextTide.type} ${nextTide.heightM} m · ${nextTide.time.slice(11, 16)}` : "No tide extrema in range"}
               </Text>
+            </View>
+          </MetricCard>
+        </FadeIn>
+
+        <FadeIn duration={280} delay={500} translateY={12} style={{ width: "48%" }}>
+          <MetricCard
+            onPress={() => active && onOpenDetail(sailDetail(active, windUnit, userSettings))}
+            label="Sail and board recommendation"
+          >
+            <Text className="text-[10px] font-bold tracking-wider text-ink-soft">YOUR KIT</Text>
+            <View className="mt-2 flex-row items-center gap-1">
+              <Sailboat size={22} color="#0F766E" strokeWidth={1.8} />
+              <Text className="text-[26px] font-bold leading-[28px] text-ink">
+                {recommendation?.sail ? recommendation.sail.size.toFixed(1) : "--"}
+              </Text>
+              <Text className="text-[14px] text-ink-soft">m²</Text>
+            </View>
+            <Text className="text-[10px] font-semibold text-ink" numberOfLines={1}>
+              {recommendation?.sail ? recommendation.sail.item.name : "No matching sail"}
+            </Text>
+            <View className="mt-auto">
+              <Text className="text-[10px] font-medium text-ink-soft" numberOfLines={1}>
+                {recommendation?.board
+                  ? `${recommendation.board.item.name} · ${Math.round(recommendation.board.size)} L`
+                  : "No matching board"}
+              </Text>
+              <Text className="text-[10px] text-ink-faint">{sailGuidance(active?.wind)}</Text>
             </View>
           </MetricCard>
         </FadeIn>
@@ -844,6 +884,60 @@ function tideDetail(hour: ForecastHour, forecast: ForecastBundle | null): InfoDe
       { label: "Trend", value: tideTrend(hour, forecast), accent: "info" },
       { label: "Next high/low", value: next ? `${next.type} · ${next.heightM} m · ${next.time.slice(11, 16)}` : "--" },
     ],
+  };
+}
+
+function sailGuidance(windKt: number | undefined): string {
+  if (windKt == null) return "--";
+  if (windKt < 6) return "Not enough wind to plane";
+  if (windKt < 12) return "Light wind — big sail, long board";
+  if (windKt < 18) return "Moderate wind — easy planing";
+  if (windKt < 25) return "Strong wind — small sail";
+  return "Overpowered — expert riders only";
+}
+
+function recommendGear(windKt: number, settings: UserSettings) {
+  const ability = settings.ability as AbilityLevel;
+  const idealSail = idealSailSize(windKt, settings.weightKg, settings.heightCm, ability);
+  const idealBoard = idealBoardVolume(windKt, settings.weightKg, ability);
+  const sail = pickClosest(settings.sails, (item) => parseSailM2(item.size), idealSail);
+  const board = pickClosest(settings.boards, (item) => parseBoardL(item.size), idealBoard);
+  return { ideal: { sail: idealSail, board: idealBoard }, sail, board };
+}
+
+function deltaLabel(deltaPct: number): string {
+  if (Math.abs(deltaPct) < 5) return "matches the ideal";
+  if (deltaPct > 0) return `${Math.round(deltaPct)}% larger than ideal`;
+  return `${Math.round(Math.abs(deltaPct))}% smaller than ideal`;
+}
+
+function sailDetail(hour: ForecastHour, windUnit: WindUnit, settings: UserSettings): InfoDetail {
+  const rec = recommendGear(hour.wind, settings);
+  const rows: InfoDetail["rows"] = [
+    { label: "Wind speed", value: formatWind(hour.wind, windUnit) },
+    { label: "Gusts", value: formatWind(hour.gust, windUnit) },
+    { label: "Guidance", value: sailGuidance(hour.wind) },
+    { label: "Ideal sail", value: rec.ideal.sail > 0 ? `${rec.ideal.sail.toFixed(1)} m²` : "--" },
+    {
+      label: "From your sails",
+      value: rec.sail ? `${rec.sail.item.name} · ${rec.sail.size.toFixed(1)} m²` : "Add a sail in settings",
+      accent: rec.sail ? (Math.abs(rec.sail.deltaPct) < 12 ? "good" : "warn") : "default",
+      description: rec.sail ? deltaLabel(rec.sail.deltaPct) : undefined,
+    },
+    { label: "Ideal board", value: `${Math.round(rec.ideal.board)} L` },
+    {
+      label: "From your boards",
+      value: rec.board ? `${rec.board.item.name} · ${Math.round(rec.board.size)} L` : "Add a board in settings",
+      accent: rec.board ? (Math.abs(rec.board.deltaPct) < 15 ? "good" : "warn") : "default",
+      description: rec.board ? deltaLabel(rec.board.deltaPct) : undefined,
+    },
+    { label: "Rider", value: `${settings.weightKg} kg · ${settings.heightCm} cm · ${settings.ability}` },
+  ];
+  return {
+    key: "sail",
+    title: "Sail and board recommendation",
+    subtitle: `${hour.dayLabel} ${hour.hour}:00`,
+    rows,
   };
 }
 
