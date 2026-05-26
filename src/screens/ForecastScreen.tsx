@@ -26,7 +26,7 @@ import {
   TrendingUp,
   Wind,
 } from "lucide-react-native";
-import Svg, { Circle, Path } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 
 import { BeachMap } from "../components/BeachMap";
 import { SailabilityMeter } from "../components/SailabilityMeter";
@@ -74,8 +74,6 @@ const ICON_ROW_H = 28;
 const DATA_ROW_H = 26;
 const TIDE_ROW_H = 70;
 const TIDE_PAD_Y = 10;
-
-export { sailabilityFromWind };
 
 export function ForecastScreen({
   mode,
@@ -746,23 +744,6 @@ function WeatherIcon({ icon, size }: { icon: ForecastHour["icon"]; size: number 
   if (icon === "cloud-sun") return <CloudSun size={size} color="#FBBF24" strokeWidth={1.8} />;
   if (icon === "wind") return <Wind size={size} color="#94A3B8" strokeWidth={1.8} />;
   return <Sun size={size} color="#FBBF24" fill="#FBBF24" strokeWidth={1.8} />;
-}
-
-function mapDetail(location: BeachLocation, hour: ForecastHour, windUnit: WindUnit): InfoDetail {
-  return {
-    key: "map",
-    title: "Wind & swell conditions",
-    subtitle: `${location.name} · ${hour.dayLabel} ${hour.hour}:00`,
-    rows: [
-      { label: "Wind speed", value: formatWind(hour.wind, windUnit) },
-      { label: "Gusts", value: formatWind(hour.gust, windUnit), accent: hour.gust >= 25 ? "warn" : "default" },
-      { label: "Direction", value: `${hour.windDirLabel} (${Math.round(hour.windDir)} deg)` },
-      { label: "Wave height", value: formatNumber(hour.waveHeightM, "m", 1) },
-      { label: "Swell height", value: formatNumber(hour.swellHeightM, "m", 1) },
-      { label: "Swell direction", value: hour.swellDirection == null ? "--" : `${Math.round(hour.swellDirection)} deg` },
-      { label: "Swell period", value: formatNumber(hour.swellPeriodS, "s", 1) },
-    ],
-  };
 }
 
 function windBeachDetail(location: BeachLocation, hour: ForecastHour, windUnit: WindUnit): InfoDetail {
