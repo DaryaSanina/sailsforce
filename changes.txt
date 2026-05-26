@@ -1,6 +1,11 @@
-- Used React Native instead of Flutter, since the group was more comfortable with JavaScript.
-- Pre-calculated beach normals to avoid expensive API calls on every request.
-- Used OpenMeteo's averaging algorithm for wind models rather than reimplementing it.
-- Replaced static image with an interactive map so users can explore their windsurfing location.
-- Changed scrolling direction after discovering navigation difficulties during implementation.
-- Removed some labels because small text was illegible on mobile.
+- Used React Native instead of Flutter. Our initial prototype was designed in Flutter, but during early development we found that the majority of the group had significantly more experience with JavaScript and the React ecosystem. Switching to React Native also allowed us to load new code without having to rebuild every time.
+
+- Pre-calculated beach normals. Determining the shore-normal direction (the angle perpendicular to the coastline) is essential for assessing whether wind is onshore or offshore. Computing this on the fly would require repeated geometric queries against coastline data via an external API, adding latency and cost. Instead, we pre-computed normals for each supported beach and stored them locally, making lookups instantaneous.
+
+- Used OpenMeteo's averaging algorithm for wind models. Rather than writing our own logic to aggregate and smooth data from multiple weather models, we relied on OpenMeteo's built-in multi-model averaging. This gives users a consensus forecast that accounts for inter-model disagreement, and saved us from having to validate a custom implementation against known meteorological benchmarks.
+
+- Replaced static image with an interactive map. The paper prototype used a simple image to indicate location, but we realised that users might want to zoom in, pan around, and orient themselves relative to nearby landmarks. We integrated an interactive map component that displays the beach, surrounding terrain, and pin markers, giving users a much richer sense of place.
+
+- Changed scrolling direction. Our initial implementation used horizontal scrolling to navigate between forecast time slots, mirroring a timeline metaphor. We switched to vertical scrolling to match user expectations and reduce navigation friction.
+
+- Removed some labels. Several UI labels that looked fine in our Figma mockups turned out to be nearly illegible on actual phone screens, particularly on smaller devices. Rather than shrinking the layout, we removed the least informative labels and relied on iconography and spatial grouping to convey meaning, improving overall readability.
