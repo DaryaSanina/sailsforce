@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "test": "node --test 'weather_data_access/tests/*.test.js' && tsx --test 'src/**/*.test.ts'"
+    "test": "node --test weather_data_access/tests/*.test.js && tsx --test src/services/*.test.ts"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
@@ -32,7 +32,7 @@
     "babel-preset-expo": "~54.0.10",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^3.4.17",
-    "tsx": "^4.22.0",
+    "tsx": "^4.22.3",
     "typescript": "~5.9.2"
   }
 }

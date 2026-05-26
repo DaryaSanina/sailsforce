@@ -226,6 +226,19 @@ describe('findTideExtrema', () => {
       ['low', 'high', 'low']
     );
   });
+
+  it('ignores a plateau (equal adjacent heights are not strict extrema)', () => {
+    // [0, 1, 1, 0, 0]: sample 1 has y1 == y2 so it is not a strict high;
+    // sample 2 has y0 == y1 so it is not a strict high either.
+    const times = [0, 1, 2, 3, 4].map((h) => `2026-05-21T0${h}:00`);
+    assert.deepEqual(findTideExtrema(times, [0, 1, 1, 0, 0]), []);
+  });
+
+  it('height field is rounded to two decimal places', () => {
+    const out = findTideExtrema(t3, [0, 1.23456, 0]);
+    assert.equal(out.length, 1);
+    assert.equal(out[0].height, 1.23); // Math.round(1.23456 * 100) / 100
+  });
 });
 
 // ======================================================================
@@ -356,5 +369,66 @@ describe('getTidalData', () => {
     await assert.rejects(getTidalData(50, undefined), /numeric/);
     await assert.rejects(getTidalData(50, -5, { days: 0 }), /positive integer/);
     await assert.rejects(getTidalData(50, -5, { days: 2.5 }), /positive integer/);
+  });
+
+  it('works correctly for a single-day forecast (days=1)', async () => {
+    installFetch();
+    const result = await getTidalData(50.4155, -5.0737, {
+      startDate: '2026-05-21',
+      days: 1,
+    });
+
+    assert.equal(result.range.days, 1);
+    assert.equal(result.range.startDate, '2026-05-21');
+    assert.equal(result.range.endDate, '2026-05-21');
+    assert.equal(result.days.length, 1);
+    assert.equal(result.days[0].date, '2026-05-21');
+    // All tides must fall within the single day.
+    for (const t of result.tides) {
+      assert.ok(t.time.startsWith('2026-05-21'), `tide outside requested day: ${t.time}`);
+    }
+  });
+
+  it('propagates the requested and modelled location into the result', async () => {
+    installFetch();
+    const result = await getTidalData(50.4155, -5.0737, { startDate: '2026-05-21' });
+
+    assert.equal(result.location.requested.lat, 50.4155);
+    assert.equal(result.location.requested.lon, -5.0737);
+    // The modelled location comes from the Marine API response (set by marineFromUrl).
+    assert.equal(typeof result.location.modelled.lat, 'number');
+    assert.equal(typeof result.location.modelled.lon, 'number');
+  });
+
+  it('filters out stations with missing coordinates when finding the nearest', async () => {
+    // DEFAULT_STATIONS includes 'NoCoords' with lat/long = null.
+    // It must be skipped, leaving Newlyn as nearest to 50.4155, -5.0737.
+    installFetch();
+    const { referenceStation } = await getTidalData(50.4155, -5.0737, {
+      startDate: '2026-05-21',
+    });
+    assert.notEqual(referenceStation?.name, 'NoCoords');
+    assert.equal(referenceStation?.name, 'Newlyn');
+  });
+
+  it('produces chronologically ordered tides and alternating high/low types', async () => {
+    installFetch();
+    const { tides } = await getTidalData(50.4155, -5.0737, {
+      startDate: '2026-05-21',
+      days: 7,
+    });
+
+    for (let i = 1; i < tides.length; i++) {
+      assert.ok(
+        tides[i].time >= tides[i - 1].time,
+        `tides are not in chronological order at index ${i}`,
+      );
+      // A sine-based series produces strictly alternating high/low.
+      assert.notEqual(
+        tides[i].type,
+        tides[i - 1].type,
+        `adjacent tides have the same type at index ${i}`,
+      );
+    }
   });
 });
