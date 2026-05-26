@@ -77,12 +77,21 @@ export function buildMockForecast(location: BeachLocation): ForecastBundle {
     const wind = Math.max(4, round(baseWind + weatherCycle * 4 + dayPart * 2));
     const gust = round(wind + gustBase + Math.max(0, Math.sin(index / 5)) * 4);
     const windDir = round((baseDirection + Math.sin(index / 10) * 28 + index * 1.5 + 360) % 360);
-    const model1 = Math.max(1, round(wind - 1 + Math.sin(index / 6)));
-    const model2 = Math.max(1, round(wind + 1 + Math.cos(index / 7)));
-    const model3 = Math.max(1, round(wind + Math.sin(index / 5 + 1)));
-    const modelGust1 = Math.max(model1, round(gust - 2));
-    const modelGust2 = Math.max(model2, round(gust + 1));
-    const modelGust3 = Math.max(model3, round(gust));
+
+    // Each model has its own bias, oscillation frequency, and phase so they
+    // converge and diverge at different times rather than tracking each other.
+    // ECMWF: slightly conservative, slow 7-hour cycle.
+    // GFS:   runs warm/high, fast 5-hour cycle, offset phase.
+    // ICON:  near-neutral bias, 6-hour cosine cycle, different phase again.
+    const model1 = Math.max(1, round(wind - 1.0 + Math.sin(index / 7 + seed * 0.3) * 2.5));
+    const model2 = Math.max(1, round(wind + 1.5 + Math.sin(index / 5 + seed * 0.5 + 1.2) * 3.0));
+    const model3 = Math.max(1, round(wind + 0.5 + Math.cos(index / 6 + seed * 0.4 + 2.1) * 2.0));
+
+    // Gust character differs too: GFS most gusty, ECMWF tightest.
+    const modelGust1 = Math.max(model1, round(model1 + gustBase - 1 + Math.sin(index / 8) * 1.5));
+    const modelGust2 = Math.max(model2, round(model2 + gustBase + 2 + Math.cos(index / 6) * 3.0));
+    const modelGust3 = Math.max(model3, round(model3 + gustBase + Math.sin(index / 7 + 1) * 2.0));
+
     const spread = Math.max(model1, model2, model3) - Math.min(model1, model2, model3);
     const temperatureC = round(baseTemp + dayPart * 3 + Math.sin(index / 18) * 1.5, 1);
 
