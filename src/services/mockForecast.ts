@@ -25,8 +25,40 @@ export function buildMockForecast(location: BeachLocation): ForecastBundle {
   const now = new Date();
   const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
   const seed = locationSeed(location);
-  const baseWind = 13 + (seed % 7);
+
+  // Independent seed derivatives so each metric varies differently per location.
+  // Prime multipliers + offsets keep the distributions from correlating.
+  const seed2 = (seed * 31 + 17) % 97;  // temperature, wave height, wave period
+  const seed3 = (seed * 53 + 29) % 89;  // swell, humidity, tide amplitude
+  const seed4 = (seed * 71 + 13) % 83;  // UV, gust base, swell period
+
+  // Wind: UK coastal sailing range roughly 8–21 kt
+  const baseWind = 8 + (seed % 14);
   const baseDirection = (location.normal + 35 + (seed % 70)) % 360;
+
+  // Temperature: UK beach air temp typically 12–21 °C in sailing season
+  const baseTemp = 12 + (seed2 % 10);
+
+  // Humidity: UK coastal air typically 65–87 %
+  const baseHumidity = 65 + (seed3 % 23);
+
+  // UV: UK summer range 3–7 (south coast higher than Scotland)
+  const uvPeak = 3 + (seed4 % 5);
+
+  // Wave height: 0.4–2.0 m depending on exposure
+  const baseWaveH = round(0.4 + (seed2 % 17) * 0.1, 1);
+
+  // Swell: 0.6–2.5 m, longer period on west/south-facing beaches
+  const baseSwellH = round(0.6 + (seed3 % 20) * 0.1, 1);
+  const baseSwellPeriod = 7 + (seed4 % 8);   // 7–14 s
+  const baseWavePeriod = 4 + (seed2 % 6);    // 4–9 s local wind-wave
+
+  // Gust excess above wind speed: 4–9 kt
+  const gustBase = 4 + (seed4 % 6);
+
+  // Tide: UK ranges from ~1.5 m (sheltered bays) to ~4.8 m (Bristol Channel area)
+  const tideAmplitude = round(1.5 + (seed3 % 34) * 0.1, 2);
+  const tideDatum = round(tideAmplitude * 0.12 + 0.1, 2);
 
   const times = Array.from({ length: HOURS }, (_, index) => {
     const date = new Date(start);
@@ -34,14 +66,16 @@ export function buildMockForecast(location: BeachLocation): ForecastBundle {
     return localTimestamp(date);
   });
 
-  const seaLevel = times.map((_, index) => round(Math.sin((index / 12.4) * Math.PI * 2) * 1.35 + 0.15, 2));
+  const seaLevel = times.map((_, index) =>
+    round(Math.sin((index / 12.4) * Math.PI * 2) * tideAmplitude + tideDatum, 2),
+  );
   const tides = findTideExtrema(times, seaLevel);
 
   const hours: ForecastHour[] = times.map((time, index) => {
     const dayPart = Math.sin(((index % 24) / 24) * Math.PI * 2 - Math.PI / 2);
     const weatherCycle = Math.sin(index / 8 + seed);
     const wind = Math.max(4, round(baseWind + weatherCycle * 4 + dayPart * 2));
-    const gust = round(wind + 5 + Math.max(0, Math.sin(index / 5)) * 4);
+    const gust = round(wind + gustBase + Math.max(0, Math.sin(index / 5)) * 4);
     const windDir = round((baseDirection + Math.sin(index / 10) * 28 + index * 1.5 + 360) % 360);
     const model1 = Math.max(1, round(wind - 1 + Math.sin(index / 6)));
     const model2 = Math.max(1, round(wind + 1 + Math.cos(index / 7)));
@@ -50,7 +84,7 @@ export function buildMockForecast(location: BeachLocation): ForecastBundle {
     const modelGust2 = Math.max(model2, round(gust + 1));
     const modelGust3 = Math.max(model3, round(gust));
     const spread = Math.max(model1, model2, model3) - Math.min(model1, model2, model3);
-    const temperatureC = round(15 + dayPart * 3 + Math.sin(index / 18) * 1.5, 1);
+    const temperatureC = round(baseTemp + dayPart * 3 + Math.sin(index / 18) * 1.5, 1);
 
     return {
       time,
@@ -73,14 +107,14 @@ export function buildMockForecast(location: BeachLocation): ForecastBundle {
       isDayStart: index === 0 || time.slice(0, 10) !== times[index - 1]?.slice(0, 10),
       temperatureC,
       apparentTemperatureC: round(temperatureC - Math.max(0, wind - 18) * 0.08, 1),
-      humidityPct: round(68 + Math.sin(index / 6) * 10),
-      uvIndex: Math.max(0, round(dayPart > 0 ? dayPart * 6 : 0)),
-      waveHeightM: round(0.8 + Math.max(0, wind - 10) * 0.08 + Math.sin(index / 9) * 0.2, 1),
+      humidityPct: round(baseHumidity + Math.sin(index / 6) * 8),
+      uvIndex: Math.max(0, round(dayPart > 0 ? dayPart * uvPeak : 0)),
+      waveHeightM: round(baseWaveH + Math.max(0, wind - 10) * 0.08 + Math.sin(index / 9) * 0.2, 1),
       waveDirection: round((windDir + 145) % 360),
-      wavePeriodS: round(7 + Math.sin(index / 8) * 1.5, 1),
-      swellHeightM: round(1.1 + Math.sin(index / 11) * 0.4, 1),
+      wavePeriodS: round(baseWavePeriod + Math.sin(index / 8) * 1.5, 1),
+      swellHeightM: round(baseSwellH + Math.sin(index / 11) * 0.4, 1),
       swellDirection: round((windDir + 160) % 360),
-      swellPeriodS: round(9 + Math.cos(index / 10) * 1.8, 1),
+      swellPeriodS: round(baseSwellPeriod + Math.cos(index / 10) * 1.8, 1),
     };
   });
 
