@@ -1,6 +1,6 @@
-Using react native instead of flutter
-Pre calculating beach normals
-Using open meteo's averaging algorithm for wind models.
-Real map instead of image
-Changed scrolling direction after realising navigation difficulties once implemented. 
-Removed some labels due to small text being illegible. 
+- Used React Native instead of Flutter, since the group was more comfortable with JavaScript.
+- Pre-calculated beach normals to avoid expensive API calls on every request.
+- Used OpenMeteo's averaging algorithm for wind models rather than reimplementing it.
+- Replaced static image with an interactive map so users can explore their windsurfing location.
+- Changed scrolling direction after discovering navigation difficulties during implementation.
+- Removed some labels because small text was illegible on mobile.
