@@ -9,13 +9,13 @@ import {
   type NativeSyntheticEvent,
 } from "react-native";
 import {
-  ArrowUpRight,
   CheckCircle2,
   ChevronDown,
   ChevronRight,
   ChevronUp,
   CloudSun,
   Menu,
+  Navigation2,
   Share2,
   Shield,
   ShieldCheck,
@@ -28,7 +28,6 @@ import {
 import Svg, { Circle, Path } from "react-native-svg";
 
 import { BeachMap } from "../components/BeachMap";
-import { BeachWindGraphic } from "../components/Graphs";
 import { SailabilityMeter } from "../components/SailabilityMeter";
 import { FadeIn } from "../components/Transitions";
 import type { InfoDetail } from "./InfoDetailSheet";
@@ -271,17 +270,17 @@ const WeatherWidget = memo(function WeatherWidget({
     setScrollX(x);
     const idx = Math.round(x / CELL_W);
     const clamped = Math.max(0, Math.min(hours.length - 1, idx));
-    if (clamped !== activeIndex) {
-      setActiveIndex(clamped);
-      onActiveIndexChange(clamped);
-    }
     if (scrollTimer.current) clearTimeout(scrollTimer.current);
     scrollTimer.current = setTimeout(() => {
-      const snapped = Math.round(x / CELL_W) * CELL_W;
+      if (clamped !== activeIndex) {
+        setActiveIndex(clamped);
+        onActiveIndexChange(clamped);
+      }
+      const snapped = clamped * CELL_W;
       if (Math.abs(x - snapped) > 2) {
         scrollRef.current?.scrollTo({ x: snapped, animated: true });
       }
-    }, 150);
+    }, 300);
   };
 
   const onScrollViewLayout = (e: LayoutChangeEvent) => {
@@ -355,7 +354,7 @@ const WeatherWidget = memo(function WeatherWidget({
                     left: viewportW / 2 - 1,
                     top: HOUR_ROW_H + ICON_ROW_H + DATA_ROW_H * (3 + MODEL_LABELS.length + 1),
                     width: 2,
-                    height: tideGraph.yAtX(scrollX + CELL_W / 2),
+                    height: TIDE_ROW_H,
                     backgroundColor: "#0F766E",
                     opacity: 0.55,
                     zIndex: 1,
@@ -434,26 +433,6 @@ const WeatherWidget = memo(function WeatherWidget({
                   ) : null}
                 </View>
               </ScrollView>
-              {viewportW > 0 && detailed && tideGraph.path ? (
-                <View
-                  pointerEvents="none"
-                  style={{
-                    position: "absolute",
-                    left: viewportW / 2 - 8,
-                    top:
-                      HOUR_ROW_H +
-                      ICON_ROW_H +
-                      DATA_ROW_H * (3 + MODEL_LABELS.length + 1) +
-                      tideGraph.yAtX(scrollX + CELL_W / 2) -
-                      8,
-                    zIndex: 2,
-                  }}
-                >
-                  <Svg width={16} height={16}>
-                    <Circle cx={8} cy={8} r={6} fill="#FFFFFF" stroke="#0F766E" strokeWidth={2} />
-                  </Svg>
-                </View>
-              ) : null}
             </View>
           </View>
         )}
@@ -646,14 +625,13 @@ function MetricGrid({
             <View className="mt-2 flex-row items-baseline">
               <Text className="text-[28px] font-bold leading-[30px] text-ink">{displayWindValue(active?.wind, windUnit)}</Text>
               <Text className="text-[14px] text-ink-soft"> {windUnit}</Text>
-              <ArrowUpRight size={18} color="#0EA5E9" style={{ marginLeft: 8 }} />
+              <View style={{ marginLeft: 8, transform: [{ rotate: `${(active?.windDir ?? 0) + 180}deg` }] }}>
+                <Navigation2 size={18} color="#0EA5E9" fill="#0EA5E9" />
+              </View>
             </View>
             <Text className="mt-0.5 text-[10px] font-medium text-ink-soft">
               {active ? `${active.windDirLabel} (${Math.round(active.windDir)} deg)` : "--"}
             </Text>
-            <View className="mt-auto overflow-hidden rounded-lg">
-              <BeachWindGraphic />
-            </View>
           </MetricCard>
         </FadeIn>
 
