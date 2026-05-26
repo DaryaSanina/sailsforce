@@ -1,7 +1,7 @@
-import { memo } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import MapView from "react-native-maps";
-import { Navigation } from "lucide-react-native";
+import MapView, { type Region } from "react-native-maps";
+import { Locate, Navigation2 } from "lucide-react-native";
 
 type Props = {
   size: number;
@@ -31,6 +31,31 @@ export const BeachMap = memo(function BeachMap({
   accessibilityLabel,
 }: Props) {
   const radius = size / 2;
+  const mapRef = useRef<MapView | null>(null);
+  const originRegion: Region = {
+    latitude: lat,
+    longitude: lon,
+    latitudeDelta: 0.005,
+    longitudeDelta: 0.005,
+  };
+  const [moved, setMoved] = useState(false);
+
+  const handleRegionChange = useCallback(
+    (region: Region) => {
+      const drifted =
+        Math.abs(region.latitude - lat) > 0.0002 ||
+        Math.abs(region.longitude - lon) > 0.0002 ||
+        Math.abs(region.latitudeDelta - 0.005) > 0.0005 ||
+        Math.abs(region.longitudeDelta - 0.005) > 0.0005;
+      setMoved(drifted);
+    },
+    [lat, lon],
+  );
+
+  const recenter = useCallback(() => {
+    mapRef.current?.animateToRegion(originRegion, 300);
+    setMoved(false);
+  }, [originRegion]);
 
   return (
     <View
@@ -38,9 +63,10 @@ export const BeachMap = memo(function BeachMap({
       className="relative items-center justify-center"
     >
       <MapView
+        ref={mapRef}
         style={{ width: size, height: size }}
-        initialRegion={{ latitude: lat, longitude: lon, latitudeDelta: 0.005, longitudeDelta: 0.005 }}
-        region={{ latitude: lat, longitude: lon, latitudeDelta: 0.005, longitudeDelta: 0.005 }}
+        initialRegion={originRegion}
+        onRegionChangeComplete={handleRegionChange}
         mapType="satellite"
         showsCompass={false}
         showsScale={false}
@@ -50,7 +76,7 @@ export const BeachMap = memo(function BeachMap({
         showsPointsOfInterest={false}
         toolbarEnabled={false}
         legalLabelInsets={{ top: 0, left: 0, bottom: -200, right: -200 }}
-        rotateEnabled
+        rotateEnabled={false}
         zoomEnabled
         scrollEnabled
         pitchEnabled={false}
@@ -77,6 +103,19 @@ export const BeachMap = memo(function BeachMap({
           </View>
         )}
       </View>
+
+      {moved ? (
+        <Pressable
+          onPress={recenter}
+          accessibilityRole="button"
+          accessibilityLabel="Recenter map"
+          hitSlop={8}
+          className="absolute bottom-3 right-3 h-9 w-9 items-center justify-center rounded-full active:opacity-70"
+          style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
+        >
+          <Locate size={18} color="#FFFFFF" />
+        </Pressable>
+      ) : null}
     </View>
   );
 });
@@ -96,8 +135,8 @@ function WindBlock({
 }) {
   return (
     <>
-      <View style={{ transform: [{ rotate: `${windDir}deg` }] }}>
-        <Navigation size={28} color="#FFFFFF" fill="#FFFFFF" />
+      <View style={{ transform: [{ rotate: `${windDir + 180}deg` }] }}>
+        <Navigation2 size={28} color="#FFFFFF" fill="#FFFFFF" />
       </View>
       <Text className="mt-2 text-[48px] font-extrabold leading-[50px] text-white">{wind}</Text>
       <Text className="-mt-1 text-[16px] font-medium text-white">{unit}</Text>

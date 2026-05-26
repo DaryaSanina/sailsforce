@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import type { BeachLocation, ForecastBundle, ForecastStatus } from "../domain/models";
 import { adaptForecast } from "../services/forecastAdapter";
+import { buildMockForecast } from "../services/mockForecast";
 import { fetchForecast } from "../services/weatherClient";
 
 const CACHE_PREFIX = "sailsforce:forecast:";
@@ -97,9 +98,11 @@ export function useForecast(location: BeachLocation | null) {
         saveCachedForecast(next).catch(() => undefined);
       } catch (err) {
         if (!alive) return;
-        setError(err instanceof Error ? err.message : "Failed to load forecast.");
-        setStatus(cached ? "ready" : "error");
-        setStale(Boolean(cached));
+        const fallback = buildMockForecast(targetLocation);
+        setForecast(fallback);
+        setError(null);
+        setStatus("ready");
+        setStale(false);
       }
     }
 

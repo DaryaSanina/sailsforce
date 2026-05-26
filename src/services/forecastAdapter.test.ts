@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 import type { BeachLocation } from "../domain/models";
 import { adaptForecast } from "./forecastAdapter";
-import { angleDifference, windBeachOrientation } from "./forecastMath";
+import { angleDifference, windBeachOrientation, windComponents } from "./forecastMath";
 import type { RawForecastResponse } from "./weatherClient";
 
 const location: BeachLocation = {
@@ -103,10 +103,32 @@ describe("adaptForecast", () => {
 });
 
 describe("forecastMath", () => {
-  it("classifies beach-relative wind from the beach normal", () => {
+  it("classifies beach-relative wind using seaward beach normals and wind-from bearings", () => {
     assert.equal(angleDifference(350, 10), 20);
-    assert.equal(windBeachOrientation(90, 90), "ONSHORE");
-    assert.equal(windBeachOrientation(180, 90), "CROSS-SHORE");
-    assert.equal(windBeachOrientation(270, 90), "OFFSHORE");
+    assert.equal(windBeachOrientation(270, 270), "ONSHORE");
+    assert.equal(windBeachOrientation(180, 270), "CROSS-SHORE");
+    assert.equal(windBeachOrientation(90, 270), "OFFSHORE");
+  });
+
+  it("decomposes wind into signed onshore/offshore and cross-shore components", () => {
+    assert.deepEqual(roundComponents(windComponents(20, 270, 270)), {
+      onshoreKt: 20,
+      crossShoreKt: 0,
+    });
+    assert.deepEqual(roundComponents(windComponents(20, 90, 270)), {
+      onshoreKt: -20,
+      crossShoreKt: 0,
+    });
+    assert.deepEqual(roundComponents(windComponents(20, 180, 270)), {
+      onshoreKt: 0,
+      crossShoreKt: 20,
+    });
   });
 });
+
+function roundComponents(components: ReturnType<typeof windComponents>) {
+  return {
+    onshoreKt: Math.round(components.onshoreKt),
+    crossShoreKt: Math.round(components.crossShoreKt),
+  };
+}

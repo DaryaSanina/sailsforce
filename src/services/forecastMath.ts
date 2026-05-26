@@ -34,6 +34,8 @@ export function sailabilityFromWind(windKt: number): number {
 }
 
 export function windBeachOrientation(windFromDeg: number, beachNormalDeg: number) {
+  // Beach normals in beaches.json point seaward. Open-Meteo wind directions are
+  // meteorological "from" bearings, so wind from the seaward normal is onshore.
   const angle = angleDifference(windFromDeg, beachNormalDeg);
   if (angle <= 45) return "ONSHORE";
   if (angle < 135) return "CROSS-SHORE";
@@ -41,6 +43,8 @@ export function windBeachOrientation(windFromDeg: number, beachNormalDeg: number
 }
 
 export function windComponents(windKt: number, windFromDeg: number, beachNormalDeg: number) {
+  // Positive onshoreKt means wind is blowing from sea toward land; negative is
+  // offshore. crossShoreKt is returned as a magnitude relative to the shoreline.
   const angle = angleDifference(windFromDeg, beachNormalDeg) * (Math.PI / 180);
   return {
     onshoreKt: windKt * Math.cos(angle),
@@ -85,4 +89,3 @@ export function findNearestHourIndex(times: string[], target = Date.now()): numb
   });
   return bestIndex;
 }
-
