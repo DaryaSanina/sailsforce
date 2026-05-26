@@ -15,7 +15,7 @@
  */
 
 const EA_STATIONS_URL =
-  'https://environment.data.gov.uk/flood-monitoring/id/stations?type=TideGauge';
+  'https://environment.data.gov.uk/flood-monitoring/id/stations?parameter=level&qualifier=Tidal%20Level';
 const OPEN_METEO_MARINE_URL = 'https://marine-api.open-meteo.com/v1/marine';
 
 const MS_PER_HOUR = 3_600_000;
@@ -25,12 +25,13 @@ const DEFAULT_DAYS = 7;
 // ---------- Date helpers ----------------------------------------------
 // Open-Meteo (timezone=auto) returns naive local timestamps with no offset,
 // e.g. "2026-05-20T14:00". We parse and format every timestamp the same
-// naive way, so values stay in the beach's local time end to end.
+// naive way using Date.UTC, so values stay in the beach's local time end to end.
 
 /** Parses a naive "YYYY-MM-DDTHH:MM" timestamp into epoch ms. */
 function parseTimestamp(s) {
   const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
   if (!m) throw new Error(`Unrecognised timestamp from API: ${s}`);
+  // We use UTC to avoid local machine timezone interference with the naive API strings.
   return Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
 }
 
@@ -56,6 +57,7 @@ function formatDate(ms) {
 function resolveStartDate(input) {
   if (!input) {
     const now = new Date();
+    // Use the machine's local date but treat as UTC midnight for naive comparison.
     return Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
   }
   if (input instanceof Date) {
@@ -92,9 +94,8 @@ function getDistance(lat1, lon1, lat2, lon2) {
 // ---------- Reference station -----------------------------------------
 
 /**
- * Finds the nearest UK Environment Agency tide gauge to the given point.
- * Used only to label the forecast with a recognisable place name; failure
- * here is non-fatal and simply yields a null reference station.
+ * Finds the nearest UK Environment Agency tidal level station.
+ * Used only to label the forecast with a recognisable place name.
  */
 async function findNearestStation(lat, lon) {
   const response = await fetch(EA_STATIONS_URL);
@@ -103,7 +104,9 @@ async function findNearestStation(lat, lon) {
   }
   const data = await response.json();
   let nearest = null;
-  for (const s of data.items || []) {
+  // EA API items can be at root or in items array depending on query.
+  const stations = data.items || (Array.isArray(data) ? data : []);
+  for (const s of stations) {
     if (typeof s.lat !== 'number' || typeof s.long !== 'number') continue;
     const distance = getDistance(lat, lon, s.lat, s.long);
     if (!nearest || distance < nearest.distance) {
@@ -117,7 +120,9 @@ async function findNearestStation(lat, lon) {
 
 /**
  * Fetches the hourly mean-sea-level height series from Open-Meteo's Marine
- * API. The API automatically snaps the request to the nearest sea cell.
+ * API. Note: Accuracy is limited in estuaries and complex coastlines;
+ * global models often drift by 30-90 minutes compared to local charts.
+ * For high-precision UK tides, the UKHO (Admiralty) API is recommended.
  */
 async function fetchSeaLevelSeries(lat, lon, startDate, endDate) {
   const params = new URLSearchParams({
