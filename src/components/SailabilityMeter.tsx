@@ -1,4 +1,5 @@
-import { View, Text } from "react-native";
+import { memo, useEffect, useRef, useState } from "react";
+import { Animated, Easing, View, Text } from "react-native";
 import Svg, { Defs, LinearGradient, Rect, Stop, Circle } from "react-native-svg";
 
 type Props = {
@@ -8,17 +9,41 @@ type Props = {
 };
 
 const BAR_WIDTH = 18;
+const MARKER_SIZE = 20;
 
-export function SailabilityMeter({ compact = false, rating = 7.8, max = 10 }: Props) {
+export const SailabilityMeter = memo(function SailabilityMeter({ compact = false, rating = 7.8, max = 10 }: Props) {
   const height = compact ? 200 : 260;
   const clamped = Math.max(0, Math.min(max, rating));
-  const fraction = 1 - clamped / max;
-  const markerY = fraction * height;
+
+  const animated = useRef(new Animated.Value(clamped)).current;
+  const [displayValue, setDisplayValue] = useState(clamped);
+
+  useEffect(() => {
+    const sub = animated.addListener(({ value }) => {
+      setDisplayValue(value);
+    });
+    return () => animated.removeListener(sub);
+  }, [animated]);
+
+  useEffect(() => {
+    Animated.timing(animated, {
+      toValue: clamped,
+      duration: 260,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [clamped, animated]);
+
+  const markerY = animated.interpolate({
+    inputRange: [0, max],
+    outputRange: [height - MARKER_SIZE / 2, -MARKER_SIZE / 2],
+    extrapolate: "clamp",
+  });
 
   return (
     <View
       className="items-center rounded-2xl bg-white px-2 py-3"
-      style={{ minHeight: compact ? height + 64 : height + 64 }}
+      style={{ minHeight: height + 64 }}
     >
       <Text className="mb-2 text-[8px] font-bold tracking-widest text-ink-soft">SAILABILITY</Text>
       <View className="relative items-center" style={{ width: BAR_WIDTH + 30, height }}>
@@ -41,17 +66,23 @@ export function SailabilityMeter({ compact = false, rating = 7.8, max = 10 }: Pr
             fill="url(#sailGrad)"
           />
         </Svg>
-        <Svg
-          width={BAR_WIDTH + 14}
-          height={20}
-          style={{ position: "absolute", left: 15 - 7, top: markerY - 10 }}
+        <Animated.View
+          style={{
+            position: "absolute",
+            left: 15 - 7,
+            top: markerY,
+            width: BAR_WIDTH + 14,
+            height: MARKER_SIZE,
+          }}
         >
-          <Circle cx={(BAR_WIDTH + 14) / 2} cy={10} r={9} fill="#FFFFFF" />
-          <Circle cx={(BAR_WIDTH + 14) / 2} cy={10} r={5} fill="#1E293B" />
-        </Svg>
+          <Svg width={BAR_WIDTH + 14} height={MARKER_SIZE}>
+            <Circle cx={(BAR_WIDTH + 14) / 2} cy={MARKER_SIZE / 2} r={9} fill="#FFFFFF" />
+            <Circle cx={(BAR_WIDTH + 14) / 2} cy={MARKER_SIZE / 2} r={5} fill="#1E293B" />
+          </Svg>
+        </Animated.View>
       </View>
-      <Text className="mt-2 text-[18px] font-extrabold text-ink">{clamped.toFixed(1)}</Text>
+      <Text className="mt-2 text-[18px] font-extrabold text-ink">{displayValue.toFixed(1)}</Text>
       <Text className="-mt-0.5 text-[9px] font-bold tracking-widest text-ink-soft">/ {max}</Text>
     </View>
   );
-}
+});

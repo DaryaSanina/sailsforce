@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { Check, Minus, Plus, X } from "lucide-react-native";
 
 import { shadows } from "../styles/shadows";
 import { RisingBackdrop, SlideUp } from "../components/Transitions";
+import { KeyboardAvoider } from "../components/KeyboardAvoider";
 
 export type EditField =
   | {
@@ -50,10 +51,7 @@ type Props = {
 export function EditValueSheet({ field, onClose, onSave }: Props) {
   return (
     <Modal visible={field !== null} transparent animationType="none" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1, justifyContent: "flex-end" }}
-      >
+      <KeyboardAvoider>
         {field !== null ? <RisingBackdrop onPress={onClose} /> : null}
         {field !== null ? (
           <SlideUp from={520} duration={320} style={{ width: "100%", maxWidth: 430, alignSelf: "center" }}>
@@ -66,7 +64,7 @@ export function EditValueSheet({ field, onClose, onSave }: Props) {
             </View>
           </SlideUp>
         ) : null}
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
     </Modal>
   );
 }

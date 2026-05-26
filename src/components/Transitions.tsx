@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from "react";
-import { Animated, Easing, Pressable, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
+import { Animated, Easing, Platform, Pressable, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
 
 type FadeInProps = {
   children: ReactNode;
@@ -20,14 +20,14 @@ export function FadeIn({ children, duration = 220, delay = 0, translateY = 0, st
         duration,
         delay,
         easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== "web",
       }),
       Animated.timing(ty, {
         toValue: 0,
         duration,
         delay,
         easing: Easing.out(Easing.cubic),
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== "web",
       }),
     ]).start();
   }, []);
@@ -54,7 +54,7 @@ export function SlideUp({ children, from = 320, duration = 320, style }: SlideUp
       toValue: 0,
       duration,
       easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== "web",
     }).start();
   }, []);
 
@@ -75,15 +75,16 @@ export function RisingBackdrop({ onPress, dim = 0.45, duration = 240 }: RisingBa
       toValue: 1,
       duration,
       easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== "web",
     }).start();
   }, []);
 
   return (
     <Animated.View
-      pointerEvents="box-none"
+      {...(Platform.OS === "web" ? {} : { pointerEvents: "box-none" as const })}
       style={[
         StyleSheet.absoluteFillObject,
+        Platform.OS === "web" ? ({ pointerEvents: "box-none" } as ViewStyle) : null,
         {
           backgroundColor: `rgba(0,0,0,${dim})`,
           opacity,

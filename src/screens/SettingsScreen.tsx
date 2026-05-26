@@ -16,10 +16,10 @@ import Svg, { Circle, Path, Rect } from "react-native-svg";
 import type { EditField } from "./EditValueSheet";
 import {
   abilityOptions,
-  windUnitLabel,
   windUnitOptions,
   type UserSettings,
-} from "../data/prototype";
+} from "../domain/models";
+import { windUnitLabel } from "../data/defaults";
 import { FadeIn } from "../components/Transitions";
 import { shadows } from "../styles/shadows";
 
