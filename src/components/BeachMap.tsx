@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import MapView, { type Region } from "react-native-maps";
-import { Locate, Navigation2 } from "lucide-react-native";
+import { Locate, Navigation2, WavesHorizontal } from "lucide-react-native";
 
 type Props = {
   size: number;
@@ -92,7 +92,8 @@ export const BeachMap = memo(function BeachMap({
         />
 
         <View pointerEvents="box-none" className="absolute inset-0 items-center justify-center">
-          <View pointerEvents="none" className="absolute top-[12%] items-center">
+          <View pointerEvents="none" className="absolute top-[12%] items-center gap-0.5">
+            <WavesHorizontal size={14} color="#FFFFFF" />
             <Text className="text-[14px] font-semibold text-white">{swell}</Text>
           </View>
 
