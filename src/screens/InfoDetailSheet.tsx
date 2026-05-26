@@ -1,8 +1,9 @@
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import { Modal, Pressable, ScrollView, Text, View } from "react-native";
 import { X } from "lucide-react-native";
 
 import { shadows } from "../styles/shadows";
 import { RisingBackdrop, SlideUp } from "../components/Transitions";
+import { KeyboardAvoider } from "../components/KeyboardAvoider";
 
 export type InfoRow = {
   label: string;
@@ -34,10 +35,7 @@ type Props = {
 export function InfoDetailSheet({ detail, onClose }: Props) {
   return (
     <Modal visible={detail !== null} transparent animationType="none" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1, justifyContent: "flex-end" }}
-      >
+      <KeyboardAvoider>
         {detail !== null ? <RisingBackdrop onPress={onClose} /> : null}
         {detail !== null ? <SlideUp
           from={520}
@@ -90,7 +88,7 @@ export function InfoDetailSheet({ detail, onClose }: Props) {
           ) : null}
         </View>
         </SlideUp> : null}
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
     </Modal>
   );
 }

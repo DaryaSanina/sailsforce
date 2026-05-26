@@ -1,22 +1,22 @@
 import { useMemo, useState } from "react";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { CheckCircle2, MapPin, PlusCircle, Search, Star, Trash2, X } from "lucide-react-native";
+import { Modal, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { CheckCircle2, MapPin, Search, Star, Trash2, X } from "lucide-react-native";
 import Svg, { Path, Rect } from "react-native-svg";
 
-import { type Location } from "../data/prototype";
+import { type BeachLocation } from "../domain/models";
 import { shadows } from "../styles/shadows";
 import { RisingBackdrop, SlideUp } from "../components/Transitions";
+import { KeyboardAvoider } from "../components/KeyboardAvoider";
 
 type Props = {
   visible: boolean;
   selectedLocationId: string;
   favoriteIds: Set<string>;
-  locations: Location[];
+  locations: BeachLocation[];
   onClose: () => void;
   onSelectLocation: (id: string) => void;
   onToggleFavorite: (id: string) => void;
   onRemoveLocation: (id: string) => void;
-  onOpenAdd: () => void;
 };
 
 export function LocationSelectionSheet({
@@ -28,7 +28,6 @@ export function LocationSelectionSheet({
   onSelectLocation,
   onToggleFavorite,
   onRemoveLocation,
-  onOpenAdd,
 }: Props) {
   const [query, setQuery] = useState("");
   const [editMode, setEditMode] = useState(false);
@@ -46,10 +45,7 @@ export function LocationSelectionSheet({
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1, justifyContent: "flex-end" }}
-      >
+      <KeyboardAvoider>
         {visible ? <RisingBackdrop onPress={onClose} /> : null}
         {visible ? <SlideUp
           from={520}
@@ -156,18 +152,10 @@ export function LocationSelectionSheet({
               ) : null}
             </ScrollView>
 
-            <View className="border-t border-line-soft bg-white px-5 pb-6 pt-4">
-              <Pressable
-                onPress={onOpenAdd}
-                className="flex-row items-center justify-center rounded-xl border border-line px-4 py-4 active:bg-surface"
-              >
-                <PlusCircle size={18} color="#0F766E" />
-                <Text className="ml-2 text-[16px] font-semibold text-accent">Add Custom Location</Text>
-              </Pressable>
-            </View>
+            <View className="border-t border-line-soft bg-white pb-6" />
         </View>
         </SlideUp> : null}
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
     </Modal>
   );
 }
@@ -181,7 +169,7 @@ function FavoriteRow({
   onToggleStar,
   onRemove,
 }: {
-  item: Location;
+  item: BeachLocation;
   selected: boolean;
   bordered: boolean;
   editMode: boolean;
@@ -231,7 +219,7 @@ function NearbyRow({
   onToggleStar,
   onRemove,
 }: {
-  item: Location;
+  item: BeachLocation;
   bordered: boolean;
   editMode: boolean;
   onPress: () => void;

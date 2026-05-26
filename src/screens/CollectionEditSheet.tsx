@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -13,9 +11,10 @@ import {
 } from "react-native";
 import { Anchor, Plus, Sailboat, Trash2, X } from "lucide-react-native";
 
-import type { GearItem } from "../data/prototype";
+import type { GearItem } from "../domain/models";
 import { shadows } from "../styles/shadows";
 import { RisingBackdrop, SlideUp } from "../components/Transitions";
+import { KeyboardAvoider } from "../components/KeyboardAvoider";
 
 type Props = {
   visible: boolean;
@@ -126,10 +125,7 @@ export function CollectionEditSheet({ visible, title, itemNoun, kind, items, onC
 
   return (
     <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={{ flex: 1, justifyContent: "flex-end" }}
-      >
+      <KeyboardAvoider>
         {visible ? <RisingBackdrop onPress={onClose} /> : null}
         {visible ? <SlideUp
           from={520}
@@ -274,7 +270,7 @@ export function CollectionEditSheet({ visible, title, itemNoun, kind, items, onC
             </View>
         </View>
         </SlideUp> : null}
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
     </Modal>
   );
 }
